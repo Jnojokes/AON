@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANDREA ONORI — ARCHIVE / 25</title>
+    <meta name="description" content="Photographer based in Italy. Editorial · portrait · personal work.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000%22/><rect x=%2230%22 y=%2230%22 width=%2240%22 height=%2240%22 fill=%22%23fff%22/></svg>">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+
+    <style>
+        :root {
+            --bg: #000000;
+            --fg: #FFFFFF;
+            --mute: #707070;
+            --line: rgba(255,255,255,0.14);
+            --line-strong: rgba(255,255,255,0.32);
+            --accent: #FF3D00;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { background: var(--bg); color: var(--fg); }
+        body {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-weight: 400;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            font-feature-settings: "ss01", "tnum";
+        }
+        ::selection { background: var(--fg); color: var(--bg); }
+
+        .display { font-family: 'Archivo Black', sans-serif; letter-spacing: -0.025em; line-height: 0.92; text-transform: uppercase; }
+        .grot { font-family: 'Bricolage Grotesque', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; font-feature-settings: "tnum"; }
+
+        .uline { letter-spacing: 0.18em; text-transform: uppercase; }
+
+        /* Marquee */
+        .marquee {
+            display: flex;
+            overflow: hidden;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            background: var(--bg);
+        }
+        .marquee-track {
+            display: flex;
+            gap: 48px;
+            padding: 12px 0;
+            animation: marquee 38s linear infinite;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+        .marquee-item { display: inline-flex; align-items: center; gap: 14px; font-size: 11px; }
+        .marquee-dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+
+        /* Coordinates HUD */
+        .hud {
+            position: fixed;
+            top: 56px;
+            right: 16px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            pointer-events: none;
+        }
+        @media (max-width: 768px) { .hud { display: none; } }
+        .hud-row { display: flex; align-items: center; gap: 8px; font-size: 10px; line-height: 1; }
+        .hud-pill {
+            border: 1px solid var(--line-strong);
+            padding: 5px 9px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+        }
+        .live-dot {
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
+            animation: blink 1.4s ease-in-out infinite;
+        }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+        /* Switch toggle */
+        .vswitch {
+            position: fixed;
+            top: 56px;
+            left: 16px;
+            z-index: 50;
+            display: inline-flex;
+            border: 1px solid var(--fg);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            pointer-events: auto;
+        }
+        @media (max-width: 768px) {
+            .vswitch { top: 56px; left: auto; right: 16px; }
+        }
+        .vswitch a {
+            padding: 9px 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--mute);
+            text-decoration: none;
+            transition: all .2s ease;
+        }
+        .vswitch a.active { background: var(--fg); color: var(--bg); }
+        .vswitch a:not(.active):hover { color: var(--fg); }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--fg); color: var(--bg);
+            padding: 14px 28px; border: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.18em;
+            transition: transform .15s ease, background .15s ease;
+            cursor: pointer; border-radius: 0;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn-primary:hover { background: var(--accent); color: var(--fg); }
+        .btn-primary .arrow { transition: transform .25s cubic-bezier(.5,0,.2,1); }
+        .btn-primary:hover .arrow { transform: translateX(4px); }
+
+        .btn-secondary {
+            background: transparent; color: var(--fg);
+            padding: 14px 28px;
+            border: 1px solid var(--line-strong);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.18em;
+            transition: all .15s ease;
+            cursor: pointer; border-radius: 0;
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn-secondary:hover { border-color: var(--fg); }
+        .pulse-dot {
+            width: 6px; height: 6px; background: #2ECC71; border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(46,204,113,0.7);
+            animation: pulse 1.8s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46,204,113,0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(46,204,113,0); }
+            100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
+        }
+
+        /* Stat counter */
+        .stat-num { font-feature-settings: "tnum"; }
+
+        /* Feed grid */
+        .feed-item {
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+            cursor: pointer;
+        }
+        .feed-item img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(.2,.7,.2,1), filter .4s ease;
+            filter: grayscale(40%) contrast(1.05);
+        }
+        .feed-item:hover img { transform: scale(1.06); filter: grayscale(0%) contrast(1.05); }
+        .feed-meta {
+            position: absolute;
+            inset: auto 0 0 0;
+            padding: 14px 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0));
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all .3s cubic-bezier(.2,.7,.2,1);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 10px;
+            color: var(--fg);
+        }
+        .feed-item:hover .feed-meta { opacity: 1; transform: translateY(0); }
+        .feed-corner {
+            position: absolute; top: 8px; left: 8px; z-index: 2;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.15em;
+            background: rgba(0,0,0,0.7);
+            padding: 3px 6px;
+            opacity: 0;
+            transition: opacity .25s ease;
+        }
+        .feed-item:hover .feed-corner { opacity: 1; }
+
+        /* Series chips - square shape */
+        .series-square {
+            width: 88px; height: 88px;
+            border: 1px solid var(--line-strong);
+            overflow: hidden;
+            transition: all .25s ease;
+            background: #0a0a0a;
+            position: relative;
+        }
+        .series-square::before {
+            content: ''; position: absolute; inset: 0;
+            border: 1px solid transparent;
+            transition: border .25s ease;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .series-square:hover { border-color: var(--fg); }
+        .series-square:hover::before { border-color: var(--accent); inset: -4px; }
+        .series-square img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(50%);
+            transition: filter .25s ease, transform .4s ease;
+        }
+        .series-square:hover img { filter: grayscale(0%); transform: scale(1.08); }
+
+        /* Tabs */
+        .tab-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            padding: 18px 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--mute);
+            transition: color .15s ease;
+            flex: 1;
+            position: relative;
+        }
+        .tab-btn.active { color: var(--fg); }
+        .tab-btn:hover { color: var(--fg); }
+        .tab-indicator {
+            position: absolute;
+            bottom: 0; height: 2px;
+            background: var(--fg);
+            transition: all .3s cubic-bezier(.4,0,.2,1);
+        }
+
+        /* Index table */
+        .index-row {
+            padding: 22px 0;
+            border-bottom: 1px solid var(--line);
+            display: grid;
+            grid-template-columns: 50px 1fr 160px 90px 30px;
+            gap: 24px;
+            align-items: center;
+            transition: all .2s ease;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+        .index-row:hover { background: rgba(255,255,255,0.04); padding-left: 12px; padding-right: 12px; }
+        .index-row:hover .index-arrow { transform: translateX(4px); color: var(--accent); }
+        .index-arrow { transition: all .25s ease; }
+        @media (max-width: 768px) {
+            .index-row { grid-template-columns: 40px 1fr 30px; gap: 14px; }
+            .index-row .hide-mobile { display: none; }
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.94);
+            z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(14px);
+            animation: modalIn .25s ease;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Story viewer */
+        .story-viewer {
+            position: fixed; inset: 0;
+            background: #000;
+            z-index: 10001;
+            display: flex; flex-direction: column;
+        }
+        .progress-bars { display: flex; gap: 4px; padding: 14px 20px; }
+        .progress-bar { flex: 1; height: 2px; background: rgba(255,255,255,0.2); position: relative; overflow: hidden; }
+        .progress-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--fg); width: 0%; transition: width 50ms linear; }
+        .story-content { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+        .story-nav-area { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 10; cursor: pointer; }
+        .story-nav-prev { left: 0; } .story-nav-next { right: 0; }
+
+        /* Hero name reveal */
+        @keyframes lineUp {
+            from { transform: translateY(110%); }
+            to { transform: translateY(0); }
+        }
+        .reveal-line { display: inline-block; overflow: hidden; }
+        .reveal-line > span {
+            display: inline-block;
+            animation: lineUp 1s cubic-bezier(.2,.7,.2,1) backwards;
+        }
+        .reveal-line.d1 > span { animation-delay: 0.08s; }
+        .reveal-line.d2 > span { animation-delay: 0.18s; }
+        .reveal-line.d3 > span { animation-delay: 0.28s; }
+
+        /* Brand badge */
+        .verified {
+            display: inline-block;
+            width: 12px; height: 12px;
+            background: var(--fg);
+            margin-left: 14px;
+            vertical-align: middle;
+            position: relative;
+            transform: translateY(-6px);
+        }
+
+        @media (max-width: 768px) {
+            .hud, .vswitch { font-size: 9px; }
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--line);
+            margin-top: 80px;
+            padding: 40px 0 28px;
+        }
+        .colofone-cell { padding: 14px 0; border-bottom: 1px dashed var(--line); }
+        .colofone-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--mute); margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+        .colofone-value { font-size: 13px; color: var(--fg); font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body>
+    <!-- Version switch -->
+    <div class="vswitch">
+        <a href="./bold.html" class="active">BOLD / 01</a>
+        <a href="./archive.html">ARCHIVE / 02</a>
+    </div>
+
+    <!-- HUD coordinates -->
+    <div class="hud">
+        <div class="hud-row hud-pill mono">
+            <span class="live-dot"></span>
+            <span id="liveTime">--:--:--</span>
+            <span style="color: var(--mute);">CET</span>
+        </div>
+        <div class="hud-row hud-pill mono" style="color: var(--mute);">
+            45.4642° N · 9.1900° E
+        </div>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Live time HUD
+        const updateClock = () => {
+            const el = document.getElementById('liveTime');
+            if (el) {
+                const d = new Date();
+                el.textContent = d.toTimeString().slice(0,8);
+            }
+        };
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        const UNSPLASH = [
+            'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1496345875659-11f7dd282d1d?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1492681290082-e932832941e6?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&h=900&fit=crop&q=85',
+            'https://images.unsplash.com/photo-1488161628813-04466f872be2?w=900&h=900&fit=crop&q=85',
+        ];
+
+        // Marquee
+        const Marquee = () => {
+            const items = [
+                ['ARCHIVE', '2025'],
+                ['LATEST', 'NOTTURNO ROMANO'],
+                ['STATUS', 'AVAILABLE FOR COMMISSIONS'],
+                ['ON FILE', '247 WORKS'],
+                ['BASED', 'MILAN — ITALY'],
+                ['PUBLISHED', 'VOGUE IT · NUMÉRO · DOMUS'],
+                ['NOW PLAYING', 'STORIA D\'AMORE'],
+                ['SHIPPING', 'WORLDWIDE'],
+            ];
+            const Block = () => (
+                <div className="marquee-track grot uline">
+                    {items.map((it, i) => (
+                        <span key={i} className="marquee-item">
+                            <span className="marquee-dot"></span>
+                            <span style={{color: 'var(--mute)'}}>{it[0]}</span>
+                            <span>{it[1]}</span>
+                        </span>
+                    ))}
+                </div>
+            );
+            return (
+                <div className="marquee">
+                    <Block /><Block /><Block />
+                </div>
+            );
+        };
+
+        // Animated counter
+        const Counter = ({ target, duration = 1400, suffix = '' }) => {
+            const [val, setVal] = useState(0);
+            const ref = useRef(null);
+            const started = useRef(false);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (entry.isIntersecting && !started.current) {
+                                started.current = true;
+                                const t0 = performance.now();
+                                const tick = (t) => {
+                                    const p = Math.min(1, (t - t0) / duration);
+                                    // easeOutCubic
+                                    const eased = 1 - Math.pow(1 - p, 3);
+                                    setVal(Math.floor(eased * target));
+                                    if (p < 1) requestAnimationFrame(tick);
+                                };
+                                requestAnimationFrame(tick);
+                            }
+                        });
+                    },
+                    { threshold: 0.3 }
+                );
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, [target, duration]);
+
+            return <span ref={ref} className="stat-num">{val}{suffix}</span>;
+        };
+
+        const Avatar = () => (
+            <div style={{ width: '160px', height: '160px', position: 'relative', flexShrink: 0 }}>
+                <img
+                    src="./andrea.jpg"
+                    alt="Andrea Onori"
+                    style={{
+                        width: '100%', height: '100%',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        border: '1px solid rgba(255,255,255,0.25)',
+                        filter: 'grayscale(20%) contrast(1.04)',
+                    }}
+                />
+                <div className="mono" style={{
+                    position: 'absolute', bottom: '-6px', right: '-6px',
+                    background: 'var(--fg)', color: 'var(--bg)',
+                    fontSize: '8px', padding: '4px 7px',
+                    letterSpacing: '0.18em', textTransform: 'uppercase',
+                }}>VERIFIED · 25</div>
+            </div>
+        );
+
+        const ProfileHeader = () => (
+            <div>
+                <div className="flex flex-col md:flex-row gap-10 md:gap-14 items-start mb-14">
+                    <Avatar />
+                    <div className="flex-1 w-full">
+                        <div className="mb-3 mono uline" style={{ color: 'var(--mute)', fontSize: '10px' }}>
+                            ◌ PHOTOGRAPHER · BASED IN MILAN
+                        </div>
+
+                        <h1 className="display" style={{ fontSize: 'clamp(48px, 8vw, 96px)' }}>
+                            <span className="reveal-line d1"><span>ANDREA</span></span>{' '}
+                            <span className="reveal-line d2"><span>ONORI</span></span>
+                            <span className="verified"></span>
+                        </h1>
+
+                        <p className="mono uline mt-3 mb-7" style={{ color: 'var(--mute)', fontSize: '11px' }}>
+                            @andrea__onori &nbsp;·&nbsp; ESTABLISHED MMXVIII
+                        </p>
+
+                        <div className="flex gap-10 md:gap-14 mb-8">
+                            <div>
+                                <div className="display" style={{ fontSize: '46px' }}>
+                                    <Counter target={247} />
+                                </div>
+                                <div className="mono uline mt-1" style={{ color: 'var(--mute)', fontSize: '9px' }}>WORKS</div>
+                            </div>
+                            <div>
+                                <div className="display" style={{ fontSize: '46px' }}>
+                                    <Counter target={12} />
+                                </div>
+                                <div className="mono uline mt-1" style={{ color: 'var(--mute)', fontSize: '9px' }}>SERIES</div>
+                            </div>
+                            <div>
+                                <div className="display" style={{ fontSize: '46px' }}>
+                                    <Counter target={89} />
+                                </div>
+                                <div className="mono uline mt-1" style={{ color: 'var(--mute)', fontSize: '9px' }}>PUBLISHED</div>
+                            </div>
+                        </div>
+
+                        <div className="mb-7 space-y-1">
+                            <p className="grot uline" style={{ fontSize: '13px', fontWeight: 600 }}>EDITORIAL · PORTRAIT · PERSONAL WORK.</p>
+                            <p className="grot uline" style={{ color: 'var(--mute)', fontSize: '11px', letterSpacing: '0.15em' }}>SELECTED BY VOGUE ITALIA · NUMÉRO · DOMUS</p>
+                        </div>
+
+                        <a href="#" className="mono uline mb-7 inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
+                            ↗ ANDREAONORI.COM
+                        </a>
+
+                        <div className="flex gap-3 flex-wrap mt-7">
+                            <button className="btn-primary">
+                                GET IN TOUCH <span className="arrow">→</span>
+                            </button>
+                            <button className="btn-secondary">
+                                <span className="pulse-dot"></span>
+                                AVAILABLE FOR WORK
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // Series
+        const Series = ({ onClick }) => {
+            const series = [
+                { id: 'editorial', label: 'EDITORIAL', count: '32', image: UNSPLASH[0] },
+                { id: 'portraits', label: 'PORTRAITS', count: '47', image: UNSPLASH[1] },
+                { id: 'travel', label: 'TRAVEL', count: '18', image: UNSPLASH[2] },
+                { id: 'backstage', label: 'BACKSTAGE', count: '24', image: UNSPLASH[3] },
+                { id: '2025', label: '2025', count: '12', image: UNSPLASH[4] },
+                { id: 'archive', label: 'ARCHIVE', count: '114', image: UNSPLASH[5] },
+            ];
+            return (
+                <div className="mb-12">
+                    <div className="flex items-baseline justify-between mb-5 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
+                        <div className="mono uline" style={{ fontSize: '10px' }}>◯ SERIES</div>
+                        <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '9px' }}>06 COLLECTIONS</div>
+                    </div>
+                    <div className="flex gap-7 overflow-x-auto pb-2">
+                        {series.map((s, i) => (
+                            <div key={s.id} className="flex flex-col items-center gap-3 flex-shrink-0 cursor-pointer" onClick={() => onClick(s)}>
+                                <div className="series-square">
+                                    <img src={s.image} alt={s.label} />
+                                </div>
+                                <div className="text-center">
+                                    <div className="mono uline" style={{ fontSize: '9px' }}>{s.label}</div>
+                                    <div className="mono" style={{ color: 'var(--mute)', fontSize: '9px', marginTop: '2px' }}>—{s.count}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        // Tabs
+        const Tabs = ({ active, setActive }) => {
+            const tabs = ['FEED', 'MOTION', 'INDEX'];
+            const refs = useRef([]);
+            const [ind, setInd] = useState({ left: 0, width: 0 });
+
+            useEffect(() => {
+                const idx = tabs.indexOf(active);
+                const el = refs.current[idx];
+                if (el) setInd({ left: el.offsetLeft, width: el.offsetWidth });
+            }, [active]);
+
+            return (
+                <div className="mb-10 relative" style={{ borderTop: '1px solid var(--line-strong)', borderBottom: '1px solid var(--line)' }}>
+                    <div className="flex">
+                        {tabs.map((t, i) => (
+                            <button
+                                key={t}
+                                ref={(el) => (refs.current[i] = el)}
+                                className={`tab-btn ${active === t ? 'active' : ''}`}
+                                onClick={() => setActive(t)}
+                            >
+                                <span style={{ color: 'var(--mute)', marginRight: '8px', fontSize: '9px' }}>0{i + 1}</span>
+                                {t}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="tab-indicator" style={{ left: `${ind.left}px`, width: `${ind.width}px` }}></div>
+                </div>
+            );
+        };
+
+        // Feed Grid with asymmetric first row
+        const FeedGrid = ({ onClick }) => {
+            const images = UNSPLASH.map((url, i) => ({
+                url,
+                title: ['NOTTURNO','RITRATTI URBANI','CHIARO DI LUNA','CINEMA VERITE','SENZA TITOLO','PROTOCOLLO','OMBRE','LUCE DIRETTA','BACKSTAGE','SERA','METROPOLI','RIFLESSI'][i],
+                year: i < 4 ? '2024' : '2025',
+                loc: ['ROMA','MILANO','VENEZIA','MILANO','FIRENZE','MILANO','NAPOLI','TORINO','BOLOGNA','ROMA','MILANO','VENEZIA'][i],
+                film: i % 3 === 0 ? '6×7 — PORTRA 400' : i % 3 === 1 ? '35MM — TRI-X 400' : 'DIGITAL — M11',
+            }));
+
+            return (
+                <div>
+                    {/* Hero bento row */}
+                    <div className="grid grid-cols-3 gap-0 mb-0">
+                        <div className="feed-item col-span-2 row-span-2" style={{ aspectRatio: '2/1' }} onClick={() => onClick(0, images)}>
+                            <span className="feed-corner mono">FEATURED · 01</span>
+                            <img src={images[0].url} alt={images[0].title} />
+                            <div className="feed-meta">
+                                <div>
+                                    <div style={{ color: 'var(--mute)', fontSize: '9px', marginBottom: '3px' }}>00 / FEATURED</div>
+                                    <div style={{ fontSize: '11px', letterSpacing: '0.12em' }}>{images[0].title}</div>
+                                </div>
+                                <div style={{ textAlign: 'right', color: 'var(--mute)' }}>
+                                    <div>{images[0].loc}</div>
+                                    <div>{images[0].year}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="feed-item" style={{ aspectRatio: '1/1' }} onClick={() => onClick(1, images)}>
+                            <span className="feed-corner mono">01</span>
+                            <img src={images[1].url} alt={images[1].title} />
+                            <div className="feed-meta">
+                                <div>
+                                    <div style={{ fontSize: '11px' }}>{images[1].title}</div>
+                                </div>
+                                <div style={{ color: 'var(--mute)' }}>{images[1].year}</div>
+                            </div>
+                        </div>
+                        <div className="feed-item" style={{ aspectRatio: '1/1' }} onClick={() => onClick(2, images)}>
+                            <span className="feed-corner mono">02</span>
+                            <img src={images[2].url} alt={images[2].title} />
+                            <div className="feed-meta">
+                                <div>
+                                    <div style={{ fontSize: '11px' }}>{images[2].title}</div>
+                                </div>
+                                <div style={{ color: 'var(--mute)' }}>{images[2].year}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Regular grid */}
+                    <div className="grid grid-cols-3 gap-0">
+                        {images.slice(3).map((img, i) => {
+                            const realIdx = i + 3;
+                            return (
+                                <div key={realIdx} className="feed-item" style={{ aspectRatio: '1/1' }} onClick={() => onClick(realIdx, images)}>
+                                    <span className="feed-corner mono">{String(realIdx).padStart(2, '0')}</span>
+                                    <img src={img.url} alt={img.title} />
+                                    <div className="feed-meta">
+                                        <div>
+                                            <div style={{ color: 'var(--mute)', fontSize: '9px', marginBottom: '3px' }}>{img.film}</div>
+                                            <div style={{ fontSize: '11px' }}>{img.title}</div>
+                                        </div>
+                                        <div style={{ textAlign: 'right', color: 'var(--mute)' }}>
+                                            <div>{img.loc}</div>
+                                            <div>{img.year}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        };
+
+        const MotionGrid = () => {
+            const videos = [
+                'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=500&h=900&fit=crop&q=85',
+                'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=500&h=900&fit=crop&q=85',
+                'https://images.unsplash.com/photo-1524522173746-f628baad3644?w=500&h=900&fit=crop&q=85',
+                'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=500&h=900&fit=crop&q=85',
+                'https://images.unsplash.com/photo-1513097633097-329a3a64e0d4?w=500&h=900&fit=crop&q=85',
+                'https://images.unsplash.com/photo-1495556650867-99590cea3657?w=500&h=900&fit=crop&q=85',
+                'https://images.unsplash.com/photo-1499510318569-1a3d67dc3976?w=500&h=900&fit=crop&q=85',
+                'https://images.unsplash.com/photo-1516962126636-27ad087061cc?w=500&h=900&fit=crop&q=85',
+                'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=500&h=900&fit=crop&q=85',
+            ];
+            return (
+                <div className="grid grid-cols-3 gap-0">
+                    {videos.map((v, i) => (
+                        <div key={i} className="feed-item" style={{ aspectRatio: '9/16' }}>
+                            <span className="feed-corner mono">MOV · {String(i+1).padStart(2,'0')}</span>
+                            <img src={v} alt={`Motion ${i+1}`} />
+                            <div className="mono" style={{
+                                position: 'absolute', top: '8px', right: '8px',
+                                background: 'rgba(0,0,0,0.8)',
+                                padding: '3px 6px',
+                                fontSize: '9px',
+                                letterSpacing: '0.12em',
+                            }}>0:{String(i+7).padStart(2,'0')}</div>
+                            <div className="feed-meta">
+                                <div style={{ fontSize: '10px' }}>REEL #{String(i+1).padStart(3,'0')}</div>
+                                <div style={{ color: 'var(--mute)' }}>2025</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        const IndexView = ({ onClick }) => {
+            const projects = [
+                { num: '01', title: 'NOTTURNO', location: 'ROMA', year: '2024', image: UNSPLASH[0] },
+                { num: '02', title: 'PROTOCOLLO', location: 'MILANO', year: '2024', image: UNSPLASH[5] },
+                { num: '03', title: 'CHIARO DI LUNA', location: 'VENEZIA', year: '2024', image: UNSPLASH[2] },
+                { num: '04', title: 'CINEMA VERITE', location: 'MILANO', year: '2024', image: UNSPLASH[3] },
+                { num: '05', title: 'SENZA TITOLO', location: 'FIRENZE', year: '2025', image: UNSPLASH[4] },
+                { num: '06', title: 'OMBRE E LUCE', location: 'NAPOLI', year: '2025', image: UNSPLASH[6] },
+                { num: '07', title: 'RITRATTI URBANI', location: 'TORINO', year: '2024', image: UNSPLASH[1] },
+                { num: '08', title: 'BACKSTAGE', location: 'BOLOGNA', year: '2025', image: UNSPLASH[7] },
+            ];
+            return (
+                <div className="max-w-4xl mx-auto">
+                    <div className="mono uline mb-6 pb-3" style={{ fontSize: '10px', color: 'var(--mute)', borderBottom: '1px solid var(--line-strong)' }}>
+                        <div className="grid items-center" style={{ gridTemplateColumns: '50px 1fr 160px 90px 30px', gap: '24px' }}>
+                            <div>NO.</div>
+                            <div>TITLE</div>
+                            <div className="hide-mobile">LOCATION</div>
+                            <div className="hide-mobile">YEAR</div>
+                            <div></div>
+                        </div>
+                    </div>
+                    {projects.map((p, i) => (
+                        <div key={i} className="index-row" onClick={() => onClick(i, projects)}>
+                            <div style={{ color: 'var(--mute)' }}>{p.num}</div>
+                            <div>/&nbsp; {p.title}</div>
+                            <div className="hide-mobile" style={{ color: 'var(--mute)' }}>{p.location}</div>
+                            <div className="hide-mobile" style={{ color: 'var(--mute)' }}>{p.year}</div>
+                            <div className="text-right index-arrow">→</div>
+                        </div>
+                    ))}
+                </div>
+            );
+        };
+
+        // Story viewer
+        const StoryViewer = ({ series, onClose }) => {
+            const [current, setCurrent] = useState(0);
+            const [progress, setProgress] = useState(0);
+            const [paused, setPaused] = useState(false);
+            const intervalRef = useRef(null);
+            const slides = UNSPLASH.slice(0, 5);
+
+            useEffect(() => {
+                if (!paused) {
+                    intervalRef.current = setInterval(() => {
+                        setProgress(prev => {
+                            if (prev >= 100) {
+                                if (current < slides.length - 1) {
+                                    setCurrent(current + 1);
+                                    return 0;
+                                } else { onClose(); return 100; }
+                            }
+                            return prev + 2;
+                        });
+                    }, 100);
+                }
+                return () => intervalRef.current && clearInterval(intervalRef.current);
+            }, [current, paused]);
+
+            useEffect(() => {
+                const onKey = (e) => {
+                    if (e.key === 'Escape') onClose();
+                    if (e.key === 'ArrowRight' && current < slides.length - 1) { setCurrent(current + 1); setProgress(0); }
+                    if (e.key === 'ArrowLeft' && current > 0) { setCurrent(current - 1); setProgress(0); }
+                };
+                window.addEventListener('keydown', onKey);
+                return () => window.removeEventListener('keydown', onKey);
+            }, [current]);
+
+            return (
+                <div className="story-viewer">
+                    <div className="progress-bars">
+                        {slides.map((_, i) => (
+                            <div key={i} className="progress-bar">
+                                <div className="progress-fill" style={{ width: i < current ? '100%' : i === current ? `${progress}%` : '0%' }}></div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-between items-center px-5 pb-2 mono uline" style={{ fontSize: '10px' }}>
+                        <div>{series.label} &nbsp;·&nbsp; {String(current + 1).padStart(2,'0')}/{String(slides.length).padStart(2,'0')}</div>
+                        <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--fg)', cursor: 'pointer', fontSize: '14px' }}>✕</button>
+                    </div>
+                    <div className="story-content">
+                        <div className="story-nav-area story-nav-prev" onClick={() => current > 0 && (setCurrent(current - 1), setProgress(0))}
+                            onMouseDown={() => setPaused(true)} onMouseUp={() => setPaused(false)} onMouseLeave={() => setPaused(false)}></div>
+                        <div className="story-nav-area story-nav-next" onClick={() => current < slides.length - 1 ? (setCurrent(current + 1), setProgress(0)) : onClose()}
+                            onMouseDown={() => setPaused(true)} onMouseUp={() => setPaused(false)} onMouseLeave={() => setPaused(false)}></div>
+                        <img src={slides[current]} alt="" style={{ maxWidth: '100%', maxHeight: '82vh', objectFit: 'contain' }} />
+                    </div>
+                </div>
+            );
+        };
+
+        // Modal post
+        const PostModal = ({ idx, images, onClose, onNext, onPrev }) => {
+            useEffect(() => {
+                const onKey = (e) => {
+                    if (e.key === 'Escape') onClose();
+                    if (e.key === 'ArrowRight') onNext();
+                    if (e.key === 'ArrowLeft') onPrev();
+                };
+                window.addEventListener('keydown', onKey);
+                return () => window.removeEventListener('keydown', onKey);
+            }, [onClose, onNext, onPrev]);
+
+            const img = images[idx];
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="max-w-6xl w-full flex flex-col md:flex-row gap-10 items-start" onClick={e => e.stopPropagation()}>
+                        <div className="flex-1 max-w-3xl">
+                            <img src={img.url} alt={img.title} className="w-full" />
+                        </div>
+                        <div className="w-full md:w-80 space-y-6">
+                            <div className="mono uline" style={{ fontSize: '10px', color: 'var(--mute)' }}>
+                                {String(idx + 1).padStart(2,'0')} / {String(images.length).padStart(2,'0')}
+                            </div>
+                            <h2 className="display" style={{ fontSize: '32px' }}>{img.title}</h2>
+                            <div className="mono uline space-y-1" style={{ fontSize: '10px' }}>
+                                <p><span style={{ color: 'var(--mute)' }}>LOCATION&nbsp;&nbsp;</span>{img.location || img.loc || 'ROMA'}</p>
+                                <p><span style={{ color: 'var(--mute)' }}>YEAR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{img.year}</p>
+                                <p><span style={{ color: 'var(--mute)' }}>FORMAT&nbsp;&nbsp;&nbsp;&nbsp;</span>{img.film || '6×7 — PORTRA 400'}</p>
+                                <p><span style={{ color: 'var(--mute)' }}>EDITION&nbsp;&nbsp;&nbsp;</span>03/12 SIGNED</p>
+                            </div>
+                            <p style={{ color: 'var(--mute)', fontSize: '14px', lineHeight: 1.55, fontWeight: 300 }}>
+                                Captured during the quiet hours when the city reveals its character. The interplay of artificial light and shadow creates a cinematic quality that transforms ordinary moments into something timeless.
+                            </p>
+                            <div className="flex gap-6 pt-4">
+                                <button onClick={onPrev} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>← PREV</button>
+                                <button onClick={onNext} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>NEXT →</button>
+                            </div>
+                            <a href="#" className="btn-primary mt-4" style={{ display: 'inline-flex' }}>INQUIRE <span className="arrow">→</span></a>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Footer
+        const Footer = () => (
+            <footer>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
+                    <div className="colofone-cell">
+                        <div className="colofone-label">© 2025</div>
+                        <div className="colofone-value">ANDREA ONORI</div>
+                    </div>
+                    <div className="colofone-cell">
+                        <div className="colofone-label">STUDIO</div>
+                        <div className="colofone-value">MILAN — IT</div>
+                    </div>
+                    <div className="colofone-cell">
+                        <div className="colofone-label">EMAIL</div>
+                        <div className="colofone-value">hello@andreaonori.com</div>
+                    </div>
+                    <div className="colofone-cell">
+                        <div className="colofone-label">SOCIAL</div>
+                        <div className="colofone-value">@andrea__onori</div>
+                    </div>
+                </div>
+                <div className="flex justify-between items-center pt-6 mono uline" style={{ fontSize: '10px', color: 'var(--mute)', borderTop: '1px solid var(--line)' }}>
+                    <span>ARCHIVE — RELEASE / 25</span>
+                    <span>EDITION 01 / BOLD</span>
+                </div>
+            </footer>
+        );
+
+        const App = () => {
+            const [active, setActive] = useState('FEED');
+            const [selectedImg, setSelectedImg] = useState(null);
+            const [imgs, setImgs] = useState([]);
+            const [selectedSeries, setSelectedSeries] = useState(null);
+
+            const open = (i, list) => { setSelectedImg(i); setImgs(list); };
+
+            return (
+                <div>
+                    <Marquee />
+                    <div style={{ borderBottom: '1px solid var(--line)' }}>
+                        <div className="max-w-[1100px] mx-auto px-6 py-3 flex justify-between items-center">
+                            <div className="mono uline" style={{ fontSize: '10px' }}>andrea__onori</div>
+                            <div className="mono uline" style={{ fontSize: '9px', color: 'var(--mute)' }}>ARCHIVE / 25 &nbsp;·&nbsp; VOLUME 01</div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-[1100px] mx-auto px-6 py-16">
+                        <ProfileHeader />
+                        <Series onClick={setSelectedSeries} />
+                        <Tabs active={active} setActive={setActive} />
+                        {active === 'FEED' && <FeedGrid onClick={open} />}
+                        {active === 'MOTION' && <MotionGrid />}
+                        {active === 'INDEX' && <IndexView onClick={open} />}
+                        <Footer />
+                    </div>
+
+                    {selectedImg !== null && (
+                        <PostModal
+                            idx={selectedImg}
+                            images={imgs}
+                            onClose={() => setSelectedImg(null)}
+                            onNext={() => setSelectedImg((p) => (p + 1) % imgs.length)}
+                            onPrev={() => setSelectedImg((p) => (p - 1 + imgs.length) % imgs.length)}
+                        />
+                    )}
+                    {selectedSeries && <StoryViewer series={selectedSeries} onClose={() => setSelectedSeries(null)} />}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
