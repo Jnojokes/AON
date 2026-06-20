@@ -143,6 +143,11 @@
             100% { box-shadow: 0 0 0 0 rgba(46,204,113,0); }
         }
 
+        /* Hero buttons — more compact on desktop; mobile keeps the larger size */
+        @media (min-width: 768px) {
+            .btn-primary, .btn-secondary { padding: 9px 18px; font-size: 10px; }
+        }
+
         /* Stat counter */
         .stat-num { font-feature-settings: "tnum"; }
 
@@ -515,9 +520,24 @@
             </div>
         );
 
+        const HERO_STATS = [
+            { target: 247, label: 'WORKS' },
+            { target: 12, label: 'SERIES' },
+            { target: 89, label: 'PUBLISHED' },
+        ];
+
+        // One stat: big number on top, small uppercase label below.
+        const StatItem = ({ target, label }) => (
+            <div>
+                <div className="display" style={{ fontSize: '46px' }}><Counter target={target} /></div>
+                <div className="mono uline mt-1" style={{ color: 'var(--mute)', fontSize: '9px' }}>{label}</div>
+            </div>
+        );
+
         const ProfileHeader = ({ onAvatarClick }) => (
             <div>
-                <div className="flex flex-col md:flex-row gap-10 md:gap-14 items-start mb-14">
+                {/* Desktop: left = name/info/buttons, right = vertical stats rail. Mobile: single column, stats inline under the name. Only md+ behaviour changes. */}
+                <div className="flex flex-col md:flex-row gap-10 md:gap-10 items-start mb-14 md:mb-9">
                     <Avatar onClick={onAvatarClick} />
                     <div className="flex-1 w-full">
                         <div className="mb-3 mono uline" style={{ color: 'var(--mute)', fontSize: '10px' }}>
@@ -530,41 +550,25 @@
                             <span className="verified"></span>
                         </h1>
 
-                        <p className="mono uline mt-3 mb-7" style={{ color: 'var(--mute)', fontSize: '11px' }}>
+                        <p className="mono uline mt-3 mb-7 md:mb-4" style={{ color: 'var(--mute)', fontSize: '11px' }}>
                             @andrea__onori &nbsp;·&nbsp; ESTABLISHED MMXVIII
                         </p>
 
-                        <div className="flex gap-10 md:gap-14 mb-8">
-                            <div>
-                                <div className="display" style={{ fontSize: '46px' }}>
-                                    <Counter target={247} />
-                                </div>
-                                <div className="mono uline mt-1" style={{ color: 'var(--mute)', fontSize: '9px' }}>WORKS</div>
-                            </div>
-                            <div>
-                                <div className="display" style={{ fontSize: '46px' }}>
-                                    <Counter target={12} />
-                                </div>
-                                <div className="mono uline mt-1" style={{ color: 'var(--mute)', fontSize: '9px' }}>SERIES</div>
-                            </div>
-                            <div>
-                                <div className="display" style={{ fontSize: '46px' }}>
-                                    <Counter target={89} />
-                                </div>
-                                <div className="mono uline mt-1" style={{ color: 'var(--mute)', fontSize: '9px' }}>PUBLISHED</div>
-                            </div>
+                        {/* Stats — MOBILE only: horizontal row under the name (unchanged). */}
+                        <div className="flex gap-10 mb-8 md:hidden">
+                            {HERO_STATS.map((s, i) => <StatItem key={i} target={s.target} label={s.label} />)}
                         </div>
 
-                        <div className="mb-7 space-y-1">
+                        <div className="mb-7 md:mb-4 space-y-1">
                             <p className="grot uline" style={{ fontSize: '13px', fontWeight: 600 }}>EDITORIAL · PORTRAIT · PERSONAL WORK.</p>
                             <p className="grot uline" style={{ color: 'var(--mute)', fontSize: '11px', letterSpacing: '0.15em' }}>SELECTED BY VOGUE ITALIA · NUMÉRO · DOMUS</p>
                         </div>
 
-                        <a href="#" className="mono uline mb-7 inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
+                        <a href="#" className="mono uline mb-7 md:mb-4 inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
                             ↗ ANDREAONORI.COM
                         </a>
 
-                        <div className="flex gap-3 flex-wrap mt-7">
+                        <div className="flex gap-3 md:gap-2 flex-wrap mt-7 md:mt-5">
                             <button className="btn-primary">
                                 <span>GET IN TOUCH</span> <span className="arrow">→</span>
                             </button>
@@ -573,6 +577,11 @@
                                 AVAILABLE FOR WORK
                             </button>
                         </div>
+                    </div>
+
+                    {/* Stats — DESKTOP only: vertical column aligned to the right of the hero. */}
+                    <div className="hidden md:flex md:flex-col md:items-end md:text-right gap-6 flex-shrink-0">
+                        {HERO_STATS.map((s, i) => <StatItem key={i} target={s.target} label={s.label} />)}
                     </div>
                 </div>
             </div>
