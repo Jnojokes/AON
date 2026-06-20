@@ -97,6 +97,51 @@ function fileToBase64(file){
   });
 }
 
+// ── API call with clear, server-aware error messages ────────────────────────
+// Distinguishes: rete giù, endpoint inesistente (sito non su Vercel),
+// password errata (401), GITHUB_TOKEN mancante (500), permessi token (502).
+async function apiPost(payload){
+  let res;
+  try {
+    res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    throw new Error("Rete non raggiungibile: impossibile contattare /api/save. Verifica la connessione e che il sito sia pubblicato su Vercel.");
+  }
+
+  // Read as text first: a non-Vercel host (es. GitHub Pages) risponde con HTML,
+  // non JSON, e res.json() esploderebbe con un errore criptico.
+  const raw = await res.text();
+  let data = null;
+  try { data = raw ? JSON.parse(raw) : null; } catch { data = null; }
+
+  if (res.ok) {
+    if (!data) throw new Error("Risposta non-JSON dal server: /api/save potrebbe non essere attivo.");
+    return data;
+  }
+
+  // Errore senza corpo JSON → quasi certamente non è la funzione serverless a rispondere.
+  if (!data) {
+    throw new Error("Endpoint /api/save non trovato (HTTP " + res.status + "). La funzione serverless non risponde: probabile sito NON su Vercel — su hosting statico /api/save non esiste. Su Vercel verifica che api/save.js sia deployato.");
+  }
+
+  const serverMsg = data.error || "errore sconosciuto";
+  if (res.status === 401) {
+    throw new Error("Password errata (401). Se su Vercel hai impostato una ADMIN_PASSWORD personalizzata (diversa dal default), entra con quella.");
+  }
+  if (res.status === 500) {
+    const tokenHint = /GITHUB_TOKEN/i.test(serverMsg) ? " → imposta la env var GITHUB_TOKEN su Vercel e rifai il deploy." : "";
+    throw new Error("Errore di configurazione server (500): " + serverMsg + tokenHint);
+  }
+  if (res.status === 502) {
+    throw new Error("GitHub ha rifiutato la scrittura (502): " + serverMsg + " → spesso il token non ha permesso Contents: Read and write sul repo, oppure owner/repo/branch sono errati.");
+  }
+  throw new Error("HTTP " + res.status + ": " + serverMsg);
+}
+
 function move(arr, from, to){
   const copy = arr.slice();
   if (to < 0 || to >= copy.length) return copy;
@@ -169,13 +214,7 @@ function ImageField({ value, password, onChange, onStatus }){
     onStatus && onStatus("Carico " + file.name + "…", "info");
     try {
       const dataUrl = await fileToBase64(file);
-      const res = await fetch(API, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ action:"upload", password, filename:file.name, contentBase64:dataUrl }),
-      });
-      const j = await res.json();
-      if (!res.ok) throw new Error(j.error || ("HTTP " + res.status));
+      const j = await apiPost({ action:"upload", password, filename:file.name, contentBase64:dataUrl });
       onChange(j.path);
       onStatus && onStatus("Caricata: " + j.path, "ok");
     } catch (err) {
@@ -296,13 +335,7 @@ function CMS({ password }){
     setSaving(true);
     status("Salvo media.json su GitHub…", "info");
     try {
-      const res = await fetch(API, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ action:"save", password, media }),
-      });
-      const j = await res.json();
-      if (!res.ok) throw new Error(j.error || ("HTTP " + res.status));
+      await apiPost({ action:"save", password, media });
       setDirty(false);
       status("Salvato. Vercel pubblicherà tra pochi secondi.", "ok");
     } catch (err) {

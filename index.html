@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANDREA ONORI — ARCHIVE / 25</title>
+    <title>ANDREA ONORI</title>
     <meta name="description" content="Photographer based in Italy. Editorial · portrait · personal work.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000%22/><rect x=%2230%22 y=%2230%22 width=%2240%22 height=%2240%22 fill=%22%23fff%22/></svg>">
 
@@ -91,34 +91,6 @@
             animation: blink 1.4s ease-in-out infinite;
         }
         @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
-
-        /* Switch toggle */
-        .vswitch {
-            position: fixed;
-            top: 56px;
-            left: 16px;
-            z-index: 50;
-            display: inline-flex;
-            border: 1px solid var(--fg);
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-            pointer-events: auto;
-        }
-        @media (max-width: 768px) {
-            .vswitch { top: 56px; left: auto; right: 16px; }
-        }
-        .vswitch a {
-            padding: 9px 14px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            color: var(--mute);
-            text-decoration: none;
-            transition: all .2s ease;
-        }
-        .vswitch a.active { background: var(--fg); color: var(--bg); }
-        .vswitch a:not(.active):hover { color: var(--fg); }
 
         /* Buttons */
         .btn-primary {
@@ -392,7 +364,7 @@
         }
 
         @media (max-width: 768px) {
-            .hud, .vswitch { font-size: 9px; }
+            .hud { font-size: 9px; }
         }
 
         /* Footer */
@@ -407,12 +379,6 @@
     </style>
 </head>
 <body>
-    <!-- Version switch -->
-    <div class="vswitch">
-        <a href="./bold.html" class="active">BOLD / 01</a>
-        <a href="./archive.html">CLEAN / 02</a>
-    </div>
-
     <!-- HUD coordinates -->
     <div class="hud">
         <div class="hud-row hud-pill mono">
@@ -441,23 +407,9 @@
         updateClock();
         setInterval(updateClock, 1000);
 
-        const UNSPLASH = [
-            'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1496345875659-11f7dd282d1d?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1492681290082-e932832941e6?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=900&h=900&fit=crop&q=85',
-            'https://images.unsplash.com/photo-1488161628813-04466f872be2?w=900&h=900&fit=crop&q=85',
-        ];
-
-        // Live media accessor — reads window.MEDIA (populated from media.json) at render time,
-        // falling back to the hardcoded defaults below if the fetch hasn't resolved.
+        // Live media accessor — reads window.MEDIA (populated from media.json) at
+        // render time. If the fetch failed, M() is empty and each section falls
+        // back to a clean empty-state (no placeholder images).
         const M = () => (window.MEDIA || {});
 
         // Marquee
@@ -626,21 +578,26 @@
             </div>
         );
 
+        // Clean empty-state shown when a section has no media (e.g. media.json
+        // failed to load). No Unsplash, no fake data — just a neutral notice.
+        const EmptyState = ({ section }) => (
+            <div className="mono uline" style={{
+                color: 'var(--mute)', fontSize: '11px', textAlign: 'center',
+                padding: '64px 16px', border: '1px dashed var(--line)',
+            }}>
+                NESSUN MEDIA IN {section} — aggiungilo da /admin-edits
+            </div>
+        );
+
         // Series
         const Series = ({ onClick }) => {
-            const series = (M().series && M().series.length) ? M().series : [
-                { id: 'editorial', label: 'EDITORIAL', count: '32', image: UNSPLASH[0] },
-                { id: 'portraits', label: 'PORTRAITS', count: '47', image: UNSPLASH[1] },
-                { id: 'travel', label: 'TRAVEL', count: '18', image: UNSPLASH[2] },
-                { id: 'backstage', label: 'BACKSTAGE', count: '24', image: UNSPLASH[3] },
-                { id: '2025', label: '2025', count: '12', image: UNSPLASH[4] },
-                { id: 'archive', label: 'ARCHIVE', count: '114', image: UNSPLASH[5] },
-            ];
+            const series = (M().series && M().series.length) ? M().series : [];
+            if (!series.length) return null;
             return (
                 <div className="mb-12">
                     <div className="flex items-baseline justify-between mb-5 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
                         <div className="mono uline" style={{ fontSize: '10px' }}>◯ SERIES</div>
-                        <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '9px' }}>06 COLLECTIONS</div>
+                        <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '9px' }}>{String(series.length).padStart(2,'0')} COLLECTIONS</div>
                     </div>
                     <div className="flex gap-7 overflow-x-auto pb-2">
                         {series.map((s, i) => (
@@ -693,13 +650,8 @@
 
         // Feed Grid with asymmetric first row
         const FeedGrid = ({ onClick }) => {
-            const images = (M().feed && M().feed.length) ? M().feed : UNSPLASH.map((url, i) => ({
-                url,
-                title: ['NOTTURNO','RITRATTI URBANI','CHIARO DI LUNA','CINEMA VERITE','SENZA TITOLO','PROTOCOLLO','OMBRE','LUCE DIRETTA','BACKSTAGE','SERA','METROPOLI','RIFLESSI'][i],
-                year: i < 4 ? '2024' : '2025',
-                loc: ['ROMA','MILANO','VENEZIA','MILANO','FIRENZE','MILANO','NAPOLI','TORINO','BOLOGNA','ROMA','MILANO','VENEZIA'][i],
-                film: i % 3 === 0 ? '6×7 — PORTRA 400' : i % 3 === 1 ? '35MM — TRI-X 400' : 'DIGITAL — M11',
-            }));
+            const images = (M().feed && M().feed.length) ? M().feed : [];
+            if (!images.length) return <EmptyState section="FEED" />;
 
             return (
                 <div>
@@ -768,17 +720,8 @@
         };
 
         const MotionGrid = () => {
-            const videos = (M().motion && M().motion.length) ? M().motion : [
-                'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=500&h=900&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=500&h=900&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1524522173746-f628baad3644?w=500&h=900&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=500&h=900&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1513097633097-329a3a64e0d4?w=500&h=900&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1495556650867-99590cea3657?w=500&h=900&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1499510318569-1a3d67dc3976?w=500&h=900&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1516962126636-27ad087061cc?w=500&h=900&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=500&h=900&fit=crop&q=85',
-            ];
+            const videos = (M().motion && M().motion.length) ? M().motion : [];
+            if (!videos.length) return <EmptyState section="MOTION" />;
             return (
                 <div className="grid grid-cols-3 gap-0">
                     {videos.map((v, i) => (
@@ -803,16 +746,8 @@
         };
 
         const IndexView = ({ onClick }) => {
-            const projects = (M().index && M().index.length) ? M().index : [
-                { num: '01', title: 'NOTTURNO', location: 'ROMA', year: '2024', image: UNSPLASH[0] },
-                { num: '02', title: 'PROTOCOLLO', location: 'MILANO', year: '2024', image: UNSPLASH[5] },
-                { num: '03', title: 'CHIARO DI LUNA', location: 'VENEZIA', year: '2024', image: UNSPLASH[2] },
-                { num: '04', title: 'CINEMA VERITE', location: 'MILANO', year: '2024', image: UNSPLASH[3] },
-                { num: '05', title: 'SENZA TITOLO', location: 'FIRENZE', year: '2025', image: UNSPLASH[4] },
-                { num: '06', title: 'OMBRE E LUCE', location: 'NAPOLI', year: '2025', image: UNSPLASH[6] },
-                { num: '07', title: 'RITRATTI URBANI', location: 'TORINO', year: '2024', image: UNSPLASH[1] },
-                { num: '08', title: 'BACKSTAGE', location: 'BOLOGNA', year: '2025', image: UNSPLASH[7] },
-            ];
+            const projects = (M().index && M().index.length) ? M().index : [];
+            if (!projects.length) return <EmptyState section="INDEX" />;
             return (
                 <div className="max-w-4xl mx-auto">
                     <div className="mono uline mb-6 pb-3" style={{ fontSize: '10px', color: 'var(--mute)', borderBottom: '1px solid var(--line-strong)' }}>
@@ -843,7 +778,7 @@
             const [progress, setProgress] = useState(0);
             const [paused, setPaused] = useState(false);
             const intervalRef = useRef(null);
-            const slides = (M().feed && M().feed.length) ? M().feed.slice(0, 5).map(f => f.url) : UNSPLASH.slice(0, 5);
+            const slides = (M().feed && M().feed.length) ? M().feed.slice(0, 5).map(f => f.url) : [];
 
             useEffect(() => {
                 if (!paused) {
@@ -871,6 +806,8 @@
                 window.addEventListener('keydown', onKey);
                 return () => window.removeEventListener('keydown', onKey);
             }, [current]);
+
+            if (!slides.length) return null;
 
             return (
                 <div className="story-viewer">
@@ -970,14 +907,7 @@
 
         // Showreel — autoplay cross-fade reel, opens from avatar
         const ShowreelModal = ({ onClose }) => {
-            const slides = [
-                'https://images.unsplash.com/photo-1492681290082-e932832941e6?w=1600&h=1000&fit=crop&q=88',
-                'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1600&h=1000&fit=crop&q=88',
-                'https://images.unsplash.com/photo-1496345875659-11f7dd282d1d?w=1600&h=1000&fit=crop&q=88',
-                'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?w=1600&h=1000&fit=crop&q=88',
-                'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=1600&h=1000&fit=crop&q=88',
-                'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1600&h=1000&fit=crop&q=88',
-            ];
+            const slides = (M().feed && M().feed.length) ? M().feed.slice(0, 6).map(f => f.url) : [];
             const [cur, setCur] = useState(0);
             const [progress, setProgress] = useState(0);
             const intervalRef = useRef(null);
@@ -1011,6 +941,8 @@
                 }, tick);
                 return () => intervalRef.current && clearInterval(intervalRef.current);
             }, []);
+
+            if (!slides.length) return null;
 
             return (
                 <div style={{
