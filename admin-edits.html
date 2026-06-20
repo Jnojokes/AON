@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>AON — Admin Edits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+<style>
+  :root{
+    --bg:#000000; --fg:#FFFFFF; --mute:#707070;
+    --line:rgba(255,255,255,0.14); --line-strong:rgba(255,255,255,0.32);
+    --accent:#FF3D00;
+    --ease-out:cubic-bezier(0.22,1,0.36,1);
+    --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:var(--bg);color:var(--fg);font-family:'Bricolage Grotesque',sans-serif;-webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--accent);color:#000;}
+  .display{font-family:'Archivo Black',sans-serif;text-transform:uppercase;letter-spacing:-0.025em;line-height:0.92;}
+  .grot{font-family:'Bricolage Grotesque',sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;}
+  .uline{letter-spacing:0.18em;text-transform:uppercase;}
+  input,button,textarea,select{font-family:inherit;color:inherit;}
+  button{cursor:pointer;background:none;border:none;}
+  a{color:inherit;}
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:#0a0a0a;}
+  ::-webkit-scrollbar-thumb{background:#333;border-radius:0;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+  .field{
+    width:100%;background:#0c0c0c;border:1px solid var(--line);
+    padding:9px 11px;font-size:12px;color:var(--fg);outline:none;
+    transition:border-color .2s var(--ease-out);
+  }
+  .field:focus{border-color:var(--accent);}
+  .lbl{font-size:9px;color:var(--mute);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:4px;display:block;}
+
+  .btn{
+    border:1px solid var(--line-strong);padding:9px 16px;font-size:11px;
+    letter-spacing:0.14em;text-transform:uppercase;font-weight:700;
+    transition:all .2s var(--ease-out);white-space:nowrap;
+  }
+  .btn:hover{background:var(--fg);color:#000;border-color:var(--fg);}
+  .btn-accent{background:var(--accent);border-color:var(--accent);color:#000;}
+  .btn-accent:hover{background:#fff;border-color:#fff;color:#000;}
+  .btn-ghost{border-color:var(--line);color:var(--mute);}
+  .btn-ghost:hover{background:#161616;color:#fff;border-color:var(--line-strong);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn:disabled:hover{background:none;color:var(--mute);border-color:var(--line);}
+
+  .card{
+    border:1px solid var(--line);background:#070707;
+    transition:border-color .2s var(--ease-out);
+  }
+  .card:hover{border-color:var(--line-strong);}
+
+  .tab{
+    font-size:11px;letter-spacing:0.16em;text-transform:uppercase;font-weight:700;
+    padding:10px 4px;color:var(--mute);border-bottom:2px solid transparent;
+    transition:color .2s var(--ease-out),border-color .2s var(--ease-out);
+  }
+  .tab:hover{color:var(--fg);}
+  .tab.active{color:var(--fg);border-color:var(--accent);}
+
+  .thumb{width:100%;aspect-ratio:1;object-fit:cover;background:#111;display:block;filter:grayscale(0.15);}
+
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .spin{animation:spin .8s linear infinite;}
+  @keyframes slideUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+  .toast{animation:slideUp .3s var(--ease-spring);}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .fade{animation:fadeIn .35s var(--ease-out);}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const API = "/api/save";
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result));
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+function move(arr, from, to){
+  const copy = arr.slice();
+  if (to < 0 || to >= copy.length) return copy;
+  const [it] = copy.splice(from, 1);
+  copy.splice(to, 0, it);
+  return copy;
+}
+
+// Default empty shapes per section
+const BLANKS = {
+  feed:   () => ({ url:"", title:"NUOVO", year:"2025", loc:"", film:"" }),
+  motion: () => "",
+  series: () => ({ id:"nuovo", label:"NUOVA SERIE", count:"0", image:"" }),
+  index:  () => ({ num:"00", title:"NUOVO", location:"", year:"2025", image:"" }),
+};
+
+const SECTIONS = [
+  { key:"feed",   label:"FEED",   help:"Griglia principale — ogni scatto ha titolo, anno, luogo, pellicola." },
+  { key:"motion", label:"MOTION", help:"Colonne verticali in movimento — solo immagine." },
+  { key:"series", label:"SERIES", help:"Le collezioni mostrate nel menu — etichetta + conteggio + cover." },
+  { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
+];
+
+// ── Login gate ──────────────────────────────────────────────────────────────
+function Login({ onAuth }){
+  const [u, setU] = useState("");
+  const [p, setP] = useState("");
+  const [err, setErr] = useState("");
+  const submit = (e) => {
+    e.preventDefault();
+    if (u.trim() === "admin" && p === "on2026"){ onAuth(p); }
+    else { setErr("Credenziali non valide."); }
+  };
+  return (
+    <div className="fade" style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+      <div style={{width:"100%",maxWidth:360}}>
+        <div className="mono uline" style={{fontSize:10,color:"var(--accent)",marginBottom:16}}>AON · CMS</div>
+        <h1 className="display" style={{fontSize:38,marginBottom:6}}>ADMIN<br/>EDITS</h1>
+        <p className="mono" style={{fontSize:11,color:"var(--mute)",marginBottom:28}}>Accesso riservato alla gestione dei contenuti.</p>
+        <form onSubmit={submit}>
+          <div style={{marginBottom:14}}>
+            <label className="lbl">Utente</label>
+            <input className="field mono" value={u} onChange={e=>setU(e.target.value)} autoFocus placeholder="admin" />
+          </div>
+          <div style={{marginBottom:20}}>
+            <label className="lbl">Password</label>
+            <input className="field mono" type="password" value={p} onChange={e=>setP(e.target.value)} placeholder="••••••" />
+          </div>
+          {err && <div className="mono" style={{fontSize:11,color:"var(--accent)",marginBottom:16}}>{err}</div>}
+          <button className="btn btn-accent" style={{width:"100%"}} type="submit">Entra</button>
+        </form>
+        <a href="/" className="mono" style={{display:"inline-block",marginTop:22,fontSize:10,color:"var(--mute)",textDecoration:"none"}}>← Torna al sito</a>
+      </div>
+    </div>
+  );
+}
+
+// ── Image picker (uploads to /media via API, stores returned path) ───────────
+function ImageField({ value, password, onChange, onStatus }){
+  const inputRef = useRef(null);
+  const [busy, setBusy] = useState(false);
+
+  const pick = () => inputRef.current && inputRef.current.click();
+
+  const onFile = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    setBusy(true);
+    onStatus && onStatus("Carico " + file.name + "…", "info");
+    try {
+      const dataUrl = await fileToBase64(file);
+      const res = await fetch(API, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ action:"upload", password, filename:file.name, contentBase64:dataUrl }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || ("HTTP " + res.status));
+      onChange(j.path);
+      onStatus && onStatus("Caricata: " + j.path, "ok");
+    } catch (err) {
+      onStatus && onStatus("Upload fallito: " + err.message, "err");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const preview = value
+    ? (value.startsWith("http") ? value : "/" + value.replace(/^\/+/, ""))
+    : "";
+
+  return (
+    <div>
+      <div style={{position:"relative"}}>
+        {preview
+          ? <img className="thumb" src={preview} alt="" onError={(e)=>{e.target.style.opacity=0.2;}} />
+          : <div className="thumb" style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <span className="mono" style={{fontSize:10,color:"#555"}}>NESSUNA IMG</span>
+            </div>}
+        {busy && (
+          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <div className="spin" style={{width:22,height:22,border:"2px solid #444",borderTopColor:"var(--accent)",borderRadius:"50%"}} />
+          </div>
+        )}
+      </div>
+      <input ref={inputRef} type="file" accept="image/*" onChange={onFile} style={{display:"none"}} />
+      <button className="btn btn-ghost" style={{width:"100%",marginTop:6}} onClick={pick} disabled={busy}>
+        {busy ? "Carico…" : (value ? "Sostituisci" : "Carica immagine")}
+      </button>
+    </div>
+  );
+}
+
+// ── Editable card for object-based sections ──────────────────────────────────
+function Card({ section, item, idx, total, password, onChange, onMove, onDelete, onStatus }){
+  const set = (k, v) => onChange({ ...item, [k]: v });
+
+  const fieldsFor = {
+    feed:   [["title","Titolo"],["year","Anno"],["loc","Luogo"],["film","Pellicola / Formato"]],
+    series: [["label","Etichetta"],["count","Conteggio"],["id","ID (slug)"]],
+    index:  [["num","N."],["title","Titolo"],["location","Luogo"],["year","Anno"]],
+  }[section] || [];
+
+  const imgKey = section === "feed" ? "url" : "image";
+
+  return (
+    <div className="card fade" style={{padding:12,display:"flex",flexDirection:"column",gap:10}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span className="mono" style={{fontSize:10,color:"var(--mute)"}}>#{String(idx+1).padStart(2,"0")}</span>
+        <div style={{display:"flex",gap:4}}>
+          <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx-1)} disabled={idx===0} title="Su">↑</button>
+          <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx+1)} disabled={idx===total-1} title="Giù">↓</button>
+          <button className="btn btn-ghost" style={{padding:"5px 9px",color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>onDelete(idx)} title="Elimina">✕</button>
+        </div>
+      </div>
+      <ImageField value={item[imgKey]} password={password} onChange={(v)=>set(imgKey,v)} onStatus={onStatus} />
+      {fieldsFor.map(([k,lbl]) => (
+        <div key={k}>
+          <label className="lbl">{lbl}</label>
+          <input className="field" value={item[k] || ""} onChange={e=>set(k,e.target.value)} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Motion card (string URL only) ────────────────────────────────────────────
+function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, onStatus }){
+  return (
+    <div className="card fade" style={{padding:12,display:"flex",flexDirection:"column",gap:10}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span className="mono" style={{fontSize:10,color:"var(--mute)"}}>#{String(idx+1).padStart(2,"0")}</span>
+        <div style={{display:"flex",gap:4}}>
+          <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx-1)} disabled={idx===0}>↑</button>
+          <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx+1)} disabled={idx===total-1}>↓</button>
+          <button className="btn btn-ghost" style={{padding:"5px 9px",color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>onDelete(idx)}>✕</button>
+        </div>
+      </div>
+      <ImageField value={item} password={password} onChange={(v)=>onChange(v)} onStatus={onStatus} />
+    </div>
+  );
+}
+
+// ── Main CMS ─────────────────────────────────────────────────────────────────
+function CMS({ password }){
+  const [media, setMedia] = useState(null);
+  const [tab, setTab] = useState("feed");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+
+  const status = useCallback((msg, kind) => {
+    setToast({ msg, kind: kind || "info" });
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), kind === "err" ? 7000 : 3800);
+  }, []);
+
+  useEffect(() => {
+    fetch("./media.json", { cache:"no-store" })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error("media.json non trovato")))
+      .then(d => { setMedia({ feed:[], motion:[], series:[], index:[], ...d }); })
+      .catch(err => { status("Impossibile caricare media.json: " + err.message, "err"); setMedia({ feed:[], motion:[], series:[], index:[] }); })
+      .finally(() => setLoading(false));
+  }, [status]);
+
+  const update = (key, nextArr) => { setMedia(m => ({ ...m, [key]: nextArr })); setDirty(true); };
+
+  const onItemChange = (key, idx, nextItem) => update(key, media[key].map((it,i)=> i===idx ? nextItem : it));
+  const onItemMove   = (key, from, to)     => update(key, move(media[key], from, to));
+  const onItemDelete = (key, idx)          => update(key, media[key].filter((_,i)=> i!==idx));
+  const onItemAdd    = (key)               => { update(key, media[key].concat([BLANKS[key]()])); status("Elemento aggiunto in fondo a " + key.toUpperCase(), "ok"); };
+
+  const saveAll = async () => {
+    setSaving(true);
+    status("Salvo media.json su GitHub…", "info");
+    try {
+      const res = await fetch(API, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ action:"save", password, media }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || ("HTTP " + res.status));
+      setDirty(false);
+      status("Salvato. Vercel pubblicherà tra pochi secondi.", "ok");
+    } catch (err) {
+      status("Salvataggio fallito: " + err.message, "err");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading || !media){
+    return (
+      <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <div className="spin" style={{width:26,height:26,border:"2px solid #333",borderTopColor:"var(--accent)",borderRadius:"50%"}} />
+      </div>
+    );
+  }
+
+  const list = media[tab] || [];
+  const meta = SECTIONS.find(s => s.key === tab);
+
+  return (
+    <div style={{minHeight:"100vh"}}>
+      {/* Header */}
+      <header style={{position:"sticky",top:0,zIndex:30,background:"rgba(0,0,0,0.92)",backdropFilter:"blur(10px)",borderBottom:"1px solid var(--line)"}}>
+        <div style={{maxWidth:1160,margin:"0 auto",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
+          <div style={{display:"flex",alignItems:"baseline",gap:12}}>
+            <span className="display" style={{fontSize:18}}>AON</span>
+            <span className="mono uline" style={{fontSize:9,color:"var(--mute)"}}>Admin · Edits</span>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            {dirty && <span className="mono" style={{fontSize:10,color:"var(--accent)"}}>● modifiche non salvate</span>}
+            <a href="/" className="btn btn-ghost">Sito</a>
+            <button className="btn btn-accent" onClick={saveAll} disabled={saving || !dirty}>
+              {saving ? "Salvo…" : "Salva tutto"}
+            </button>
+          </div>
+        </div>
+        {/* Tabs */}
+        <div style={{maxWidth:1160,margin:"0 auto",padding:"0 24px",display:"flex",gap:24,overflowX:"auto"}}>
+          {SECTIONS.map(s => (
+            <button key={s.key} className={"tab" + (tab===s.key ? " active":"")} onClick={()=>setTab(s.key)}>
+              {s.label} <span style={{color:"#555"}}>{(media[s.key]||[]).length}</span>
+            </button>
+          ))}
+        </div>
+      </header>
+
+      {/* Body */}
+      <main style={{maxWidth:1160,margin:"0 auto",padding:"24px"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",gap:16,marginBottom:18,flexWrap:"wrap"}}>
+          <div>
+            <h2 className="display" style={{fontSize:30,marginBottom:6}}>{meta.label}</h2>
+            <p className="mono" style={{fontSize:11,color:"var(--mute)",maxWidth:520}}>{meta.help}</p>
+          </div>
+          <button className="btn" onClick={()=>onItemAdd(tab)}>+ Aggiungi</button>
+        </div>
+
+        {list.length === 0 ? (
+          <div className="card" style={{padding:40,textAlign:"center"}}>
+            <p className="mono" style={{fontSize:12,color:"var(--mute)"}}>Nessun elemento. Usa “+ Aggiungi” per iniziare.</p>
+          </div>
+        ) : (
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
+            {tab === "motion"
+              ? list.map((it,i)=>(
+                  <MotionCard key={i} item={it} idx={i} total={list.length} password={password}
+                    onChange={(v)=>onItemChange("motion",i,v)}
+                    onMove={(f,t)=>onItemMove("motion",f,t)}
+                    onDelete={(idx)=>onItemDelete("motion",idx)}
+                    onStatus={status} />
+                ))
+              : list.map((it,i)=>(
+                  <Card key={i} section={tab} item={it} idx={i} total={list.length} password={password}
+                    onChange={(v)=>onItemChange(tab,i,v)}
+                    onMove={(f,t)=>onItemMove(tab,f,t)}
+                    onDelete={(idx)=>onItemDelete(tab,idx)}
+                    onStatus={status} />
+                ))}
+          </div>
+        )}
+
+        <div style={{marginTop:28,paddingTop:18,borderTop:"1px solid var(--line)",display:"flex",justifyContent:"flex-end"}}>
+          <button className="btn btn-accent" onClick={saveAll} disabled={saving || !dirty}>
+            {saving ? "Salvo…" : "Salva tutto su GitHub"}
+          </button>
+        </div>
+      </main>
+
+      {/* Toast */}
+      {toast && (
+        <div className="toast" style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",zIndex:50,
+          background: toast.kind==="err" ? "#2a0a00" : (toast.kind==="ok" ? "#06200d" : "#111"),
+          border:"1px solid " + (toast.kind==="err" ? "var(--accent)" : (toast.kind==="ok" ? "#1f7a3a" : "var(--line-strong)")),
+          padding:"12px 18px",maxWidth:"min(90vw,560px)"}}>
+          <span className="mono" style={{fontSize:11}}>{toast.msg}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Root ─────────────────────────────────────────────────────────────────────
+function App(){
+  const [password, setPassword] = useState(null);
+  return password ? <CMS password={password} /> : <Login onAuth={setPassword} />;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

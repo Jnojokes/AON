@@ -1,0 +1,19 @@
+# Archivio media originale (~1.6 GB) — NON deve andare su GitHub.
+# Contiene video oltre i 100 MB che farebbero fallire il push.
+asset/
+
+# Video pesanti ovunque (limite GitHub 100 MB/file → hosting esterno)
+*.mp4
+*.mov
+*.MP4
+*.MOV
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Node
+node_modules/
+
+# Vercel
+.vercel/

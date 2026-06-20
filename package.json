@@ -1,0 +1,14 @@
+{
+  "name": "aon-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Andrea Onori — portfolio + CMS hard-coded (admin-edits) con save serverless sicuro via GitHub API.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  }
+}
