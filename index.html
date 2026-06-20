@@ -148,6 +148,19 @@
             .btn-primary, .btn-secondary { padding: 9px 18px; font-size: 10px; }
         }
 
+        /* Hero stats: horizontal row under the name on mobile, vertical right-rail on
+           desktop. Explicit rules (not utility classes) so the desktop layout always wins. */
+        .hero-stats-mobile { display: flex; gap: 40px; margin-bottom: 32px; }
+        .hero-stats-desktop { display: none; }
+        @media (min-width: 768px) {
+            .hero-stats-mobile { display: none; }
+            .hero-stats-desktop {
+                display: flex; flex-direction: column;
+                align-items: flex-end; text-align: right;
+                gap: 24px; flex-shrink: 0;
+            }
+        }
+
         /* Stat counter */
         .stat-num { font-feature-settings: "tnum"; }
 
@@ -554,8 +567,8 @@
                             @andrea__onori &nbsp;·&nbsp; ESTABLISHED MMXVIII
                         </p>
 
-                        {/* Stats — MOBILE only: horizontal row under the name (unchanged). */}
-                        <div className="flex gap-10 mb-8 md:hidden">
+                        {/* Stats — MOBILE only: horizontal row under the name. */}
+                        <div className="hero-stats-mobile">
                             {HERO_STATS.map((s, i) => <StatItem key={i} target={s.target} label={s.label} />)}
                         </div>
 
@@ -580,7 +593,7 @@
                     </div>
 
                     {/* Stats — DESKTOP only: vertical column aligned to the right of the hero. */}
-                    <div className="hidden md:flex md:flex-col md:items-end md:text-right gap-6 flex-shrink-0">
+                    <div className="hero-stats-desktop">
                         {HERO_STATS.map((s, i) => <StatItem key={i} target={s.target} label={s.label} />)}
                     </div>
                 </div>
@@ -657,73 +670,29 @@
             );
         };
 
-        // Feed Grid with asymmetric first row
+        // Feed Grid — uniform 4:5 cells on every breakpoint (no bento, no mixed ratios, no holes)
         const FeedGrid = ({ onClick }) => {
             const images = (M().feed && M().feed.length) ? M().feed : [];
             if (!images.length) return <EmptyState section="FEED" />;
 
             return (
-                <div>
-                    {/* Hero bento row */}
-                    <div className="grid grid-cols-3 gap-0 mb-0">
-                        <div className="feed-item col-span-2 row-span-2" style={{ aspectRatio: '2/1' }} onClick={() => onClick(0, images)}>
-                            <span className="feed-corner mono">FEATURED · 01</span>
-                            <img src={images[0].url} alt={images[0].title} />
+                <div className="grid grid-cols-3 gap-0">
+                    {images.map((img, i) => (
+                        <div key={i} className="feed-item" style={{ aspectRatio: '4 / 5' }} onClick={() => onClick(i, images)}>
+                            <span className="feed-corner mono">{String(i + 1).padStart(2, '0')}</span>
+                            <img src={img.url} alt={img.title} />
                             <div className="feed-meta">
                                 <div>
-                                    <div style={{ color: 'var(--mute)', fontSize: '9px', marginBottom: '3px' }}>00 / FEATURED</div>
-                                    <div style={{ fontSize: '11px', letterSpacing: '0.12em' }}>{images[0].title}</div>
+                                    <div style={{ color: 'var(--mute)', fontSize: '9px', marginBottom: '3px' }}>{img.film}</div>
+                                    <div style={{ fontSize: '11px' }}>{img.title}</div>
                                 </div>
                                 <div style={{ textAlign: 'right', color: 'var(--mute)' }}>
-                                    <div>{images[0].loc}</div>
-                                    <div>{images[0].year}</div>
+                                    <div>{img.loc}</div>
+                                    <div>{img.year}</div>
                                 </div>
                             </div>
                         </div>
-                        <div className="feed-item" style={{ aspectRatio: '1/1' }} onClick={() => onClick(1, images)}>
-                            <span className="feed-corner mono">01</span>
-                            <img src={images[1].url} alt={images[1].title} />
-                            <div className="feed-meta">
-                                <div>
-                                    <div style={{ fontSize: '11px' }}>{images[1].title}</div>
-                                </div>
-                                <div style={{ color: 'var(--mute)' }}>{images[1].year}</div>
-                            </div>
-                        </div>
-                        <div className="feed-item" style={{ aspectRatio: '1/1' }} onClick={() => onClick(2, images)}>
-                            <span className="feed-corner mono">02</span>
-                            <img src={images[2].url} alt={images[2].title} />
-                            <div className="feed-meta">
-                                <div>
-                                    <div style={{ fontSize: '11px' }}>{images[2].title}</div>
-                                </div>
-                                <div style={{ color: 'var(--mute)' }}>{images[2].year}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Regular grid */}
-                    <div className="grid grid-cols-3 gap-0">
-                        {images.slice(3).map((img, i) => {
-                            const realIdx = i + 3;
-                            return (
-                                <div key={realIdx} className="feed-item" style={{ aspectRatio: '1/1' }} onClick={() => onClick(realIdx, images)}>
-                                    <span className="feed-corner mono">{String(realIdx).padStart(2, '0')}</span>
-                                    <img src={img.url} alt={img.title} />
-                                    <div className="feed-meta">
-                                        <div>
-                                            <div style={{ color: 'var(--mute)', fontSize: '9px', marginBottom: '3px' }}>{img.film}</div>
-                                            <div style={{ fontSize: '11px' }}>{img.title}</div>
-                                        </div>
-                                        <div style={{ textAlign: 'right', color: 'var(--mute)' }}>
-                                            <div>{img.loc}</div>
-                                            <div>{img.year}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                    ))}
                 </div>
             );
         };
