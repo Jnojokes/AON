@@ -152,16 +152,16 @@ function move(arr, from, to){
 
 // Default empty shapes per section
 const BLANKS = {
-  feed:   () => ({ url:"", title:"NUOVO", year:"2025", loc:"", film:"" }),
+  feed:   () => ({ url:"", images:[], title:"NUOVO", year:"2025", loc:"", film:"" }),
   motion: () => "",
-  series: () => ({ id:"nuovo", label:"NUOVA SERIE", count:"0", image:"" }),
+  series: () => ({ id:"nuovo", label:"NUOVA SERIE", image:"", images:[] }),
   index:  () => ({ num:"00", title:"NUOVO", location:"", year:"2025", image:"" }),
 };
 
 const SECTIONS = [
-  { key:"feed",   label:"FEED",   help:"Griglia principale — ogni scatto ha titolo, anno, luogo, pellicola." },
+  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). Ogni post può avere più foto → diventa un carosello; la 1ª immagine è la copertina." },
   { key:"motion", label:"MOTION", help:"Colonne verticali in movimento — solo immagine." },
-  { key:"series", label:"SERIES", help:"Le collezioni mostrate nel menu — etichetta + conteggio + cover." },
+  { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + le immagini che si sfogliano. Il conteggio è automatico." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
 ];
 
@@ -232,7 +232,7 @@ function ImageField({ value, password, onChange, onStatus }){
     <div>
       <div style={{position:"relative"}}>
         {preview
-          ? <img className="thumb" src={preview} alt="" onError={(e)=>{e.target.style.opacity=0.2;}} />
+          ? <img className="thumb" src={preview} alt="" onError={(e)=>{e.target.style.opacity=0.2;}} onLoad={(e)=>{e.target.style.opacity=1;}} />
           : <div className="thumb" style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
               <span className="mono" style={{fontSize:10,color:"#555"}}>NESSUNA IMG</span>
             </div>}
@@ -250,17 +250,75 @@ function ImageField({ value, password, onChange, onStatus }){
   );
 }
 
+// ── Multi-image gallery (carousel for FEED posts / stories folder for SERIES) ─
+function GalleryField({ images, password, onChange, onStatus }){
+  const inputRef = useRef(null);
+  const [busy, setBusy] = useState(false);
+  const list = Array.isArray(images) ? images : [];
+
+  const srcOf = (v) => v ? (v.startsWith("http") ? v : "/" + v.replace(/^\/+/, "")) : "";
+
+  const moveImg = (from, to) => {
+    if (to < 0 || to >= list.length) return;
+    const c = list.slice(); const [x] = c.splice(from, 1); c.splice(to, 0, x); onChange(c);
+  };
+  const removeImg = (i) => onChange(list.filter((_, idx) => idx !== i));
+
+  const addFiles = async (e) => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = "";
+    if (!files.length) return;
+    setBusy(true);
+    const added = [];
+    try {
+      for (const file of files) {
+        onStatus && onStatus("Carico " + file.name + "…", "info");
+        const dataUrl = await fileToBase64(file);
+        const j = await apiPost({ action:"upload", password, filename:file.name, contentBase64:dataUrl });
+        added.push(j.path);
+      }
+      onChange(list.concat(added));
+      onStatus && onStatus(added.length + " immagine/i caricate", "ok");
+    } catch (err) {
+      if (added.length) onChange(list.concat(added));
+      onStatus && onStatus("Upload fallito: " + err.message, "err");
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <div>
+      {list.length > 0 && (
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(72px,1fr))",gap:6}}>
+          {list.map((v, i) => (
+            <div key={v + '|' + i} style={{position:"relative"}}>
+              <img src={srcOf(v)} alt="" style={{width:"100%",aspectRatio:"4/5",objectFit:"cover",background:"#111",display:"block"}} onError={(e)=>{e.target.style.opacity=0.2;}} onLoad={(e)=>{e.target.style.opacity=1;}} />
+              {i === 0 && <span className="mono" style={{position:"absolute",top:2,left:2,background:"var(--accent)",color:"#000",fontSize:7,padding:"1px 3px",letterSpacing:"0.1em"}}>COVER</span>}
+              <div style={{position:"absolute",bottom:2,left:2,right:2,display:"flex",justifyContent:"space-between",gap:2}}>
+                <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9}} onClick={()=>moveImg(i,i-1)} disabled={i===0} title="Sinistra">←</button>
+                <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9,color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>removeImg(i)} title="Rimuovi">✕</button>
+                <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9}} onClick={()=>moveImg(i,i+1)} disabled={i===list.length-1} title="Destra">→</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <input ref={inputRef} type="file" accept="image/*" multiple onChange={addFiles} style={{display:"none"}} />
+      <button className="btn btn-ghost" style={{width:"100%",marginTop:6}} onClick={()=>inputRef.current && inputRef.current.click()} disabled={busy}>
+        {busy ? "Carico…" : (list.length ? "+ Aggiungi immagini" : "Carica immagini")}
+      </button>
+    </div>
+  );
+}
+
 // ── Editable card for object-based sections ──────────────────────────────────
 function Card({ section, item, idx, total, password, onChange, onMove, onDelete, onStatus }){
   const set = (k, v) => onChange({ ...item, [k]: v });
 
   const fieldsFor = {
     feed:   [["title","Titolo"],["year","Anno"],["loc","Luogo"],["film","Pellicola / Formato"]],
-    series: [["label","Etichetta"],["count","Conteggio"],["id","ID (slug)"]],
+    series: [["label","Etichetta"],["id","ID (slug)"]],
     index:  [["num","N."],["title","Titolo"],["location","Luogo"],["year","Anno"]],
   }[section] || [];
-
-  const imgKey = section === "feed" ? "url" : "image";
 
   return (
     <div className="card fade" style={{padding:12,display:"flex",flexDirection:"column",gap:10}}>
@@ -272,7 +330,31 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
           <button className="btn btn-ghost" style={{padding:"5px 9px",color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>onDelete(idx)} title="Elimina">✕</button>
         </div>
       </div>
-      <ImageField value={item[imgKey]} password={password} onChange={(v)=>set(imgKey,v)} onStatus={onStatus} />
+      {section === "feed" && (
+        <div>
+          <label className="lbl">Immagini del post · la 1ª è la copertina (più di una = carosello)</label>
+          <GalleryField
+            images={(item.images && item.images.length) ? item.images : (item.url ? [item.url] : [])}
+            password={password}
+            onChange={(arr)=>onChange({ ...item, images: arr, url: arr[0] || "" })}
+            onStatus={onStatus} />
+        </div>
+      )}
+      {section === "series" && (
+        <>
+          <div>
+            <label className="lbl">Copertina (cerchio)</label>
+            <ImageField value={item.image} password={password} onChange={(v)=>set("image",v)} onStatus={onStatus} />
+          </div>
+          <div>
+            <label className="lbl">Storie nella cartella · si sfogliano nel viewer</label>
+            <GalleryField images={item.images || []} password={password} onChange={(arr)=>set("images",arr)} onStatus={onStatus} />
+          </div>
+        </>
+      )}
+      {section === "index" && (
+        <ImageField value={item.image} password={password} onChange={(v)=>set("image",v)} onStatus={onStatus} />
+      )}
       {fieldsFor.map(([k,lbl]) => (
         <div key={k}>
           <label className="lbl">{lbl}</label>
@@ -401,14 +483,14 @@ function CMS({ password }){
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
             {tab === "motion"
               ? list.map((it,i)=>(
-                  <MotionCard key={i} item={it} idx={i} total={list.length} password={password}
+                  <MotionCard key={it + '|' + i} item={it} idx={i} total={list.length} password={password}
                     onChange={(v)=>onItemChange("motion",i,v)}
                     onMove={(f,t)=>onItemMove("motion",f,t)}
                     onDelete={(idx)=>onItemDelete("motion",idx)}
                     onStatus={status} />
                 ))
               : list.map((it,i)=>(
-                  <Card key={i} section={tab} item={it} idx={i} total={list.length} password={password}
+                  <Card key={(it.id||it.title||it.url||it.num||'')+'|'+i} section={tab} item={it} idx={i} total={list.length} password={password}
                     onChange={(v)=>onItemChange(tab,i,v)}
                     onMove={(f,t)=>onItemMove(tab,f,t)}
                     onDelete={(idx)=>onItemDelete(tab,idx)}
