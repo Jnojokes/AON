@@ -378,6 +378,10 @@ function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, on
         </div>
       </div>
       <ImageField value={item} password={password} onChange={(v)=>onChange(v)} onStatus={onStatus} />
+      <div>
+        <label className="lbl">URL — immagine o video esterno (.mp4 / .webm)</label>
+        <input className="field mono" value={item || ""} onChange={e=>onChange(e.target.value)} placeholder="es. https://…/clip.mp4" />
+      </div>
     </div>
   );
 }
@@ -483,14 +487,14 @@ function CMS({ password }){
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
             {tab === "motion"
               ? list.map((it,i)=>(
-                  <MotionCard key={it + '|' + i} item={it} idx={i} total={list.length} password={password}
+                  <MotionCard key={i} item={it} idx={i} total={list.length} password={password}
                     onChange={(v)=>onItemChange("motion",i,v)}
                     onMove={(f,t)=>onItemMove("motion",f,t)}
                     onDelete={(idx)=>onItemDelete("motion",idx)}
                     onStatus={status} />
                 ))
               : list.map((it,i)=>(
-                  <Card key={(it.id||it.title||it.url||it.num||'')+'|'+i} section={tab} item={it} idx={i} total={list.length} password={password}
+                  <Card key={i} section={tab} item={it} idx={i} total={list.length} password={password}
                     onChange={(v)=>onItemChange(tab,i,v)}
                     onMove={(f,t)=>onItemMove(tab,f,t)}
                     onDelete={(idx)=>onItemDelete(tab,idx)}
