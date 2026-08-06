@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin-edits
+Disallow: /admin-edits.html
+Disallow: /api/
+
+Sitemap: https://andreaonori.com/sitemap.xml
