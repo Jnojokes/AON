@@ -15,7 +15,7 @@
   :root{
     --bg:#000000; --fg:#FFFFFF; --mute:#707070;
     --line:rgba(255,255,255,0.14); --line-strong:rgba(255,255,255,0.32);
-    --accent:#FF3D00;
+    --accent:#FF3D00; --ok:#4ade80;
     --ease-out:cubic-bezier(0.22,1,0.36,1);
     --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
   }
@@ -40,6 +40,7 @@
     transition:border-color .2s var(--ease-out);
   }
   .field:focus{border-color:var(--accent);}
+  .field.sm{padding:6px 8px;font-size:11px;}
   .lbl{font-size:9px;color:var(--mute);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:4px;display:block;}
 
   .btn{
@@ -52,6 +53,7 @@
   .btn-accent:hover{background:#fff;border-color:#fff;color:#000;}
   .btn-ghost{border-color:var(--line);color:var(--mute);}
   .btn-ghost:hover{background:#161616;color:#fff;border-color:var(--line-strong);}
+  .btn-xs{padding:4px 8px;font-size:9px;letter-spacing:0.1em;}
   .btn:disabled{opacity:.4;cursor:not-allowed;}
   .btn:disabled:hover{background:none;color:var(--mute);border-color:var(--line);}
 
@@ -71,6 +73,47 @@
 
   .thumb{width:100%;aspect-ratio:1;object-fit:cover;background:#111;display:block;filter:grayscale(0.15);}
 
+  /* ── Drag & drop ─────────────────────────────────────────────────────── */
+  .drop{position:relative;}
+  .drop::after{
+    content:attr(data-hint);position:absolute;inset:0;z-index:4;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;
+    text-transform:uppercase;color:#fff;background:rgba(255,61,0,0.16);
+    border:2px dashed var(--accent);opacity:0;pointer-events:none;
+    transition:opacity .15s var(--ease-out);padding:8px;
+  }
+  .drop.over::after{opacity:1;}
+  .drop-idle{
+    border:1px dashed var(--line-strong);color:var(--mute);
+    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;
+    text-transform:uppercase;text-align:center;padding:14px 8px;
+    transition:border-color .2s var(--ease-out),color .2s var(--ease-out);
+  }
+  .drop.over .drop-idle{border-color:var(--accent);color:#fff;}
+
+  .vbadge{
+    position:absolute;top:3px;right:3px;z-index:3;
+    background:rgba(0,0,0,0.78);border:1px solid var(--accent);color:var(--accent);
+    font-family:'JetBrains Mono',monospace;font-size:8px;padding:0 4px;letter-spacing:0.06em;
+  }
+  .chip{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;
+    letter-spacing:0.1em;text-transform:uppercase;padding:3px 7px;
+    border:1px solid var(--line);color:var(--mute);
+  }
+  .chip.ok{border-color:#1f7a3a;color:var(--ok);}
+  .chip.err{border-color:var(--accent);color:var(--accent);}
+  .panel{border:1px solid var(--accent);background:#0b0b0b;padding:12px;}
+  details.help{border:1px solid var(--line);background:#070707;padding:12px 14px;}
+  details.help summary{
+    cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;
+    letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);
+  }
+  details.help ol{margin:12px 0 0 18px;}
+  details.help li{font-size:12px;color:#c9c9c9;margin-bottom:7px;line-height:1.5;}
+  details.help code{font-family:'JetBrains Mono',monospace;font-size:11px;background:#141414;padding:1px 5px;border:1px solid var(--line);}
+
   @keyframes spin{to{transform:rotate(360deg);}}
   .spin{animation:spin .8s linear infinite;}
   @keyframes slideUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
@@ -87,6 +130,46 @@ const { useState, useEffect, useRef, useCallback } = React;
 
 const API = "/api/save";
 
+// Il body di una funzione serverless Vercel è limitato a ~4.5 MB e il base64
+// gonfia il file del ~33%: oltre i 3 MB l'upload fallirebbe, quindi lo fermiamo
+// prima con un messaggio chiaro invece di far vedere un 413 criptico.
+const MAX_UPLOAD = 3 * 1024 * 1024;
+
+// ── Modello media (identico a quello di index.html) ─────────────────────────
+//   "media/foto.jpg"                        → immagine nel repo
+//   "https://…/clip.mp4"                    → video esterno
+//   { video, poster, title }                → video esterno + copertina
+const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
+const isVideoUrl = (u) => typeof u === "string" && VIDEO_RE.test(u);
+
+const normMedia = (v) => {
+  if (!v) return { image:"", video:"", title:"" };
+  if (typeof v === "string") {
+    return isVideoUrl(v) ? { image:"", video:v, title:"" } : { image:v, video:"", title:"" };
+  }
+  const src = v.src || "";
+  const video = v.video || (isVideoUrl(src) ? src : "");
+  const image = v.poster || v.image || (isVideoUrl(src) ? "" : src) || v.url || "";
+  return { image, video, title: v.title || "" };
+};
+
+// Riscrive un media nella forma più semplice possibile: stringa se è solo una
+// foto (così media.json resta identico a prima), oggetto se c'è un video.
+const toRaw = ({ image, video, title }) =>
+  (video || title) ? { poster: image || "", video: video || "", title: title || "" } : (image || "");
+
+const firstImage = (arr) => {
+  for (const it of (arr || [])) { const m = normMedia(it); if (m.image) return m.image; }
+  return "";
+};
+const srcOf = (v) => v ? (v.startsWith("http") ? v : "/" + v.replace(/^\/+/, "")) : "";
+const fmtMB = (b) => (b / 1048576).toFixed(1) + " MB";
+const fmtDur = (s) => {
+  if (!isFinite(s)) return "—";
+  const m = Math.floor(s / 60), r = Math.round(s % 60);
+  return m + "'" + String(r).padStart(2, "0") + '"';
+};
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 function fileToBase64(file){
   return new Promise((resolve, reject) => {
@@ -96,6 +179,11 @@ function fileToBase64(file){
     r.readAsDataURL(file);
   });
 }
+
+const splitFiles = (files) => ({
+  imgs: files.filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|webp|gif|avif|heic|heif)$/i.test(f.name)),
+  vids: files.filter(f => /^video\//.test(f.type) || VIDEO_RE.test(f.name)),
+});
 
 // ── API call with clear, server-aware error messages ────────────────────────
 // Distinguishes: rete giù, endpoint inesistente (sito non su Vercel),
@@ -132,6 +220,9 @@ async function apiPost(payload){
   if (res.status === 401) {
     throw new Error("Password errata (401). Se su Vercel hai impostato una ADMIN_PASSWORD personalizzata (diversa dal default), entra con quella.");
   }
+  if (res.status === 413) {
+    throw new Error("File troppo grande per l'upload (413). Comprimi l'immagine: lato lungo 2000px, qualità 80, sotto i 3 MB.");
+  }
   if (res.status === 500) {
     const tokenHint = /GITHUB_TOKEN/i.test(serverMsg) ? " → imposta la env var GITHUB_TOKEN su Vercel e rifai il deploy." : "";
     throw new Error("Errore di configurazione server (500): " + serverMsg + tokenHint);
@@ -141,6 +232,125 @@ async function apiPost(payload){
   }
   throw new Error("HTTP " + res.status + ": " + serverMsg);
 }
+
+async function uploadImage(file, password){
+  if (file.size > MAX_UPLOAD) {
+    throw new Error('"' + file.name + '" pesa ' + fmtMB(file.size) + ": il limite dal pannello è 3 MB. Comprimila (lato lungo 2000px, qualità 80) e riprova.");
+  }
+  const dataUrl = await fileToBase64(file);
+  const j = await apiPost({ action:"upload", password, filename:file.name, contentBase64:dataUrl });
+  return j.path;
+}
+
+async function uploadDataUrl(dataUrl, filename, password){
+  const j = await apiPost({ action:"upload", password, filename, contentBase64:dataUrl });
+  return j.path;
+}
+
+// Valida la password contro il server senza modificare api/save.js:
+// save.js risponde 401 se la password è sbagliata e 400 ("Azione sconosciuta")
+// se la password è giusta ma l'azione non esiste.
+async function checkPassword(p){
+  let res;
+  try {
+    res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action:"__ping", password:p }),
+    });
+  } catch (e) { return { offline:true }; }
+  if (res.status === 401) return { ok:false };
+  if (res.status === 400) return { ok:true };
+  if (res.status >= 404) return { offline:true };
+  return { ok:true };
+}
+
+// ── Verifica di un link video esterno (Aruba & co.) ─────────────────────────
+function mediaErrMsg(code, url){
+  const httpHint = /^http:\/\//i.test(url)
+    ? " ⚠ Il link è in http:// — su un sito https i video in http vengono bloccati dal browser: usa https://."
+    : "";
+  if (/\.m3u8(\?|#|$)/i.test(url)) {
+    return "Link HLS (.m3u8): si vede su Safari/iPhone ma non su Chrome senza un player dedicato. Meglio un file .mp4 diretto." + httpHint;
+  }
+  switch (code) {
+    case 1: return "Caricamento interrotto." + httpHint;
+    case 2: return "File non raggiungibile: controlla che sullo storage sia impostato come PUBBLICO." + httpHint;
+    case 3: return "Il browser non riesce a decodificare il file: esportalo in MP4 (H.264 + AAC)." + httpHint;
+    case 4: return "Il link non apre un file video diretto (o il formato non è supportato). Serve un URL che finisce in .mp4 e che, aperto nel browser, fa partire il video — non una pagina di anteprima o di condivisione." + httpHint;
+    default: return "Link non verificabile." + httpHint;
+  }
+}
+
+// Stacca la src da un <video> temporaneo: senza questo il browser continua a
+// scaricare in background dopo la verifica.
+function stopVideo(el){
+  try { el.pause(); el.removeAttribute("src"); el.load(); } catch (e) {}
+}
+
+function probeVideo(url, withCors){
+  return new Promise((resolve, reject) => {
+    const v = document.createElement("video");
+    v.preload = "metadata";
+    v.muted = true;
+    if (withCors) v.crossOrigin = "anonymous";
+    let done = false;
+    const to = setTimeout(() => {
+      if (done) return; done = true;
+      reject(new Error("Timeout: lo storage non ha risposto entro 20 secondi (file molto grande o server lento)."));
+    }, 20000);
+    v.onloadedmetadata = () => {
+      if (done) return; done = true; clearTimeout(to);
+      resolve({ el:v, duration:v.duration, w:v.videoWidth, h:v.videoHeight });
+    };
+    v.onerror = () => {
+      if (done) return; done = true; clearTimeout(to);
+      reject(new Error(mediaErrMsg(v.error && v.error.code, url)));
+    };
+    v.src = url;
+  });
+}
+
+// Estrae un frame dal video e lo restituisce come data URL JPEG.
+// Richiede che lo storage mandi gli header CORS: se non li manda, il canvas
+// è "tainted" e si ricade sul drag&drop manuale della copertina.
+async function grabPoster(url){
+  let el;
+  try {
+    ({ el } = await probeVideo(url, true));
+  } catch (e) {
+    throw new Error("Impossibile leggere il video con i permessi CORS (" + e.message + ") → la copertina automatica non è disponibile su questo storage: trascina tu una foto nel riquadro qui a fianco.");
+  }
+  await new Promise((res) => {
+    el.onseeked = res;
+    const t = setTimeout(res, 6000);
+    el.onerror = () => { clearTimeout(t); res(); };
+    try { el.currentTime = Math.min(1.5, (el.duration || 2) * 0.1); } catch (e) { res(); }
+  });
+  const maxW = 1080;
+  const vw = el.videoWidth || 720, vh = el.videoHeight || 1280;
+  const scale = Math.min(1, maxW / vw);
+  const cv = document.createElement("canvas");
+  cv.width = Math.max(2, Math.round(vw * scale));
+  cv.height = Math.max(2, Math.round(vh * scale));
+  cv.getContext("2d").drawImage(el, 0, 0, cv.width, cv.height);
+  let out;
+  try {
+    out = cv.toDataURL("image/jpeg", 0.82);
+  } catch (e) {
+    stopVideo(el);
+    throw new Error("Lo storage non invia gli header CORS, quindi il browser vieta di leggere il frame: trascina tu una foto come copertina.");
+  }
+  stopVideo(el);
+  return out;
+}
+
+const posterName = (url) => {
+  try {
+    const base = decodeURIComponent(new URL(url, location.href).pathname.split("/").pop() || "video");
+    return "poster-" + base.replace(/\.[a-z0-9]+$/i, "") + ".jpg";
+  } catch (e) { return "poster.jpg"; }
+};
 
 function move(arr, from, to){
   const copy = arr.slice();
@@ -159,22 +369,59 @@ const BLANKS = {
 };
 
 const SECTIONS = [
-  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). Ogni post può avere più foto → diventa un carosello; la 1ª immagine è la copertina." },
-  { key:"motion", label:"MOTION", help:"Colonne verticali in movimento — solo immagine." },
-  { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + le immagini che si sfogliano. Il conteggio è automatico." },
+  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). Trascina le foto per creare un carosello; la 1ª è la copertina. Con “+ Link video” aggiungi un film ospitato su Aruba dentro il post." },
+  { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link al video su Aruba: il video parte solo al click, quindi la griglia resta veloce." },
+  { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
 ];
+
+// ── Drag & drop hook ────────────────────────────────────────────────────────
+function useDrop(onFiles){
+  const [over, setOver] = useState(false);
+  const depth = useRef(0);
+  const handlers = {
+    onDragEnter: (e) => { e.preventDefault(); e.stopPropagation(); depth.current++; setOver(true); },
+    onDragOver:  (e) => { e.preventDefault(); e.stopPropagation(); if (e.dataTransfer) e.dataTransfer.dropEffect = "copy"; },
+    onDragLeave: (e) => { e.preventDefault(); e.stopPropagation(); depth.current = Math.max(0, depth.current - 1); if (!depth.current) setOver(false); },
+    onDrop: (e) => {
+      e.preventDefault(); e.stopPropagation();
+      depth.current = 0; setOver(false);
+      const files = Array.from((e.dataTransfer && e.dataTransfer.files) || []);
+      if (files.length) onFiles(files);
+    },
+  };
+  return [over, handlers];
+}
+
+const VIDEO_DROP_MSG = (name) =>
+  '"' + name + '" è un video: i video non vanno caricati nel sito (lo appesantirebbero e GitHub li rifiuta). Caricalo sullo storage Aruba, copia il link e incollalo nel campo “Link video”.';
 
 // ── Login gate ──────────────────────────────────────────────────────────────
 function Login({ onAuth }){
   const [u, setU] = useState("");
   const [p, setP] = useState("");
   const [err, setErr] = useState("");
-  const submit = (e) => {
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e) => {
     e.preventDefault();
-    if (u.trim() === "admin" && p === "on2026"){ onAuth(p); }
-    else { setErr("Credenziali non valide."); }
+    setErr("");
+    if (u.trim() !== "admin"){ setErr("Utente non valido."); return; }
+    if (!p){ setErr("Inserisci la password."); return; }
+    setBusy(true);
+    const r = await checkPassword(p);
+    setBusy(false);
+    if (r.offline){
+      // Nessun /api/save raggiungibile (anteprima locale o hosting statico):
+      // si entra solo con la password di default, in sola lettura di fatto.
+      if (p === "on2026") onAuth(p);
+      else setErr("Non riesco a contattare /api/save per validare la password. Se il sito è su Vercel controlla il deploy; in anteprima locale usa la password di default.");
+      return;
+    }
+    if (r.ok) onAuth(p);
+    else setErr("Password errata.");
   };
+
   return (
     <div className="fade" style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
       <div style={{width:"100%",maxWidth:360}}>
@@ -190,8 +437,8 @@ function Login({ onAuth }){
             <label className="lbl">Password</label>
             <input className="field mono" type="password" value={p} onChange={e=>setP(e.target.value)} placeholder="••••••" />
           </div>
-          {err && <div className="mono" style={{fontSize:11,color:"var(--accent)",marginBottom:16}}>{err}</div>}
-          <button className="btn btn-accent" style={{width:"100%"}} type="submit">Entra</button>
+          {err && <div className="mono" style={{fontSize:11,color:"var(--accent)",marginBottom:16,lineHeight:1.5}}>{err}</div>}
+          <button className="btn btn-accent" style={{width:"100%"}} type="submit" disabled={busy}>{busy ? "Verifico…" : "Entra"}</button>
         </form>
         <a href="/" className="mono" style={{display:"inline-block",marginTop:22,fontSize:10,color:"var(--mute)",textDecoration:"none"}}>← Torna al sito</a>
       </div>
@@ -199,83 +446,198 @@ function Login({ onAuth }){
   );
 }
 
-// ── Image picker (uploads to /media via API, stores returned path) ───────────
-function ImageField({ value, password, onChange, onStatus }){
+// ── Image picker: click o drag&drop, carica in /media via API ────────────────
+function ImageField({ value, password, onChange, onStatus, aspect, allowUrl }){
   const inputRef = useRef(null);
   const [busy, setBusy] = useState(false);
 
-  const pick = () => inputRef.current && inputRef.current.click();
-
-  const onFile = async (e) => {
-    const file = e.target.files && e.target.files[0];
-    e.target.value = "";
-    if (!file) return;
+  const upload = async (file) => {
     setBusy(true);
     onStatus && onStatus("Carico " + file.name + "…", "info");
     try {
-      const dataUrl = await fileToBase64(file);
-      const j = await apiPost({ action:"upload", password, filename:file.name, contentBase64:dataUrl });
-      onChange(j.path);
-      onStatus && onStatus("Caricata: " + j.path, "ok");
+      const path = await uploadImage(file, password);
+      onChange(path);
+      onStatus && onStatus("Caricata: " + path, "ok");
     } catch (err) {
       onStatus && onStatus("Upload fallito: " + err.message, "err");
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   };
 
-  const preview = value
-    ? (value.startsWith("http") ? value : "/" + value.replace(/^\/+/, ""))
-    : "";
+  const onFile = (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (file) upload(file);
+  };
+
+  const [over, dropHandlers] = useDrop((files) => {
+    const { imgs, vids } = splitFiles(files);
+    if (!imgs.length && vids.length){ onStatus && onStatus(VIDEO_DROP_MSG(vids[0].name), "err"); return; }
+    if (!imgs.length){ onStatus && onStatus("Trascina un file immagine (jpg, png, webp).", "err"); return; }
+    upload(imgs[0]);
+  });
+
+  const preview = value ? srcOf(value) : "";
+  const thumbStyle = aspect ? { aspectRatio: aspect } : null;
 
   return (
     <div>
-      <div style={{position:"relative"}}>
+      <div className={"drop" + (over ? " over" : "")} data-hint="Rilascia la foto" {...dropHandlers} style={{position:"relative"}}>
         {preview
-          ? <img className="thumb" src={preview} alt="" onError={(e)=>{e.target.style.opacity=0.2;}} onLoad={(e)=>{e.target.style.opacity=1;}} />
-          : <div className="thumb" style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <span className="mono" style={{fontSize:10,color:"#555"}}>NESSUNA IMG</span>
+          ? <img className="thumb" style={thumbStyle} src={preview} alt="" onError={(e)=>{e.target.style.opacity=0.2;}} onLoad={(e)=>{e.target.style.opacity=1;}} />
+          : <div className="thumb" style={{...(thumbStyle||{}),display:"flex",alignItems:"center",justifyContent:"center",flexDirection:"column",gap:4}}>
+              <span className="mono" style={{fontSize:9,color:"#555",letterSpacing:"0.14em"}}>TRASCINA QUI</span>
+              <span className="mono" style={{fontSize:8,color:"#3d3d3d"}}>oppure usa il pulsante</span>
             </div>}
         {busy && (
-          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:5}}>
             <div className="spin" style={{width:22,height:22,border:"2px solid #444",borderTopColor:"var(--accent)",borderRadius:"50%"}} />
           </div>
         )}
       </div>
       <input ref={inputRef} type="file" accept="image/*" onChange={onFile} style={{display:"none"}} />
-      <button className="btn btn-ghost" style={{width:"100%",marginTop:6}} onClick={pick} disabled={busy}>
-        {busy ? "Carico…" : (value ? "Sostituisci" : "Carica immagine")}
-      </button>
+      <div style={{display:"flex",gap:6,marginTop:6}}>
+        <button className="btn btn-ghost" style={{flex:1}} onClick={()=>inputRef.current && inputRef.current.click()} disabled={busy}>
+          {busy ? "Carico…" : (value ? "Sostituisci" : "Scegli foto")}
+        </button>
+        {value && <button className="btn btn-ghost btn-xs" onClick={()=>onChange("")} title="Rimuovi copertina">✕</button>}
+      </div>
+      {allowUrl && (
+        <input className="field sm mono" style={{marginTop:6}}
+          value={isVideoUrl(value) ? "" : (value || "")}
+          onChange={e=>{
+            const v = e.target.value.trim();
+            // Un link video incollato qui romperebbe la copertina (<img> su un .mp4).
+            if (isVideoUrl(v)){
+              onStatus && onStatus("Quello è un link video: incollalo nel campo “Link video esterno”, non nella copertina.", "err");
+              return;
+            }
+            onChange(v);
+          }}
+          placeholder="…oppure incolla un URL immagine" />
+      )}
     </div>
   );
 }
 
-// ── Multi-image gallery (carousel for FEED posts / stories folder for SERIES) ─
-function GalleryField({ images, password, onChange, onStatus }){
+// ── Campo link video esterno (Aruba) + verifica + poster automatico ─────────
+function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus, compact }){
+  const [state, setState] = useState(null); // {kind:'ok'|'err', msg}
+  const [busy, setBusy] = useState(false);
+  const [gen, setGen] = useState(false);
+
+  useEffect(() => { setState(null); }, [value]);
+
+  const clean = (raw) => {
+    let u = (raw || "").trim().replace(/^["'<]+|["'>]+$/g, "");
+    return u;
+  };
+
+  const verify = async () => {
+    const url = clean(value);
+    if (!url){ setState({ kind:"err", msg:"Incolla prima un link." }); return; }
+    setBusy(true); setState(null);
+    try {
+      const info = await probeVideo(url, false);
+      setState({ kind:"ok", msg: "Link valido · " + fmtDur(info.duration) + " · " + info.w + "×" + info.h });
+      stopVideo(info.el); // niente buffering in background dopo il controllo
+    } catch (e) {
+      setState({ kind:"err", msg: e.message });
+    } finally { setBusy(false); }
+  };
+
+  const makePoster = async () => {
+    const url = clean(value);
+    if (!url){ setState({ kind:"err", msg:"Incolla prima un link." }); return; }
+    setGen(true);
+    onStatus && onStatus("Estraggo un fotogramma dal video…", "info");
+    try {
+      const dataUrl = await grabPoster(url);
+      const path = await uploadDataUrl(dataUrl, posterName(url), password);
+      onPoster && onPoster(path);
+      onStatus && onStatus("Copertina generata dal video: " + path, "ok");
+    } catch (e) {
+      onStatus && onStatus(e.message, "err");
+    } finally { setGen(false); }
+  };
+
+  const httpWarn = /^http:\/\//i.test(value || "");
+
+  return (
+    <div>
+      <label className="lbl">Link video esterno · Aruba (.mp4)</label>
+      <input className="field mono" value={value || ""} onChange={e=>onChange(e.target.value.trim())}
+        placeholder="https://…/nome-video.mp4" />
+      <div style={{display:"flex",gap:6,marginTop:6,flexWrap:"wrap"}}>
+        <button className="btn btn-ghost btn-xs" onClick={verify} disabled={busy || !value}>{busy ? "Verifico…" : "Verifica link"}</button>
+        <button className="btn btn-ghost btn-xs" onClick={makePoster} disabled={gen || !value} title="Prova a generare la copertina prendendo un fotogramma dal video">
+          {gen ? "Genero…" : "Copertina auto"}
+        </button>
+        {value && <button className="btn btn-ghost btn-xs" onClick={()=>onChange("")}>Rimuovi video</button>}
+      </div>
+      {httpWarn && <div className="chip err" style={{marginTop:6}}>usa https://</div>}
+      {state && (
+        <div className={"mono " + (state.kind === "ok" ? "" : "")} style={{
+          marginTop:6,fontSize:10,lineHeight:1.5,
+          color: state.kind === "ok" ? "var(--ok)" : "var(--accent)",
+        }}>{state.kind === "ok" ? "✓ " : "✕ "}{state.msg}</div>
+      )}
+      {!compact && (
+        <p className="mono" style={{marginTop:6,fontSize:9,color:"#555",lineHeight:1.6}}>
+          Il video resta su Aruba: il sito ne mostra solo la copertina e lo scarica al click.
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ── Editor di una singola slide (foto e/o video) ─────────────────────────────
+function SlideEditor({ item, password, onChange, onStatus, onDone, aspect }){
+  const m = normMedia(item);
+  const patch = (p) => onChange(toRaw({ ...m, ...p }));
+  return (
+    <div className="panel fade" style={{marginTop:10,display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12,alignItems:"start"}}>
+      <div style={{minWidth:0}}>
+        <label className="lbl">{m.video ? "Copertina del video" : "Immagine"}</label>
+        <ImageField value={m.image} password={password} aspect={aspect}
+          onChange={(v)=>patch({ image:v })} onStatus={onStatus} allowUrl />
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:10,minWidth:0}}>
+        <VideoLinkField value={m.video} password={password} compact
+          onChange={(v)=>patch({ video:v })}
+          onPoster={(p)=>patch({ image:p })}
+          onStatus={onStatus} />
+        <div>
+          <label className="lbl">Titolo slide (opzionale)</label>
+          <input className="field sm" value={m.title} onChange={e=>patch({ title:e.target.value })} placeholder="es. SANTONI BTO — FILM" />
+        </div>
+        <button className="btn btn-ghost btn-xs" style={{alignSelf:"flex-start"}} onClick={onDone}>Chiudi slide</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Galleria: foto (drag&drop multiplo) + slide video ───────────────────────
+function GalleryField({ images, password, onChange, onStatus, aspect }){
   const inputRef = useRef(null);
   const [busy, setBusy] = useState(false);
+  const [edit, setEdit] = useState(-1);
   const list = Array.isArray(images) ? images : [];
-
-  const srcOf = (v) => v ? (v.startsWith("http") ? v : "/" + v.replace(/^\/+/, "")) : "";
 
   const moveImg = (from, to) => {
     if (to < 0 || to >= list.length) return;
-    const c = list.slice(); const [x] = c.splice(from, 1); c.splice(to, 0, x); onChange(c);
+    const c = list.slice(); const [x] = c.splice(from, 1); c.splice(to, 0, x);
+    onChange(c); setEdit(-1);
   };
-  const removeImg = (i) => onChange(list.filter((_, idx) => idx !== i));
+  const removeImg = (i) => { onChange(list.filter((_, idx) => idx !== i)); setEdit(-1); };
 
-  const addFiles = async (e) => {
-    const files = Array.from(e.target.files || []);
-    e.target.value = "";
+  const addImages = async (files) => {
     if (!files.length) return;
     setBusy(true);
     const added = [];
     try {
       for (const file of files) {
         onStatus && onStatus("Carico " + file.name + "…", "info");
-        const dataUrl = await fileToBase64(file);
-        const j = await apiPost({ action:"upload", password, filename:file.name, contentBase64:dataUrl });
-        added.push(j.path);
+        added.push(await uploadImage(file, password));
       }
       onChange(list.concat(added));
       onStatus && onStatus(added.length + " immagine/i caricate", "ok");
@@ -285,27 +647,72 @@ function GalleryField({ images, password, onChange, onStatus }){
     } finally { setBusy(false); }
   };
 
+  const onPick = (e) => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = "";
+    addImages(files);
+  };
+
+  const [over, dropHandlers] = useDrop((files) => {
+    const { imgs, vids } = splitFiles(files);
+    if (vids.length) onStatus && onStatus(VIDEO_DROP_MSG(vids[0].name), "err");
+    if (imgs.length) addImages(imgs);
+    else if (!vids.length) onStatus && onStatus("Trascina file immagine (jpg, png, webp).", "err");
+  });
+
+  const addVideoSlide = () => {
+    onChange(list.concat([{ video:"", poster:"", title:"" }]));
+    setEdit(list.length);
+  };
+
   return (
     <div>
-      {list.length > 0 && (
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(72px,1fr))",gap:6}}>
-          {list.map((v, i) => (
-            <div key={v + '|' + i} style={{position:"relative"}}>
-              <img src={srcOf(v)} alt="" style={{width:"100%",aspectRatio:"4/5",objectFit:"cover",background:"#111",display:"block"}} onError={(e)=>{e.target.style.opacity=0.2;}} onLoad={(e)=>{e.target.style.opacity=1;}} />
-              {i === 0 && <span className="mono" style={{position:"absolute",top:2,left:2,background:"var(--accent)",color:"#000",fontSize:7,padding:"1px 3px",letterSpacing:"0.1em"}}>COVER</span>}
-              <div style={{position:"absolute",bottom:2,left:2,right:2,display:"flex",justifyContent:"space-between",gap:2}}>
-                <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9}} onClick={()=>moveImg(i,i-1)} disabled={i===0} title="Sinistra">←</button>
-                <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9,color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>removeImg(i)} title="Rimuovi">✕</button>
-                <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9}} onClick={()=>moveImg(i,i+1)} disabled={i===list.length-1} title="Destra">→</button>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className={"drop" + (over ? " over" : "")} data-hint="Rilascia le foto qui" {...dropHandlers}>
+        {list.length > 0 ? (
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(88px,1fr))",gap:6}}>
+            {list.map((v, i) => {
+              const m = normMedia(v);
+              return (
+                <div key={i} style={{position:"relative",outline: i === edit ? "1px solid var(--accent)" : "none"}}>
+                  {m.image
+                    ? <img src={srcOf(m.image)} alt="" style={{width:"100%",aspectRatio:aspect||"4/5",objectFit:"cover",background:"#111",display:"block"}} onError={(e)=>{e.target.style.opacity=0.2;}} onLoad={(e)=>{e.target.style.opacity=1;}} />
+                    : <div style={{width:"100%",aspectRatio:aspect||"4/5",background:"#111",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                        <span className="mono" style={{fontSize:8,color:"#555"}}>{m.video ? "VIDEO" : "VUOTO"}</span>
+                      </div>}
+                  {i === 0 && <span className="mono" style={{position:"absolute",top:2,left:2,background:"var(--accent)",color:"#000",fontSize:7,padding:"1px 3px",letterSpacing:"0.1em",zIndex:3}}>COVER</span>}
+                  {m.video && <span className="vbadge">▶</span>}
+                  <div style={{position:"absolute",bottom:2,left:2,right:2,display:"flex",justifyContent:"space-between",gap:2,zIndex:3}}>
+                    <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9}} onClick={()=>moveImg(i,i-1)} disabled={i===0} title="Sposta a sinistra">←</button>
+                    <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9}} onClick={()=>setEdit(edit===i?-1:i)} title="Modifica slide (foto / link video)">⋯</button>
+                    <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9,color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>removeImg(i)} title="Rimuovi">✕</button>
+                    <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9}} onClick={()=>moveImg(i,i+1)} disabled={i===list.length-1} title="Sposta a destra">→</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="drop-idle">Trascina qui le foto<br/><span style={{color:"#3d3d3d"}}>jpg · png · webp — max 3 MB ciascuna</span></div>
+        )}
+      </div>
+
+      <input ref={inputRef} type="file" accept="image/*" multiple onChange={onPick} style={{display:"none"}} />
+      <div style={{display:"flex",gap:6,marginTop:6,flexWrap:"wrap"}}>
+        <button className="btn btn-ghost" style={{flex:1}} onClick={()=>inputRef.current && inputRef.current.click()} disabled={busy}>
+          {busy ? "Carico…" : (list.length ? "+ Aggiungi foto" : "Scegli foto")}
+        </button>
+        <button className="btn btn-ghost" onClick={addVideoSlide} disabled={busy} title="Aggiunge una slide che punta a un video su Aruba">+ Link video</button>
+      </div>
+
+      {edit >= 0 && edit < list.length && (
+        <SlideEditor
+          item={list[edit]}
+          password={password}
+          aspect={aspect}
+          onChange={(next)=>onChange(list.map((it,i)=> i===edit ? next : it))}
+          onStatus={onStatus}
+          onDone={()=>setEdit(-1)} />
       )}
-      <input ref={inputRef} type="file" accept="image/*" multiple onChange={addFiles} style={{display:"none"}} />
-      <button className="btn btn-ghost" style={{width:"100%",marginTop:6}} onClick={()=>inputRef.current && inputRef.current.click()} disabled={busy}>
-        {busy ? "Carico…" : (list.length ? "+ Aggiungi immagini" : "Carica immagini")}
-      </button>
     </div>
   );
 }
@@ -332,11 +739,11 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
       </div>
       {section === "feed" && (
         <div>
-          <label className="lbl">Immagini del post · la 1ª è la copertina (più di una = carosello)</label>
+          <label className="lbl">Media del post · la 1ª è la copertina · ⋯ per il link video</label>
           <GalleryField
             images={(item.images && item.images.length) ? item.images : (item.url ? [item.url] : [])}
             password={password}
-            onChange={(arr)=>onChange({ ...item, images: arr, url: arr[0] || "" })}
+            onChange={(arr)=>onChange({ ...item, images: arr, url: firstImage(arr) })}
             onStatus={onStatus} />
         </div>
       )}
@@ -344,16 +751,16 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
         <>
           <div>
             <label className="lbl">Copertina (cerchio)</label>
-            <ImageField value={item.image} password={password} onChange={(v)=>set("image",v)} onStatus={onStatus} />
+            <ImageField value={item.image} password={password} onChange={(v)=>set("image",v)} onStatus={onStatus} allowUrl />
           </div>
           <div>
-            <label className="lbl">Storie nella cartella · si sfogliano nel viewer</label>
-            <GalleryField images={item.images || []} password={password} onChange={(arr)=>set("images",arr)} onStatus={onStatus} />
+            <label className="lbl">Slide della cartella · foto o video (⋯)</label>
+            <GalleryField images={item.images || []} password={password} onChange={(arr)=>set("images",arr)} onStatus={onStatus} aspect="9/16" />
           </div>
         </>
       )}
       {section === "index" && (
-        <ImageField value={item.image} password={password} onChange={(v)=>set("image",v)} onStatus={onStatus} />
+        <ImageField value={item.image} password={password} onChange={(v)=>set("image",v)} onStatus={onStatus} allowUrl />
       )}
       {fieldsFor.map(([k,lbl]) => (
         <div key={k}>
@@ -365,24 +772,54 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
   );
 }
 
-// ── Motion card (string URL only) ────────────────────────────────────────────
+// ── Motion card: copertina + link al video su Aruba ─────────────────────────
 function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, onStatus }){
+  const m = normMedia(item);
+  const patch = (p) => onChange(toRaw({ ...m, ...p }));
   return (
     <div className="card fade" style={{padding:12,display:"flex",flexDirection:"column",gap:10}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <span className="mono" style={{fontSize:10,color:"var(--mute)"}}>#{String(idx+1).padStart(2,"0")}</span>
-        <div style={{display:"flex",gap:4}}>
+        <div style={{display:"flex",gap:4,alignItems:"center"}}>
+          {m.video && <span className="chip err" style={{borderColor:"var(--accent)"}}>▶ video</span>}
           <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx-1)} disabled={idx===0}>↑</button>
           <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx+1)} disabled={idx===total-1}>↓</button>
           <button className="btn btn-ghost" style={{padding:"5px 9px",color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>onDelete(idx)}>✕</button>
         </div>
       </div>
-      <ImageField value={item} password={password} onChange={(v)=>onChange(v)} onStatus={onStatus} />
       <div>
-        <label className="lbl">URL — immagine o video esterno (.mp4 / .webm)</label>
-        <input className="field mono" value={item || ""} onChange={e=>onChange(e.target.value)} placeholder="es. https://…/clip.mp4" />
+        <label className="lbl">Copertina 9:16 · trascina qui la foto</label>
+        <ImageField value={m.image} password={password} aspect="9/16"
+          onChange={(v)=>patch({ image:v })} onStatus={onStatus} allowUrl />
+      </div>
+      <VideoLinkField value={m.video} password={password}
+        onChange={(v)=>patch({ video:v })}
+        onPoster={(p)=>patch({ image:p })}
+        onStatus={onStatus} />
+      <div>
+        <label className="lbl">Titolo (opzionale)</label>
+        <input className="field" value={m.title} onChange={e=>patch({ title:e.target.value })} placeholder="es. SANTONI BTO" />
       </div>
     </div>
+  );
+}
+
+// ── Guida rapida Aruba ──────────────────────────────────────────────────────
+function HelpBox(){
+  return (
+    <details className="help" style={{marginBottom:18}}>
+      <summary>▶ Come si mette un video (storage Aruba) — 4 passi</summary>
+      <ol>
+        <li>Esporta il video in <b>MP4 (H.264 + AAC)</b>, 1080p, e caricalo sul tuo spazio Aruba. Un reel da 30" dovrebbe stare in <b>5–15 MB</b>: più è leggero, più parte subito.</li>
+        <li>Sullo storage imposta il file come <b>pubblico</b> e copia il <b>link diretto</b>: deve finire in <code>.mp4</code> e, aperto in una nuova scheda del browser, deve far partire il video. Se apre una pagina di anteprima o chiede il login, non è il link giusto.</li>
+        <li>Qui nel pannello incolla il link nel campo <b>“Link video esterno”</b> e premi <b>Verifica link</b>: se compare ✓ con durata e risoluzione, il sito lo riprodurrà.</li>
+        <li>Metti una <b>copertina</b>: trascina una foto nel riquadro (consigliato) oppure premi <b>Copertina auto</b> per estrarre un fotogramma dal video. Poi <b>Salva tutto</b>.</li>
+      </ol>
+      <p className="mono" style={{fontSize:10,color:"#666",marginTop:12,lineHeight:1.7}}>
+        I video non vengono mai copiati nel sito: restano su Aruba e il sito li richiama al click.
+        Le <b>foto</b> invece si trascinano direttamente qui (max 3 MB l'una) e finiscono nella cartella <code>/media</code> del sito.
+      </p>
+    </details>
   );
 }
 
@@ -399,7 +836,7 @@ function CMS({ password }){
   const status = useCallback((msg, kind) => {
     setToast({ msg, kind: kind || "info" });
     if (toastTimer.current) clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToast(null), kind === "err" ? 7000 : 3800);
+    toastTimer.current = setTimeout(() => setToast(null), kind === "err" ? 12000 : 3800);
   }, []);
 
   useEffect(() => {
@@ -409,6 +846,13 @@ function CMS({ password }){
       .catch(err => { status("Impossibile caricare media.json: " + err.message, "err"); setMedia({ feed:[], motion:[], series:[], index:[] }); })
       .finally(() => setLoading(false));
   }, [status]);
+
+  // Avviso prima di chiudere la pagina con modifiche non salvate.
+  useEffect(() => {
+    const onLeave = (e) => { if (dirty){ e.preventDefault(); e.returnValue = ""; } };
+    window.addEventListener("beforeunload", onLeave);
+    return () => window.removeEventListener("beforeunload", onLeave);
+  }, [dirty]);
 
   const update = (key, nextArr) => { setMedia(m => ({ ...m, [key]: nextArr })); setDirty(true); };
 
@@ -441,6 +885,11 @@ function CMS({ password }){
 
   const list = media[tab] || [];
   const meta = SECTIONS.find(s => s.key === tab);
+  const nVideo = (arr) => (arr || []).reduce((n, it) => {
+    if (tab === "motion") return n + (normMedia(it).video ? 1 : 0);
+    const slides = (it && it.images) ? it.images : [];
+    return n + slides.filter(s => normMedia(s).video).length + (it && it.video ? 1 : 0);
+  }, 0);
 
   return (
     <div style={{minHeight:"100vh"}}>
@@ -471,12 +920,17 @@ function CMS({ password }){
 
       {/* Body */}
       <main style={{maxWidth:1160,margin:"0 auto",padding:"24px"}}>
+        <HelpBox />
+
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",gap:16,marginBottom:18,flexWrap:"wrap"}}>
           <div>
             <h2 className="display" style={{fontSize:30,marginBottom:6}}>{meta.label}</h2>
-            <p className="mono" style={{fontSize:11,color:"var(--mute)",maxWidth:520}}>{meta.help}</p>
+            <p className="mono" style={{fontSize:11,color:"var(--mute)",maxWidth:600,lineHeight:1.6}}>{meta.help}</p>
           </div>
-          <button className="btn" onClick={()=>onItemAdd(tab)}>+ Aggiungi</button>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            {nVideo(list) > 0 && <span className="chip err">▶ {nVideo(list)} video</span>}
+            <button className="btn" onClick={()=>onItemAdd(tab)}>+ Aggiungi</button>
+          </div>
         </div>
 
         {list.length === 0 ? (
@@ -484,7 +938,7 @@ function CMS({ password }){
             <p className="mono" style={{fontSize:12,color:"var(--mute)"}}>Nessun elemento. Usa “+ Aggiungi” per iniziare.</p>
           </div>
         ) : (
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14,alignItems:"start"}}>
             {tab === "motion"
               ? list.map((it,i)=>(
                   <MotionCard key={i} item={it} idx={i} total={list.length} password={password}
@@ -515,8 +969,9 @@ function CMS({ password }){
         <div className="toast" style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",zIndex:50,
           background: toast.kind==="err" ? "#2a0a00" : (toast.kind==="ok" ? "#06200d" : "#111"),
           border:"1px solid " + (toast.kind==="err" ? "var(--accent)" : (toast.kind==="ok" ? "#1f7a3a" : "var(--line-strong)")),
-          padding:"12px 18px",maxWidth:"min(90vw,560px)"}}>
-          <span className="mono" style={{fontSize:11}}>{toast.msg}</span>
+          padding:"12px 18px",maxWidth:"min(90vw,620px)",display:"flex",gap:12,alignItems:"flex-start"}}>
+          <span className="mono" style={{fontSize:11,lineHeight:1.6}}>{toast.msg}</span>
+          <button className="btn btn-ghost btn-xs" onClick={()=>setToast(null)} style={{flexShrink:0}}>✕</button>
         </div>
       )}
     </div>
