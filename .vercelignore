@@ -12,7 +12,9 @@
 POST/
 asset/
 
-# Lo script di prerender gira in fase di build: serve alla build, non al sito.
-scripts/
+# NON escludere scripts/: Vercel filtra i sorgenti con questo file PRIMA di
+# eseguire il buildCommand, quindi escluderlo faceva fallire la build con
+# "Cannot find module scripts/prerender.mjs". Lo script è comunque già pubblico
+# nel repo GitHub, quindi non c'era nulla da guadagnare a nasconderlo.
 
 .claude/
