@@ -93,7 +93,7 @@
          presente solo nella versione statica sarebbe visibile ai soli crawler,
          cioè esattamente la forma del cloaking. Rigenerato dal prerender. -->
     <!-- ABOUT:START -->
-    <script>window.AON_ABOUT = ["Andrea Onori is a photographer and filmmaker based in Milan, Italy.","He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.","He has been working professionally since 2018.","His work has been selected by Vogue Italia, Numéro, Domus.","Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.","Shoots have taken place in MILANO, GINOSTRA, STROMBOLI.","He is available for commissions and can be reached at hello@andreaonori.com."];</script>
+    <script>window.AON_ABOUT = ["Andrea Onori is a photographer and filmmaker based in Milan, Italy.","He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.","He has been working professionally since 2018.","His work has been selected by Vogue Italia, Numéro, Domus.","Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.","Shoots have taken place in MILANO, GINOSTRA, STROMBOLI.","He is available for commissions and can be reached at video@andreaonori.com."];</script>
         <!-- ABOUT:END -->
 
     <!-- Structured data — rigenerato da scripts/prerender.mjs a ogni build.
@@ -111,7 +111,7 @@
               "image": "https://www.andreaonori.com/andrea.jpg",
               "jobTitle": "Photographer & Filmmaker",
               "description": "Andrea Onori is a photographer and filmmaker based in Milan, Italy. He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines. He has been working professionally since 2018.",
-              "email": "mailto:hello@andreaonori.com",
+              "email": "mailto:video@andreaonori.com",
               "nationality": {
                 "@type": "Country",
                 "name": "Italy"
@@ -170,7 +170,7 @@
               "employee": {
                 "@id": "https://www.andreaonori.com/#person"
               },
-              "email": "mailto:hello@andreaonori.com",
+              "email": "mailto:video@andreaonori.com",
               "priceRange": "$$$",
               "address": {
                 "@type": "PostalAddress",
@@ -1036,10 +1036,10 @@
               <p>His work has been selected by Vogue Italia, Numéro, Domus.</p>
               <p>Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.</p>
               <p>Shoots have taken place in MILANO, GINOSTRA, STROMBOLI.</p>
-              <p>He is available for commissions and can be reached at hello@andreaonori.com.</p>
+              <p>He is available for commissions and can be reached at video@andreaonori.com.</p>
             </div>
             <p class="pf-contact">
-              <a href="mailto:hello@andreaonori.com">hello@andreaonori.com</a>
+              <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>
               <span aria-hidden="true"> · </span>
               <a href="https://www.instagram.com/andrea__onori" rel="me noopener" target="_blank">@andrea__onori</a>
             </p>
@@ -1201,9 +1201,11 @@
           <footer class="pf-footer">
             <p>© 2026 Andrea Onori — Studio Milan, Italy</p>
             <p>
-              <a href="mailto:hello@andreaonori.com">hello@andreaonori.com</a>
+              <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>
               <span aria-hidden="true"> · </span>
               <a href="https://www.instagram.com/andrea__onori" rel="me noopener" target="_blank">@andrea__onori</a>
+              <span aria-hidden="true"> · </span>
+              <a href="/privacy">Privacy &amp; Cookie Policy</a>
             </p>
           </footer>
         </div>
@@ -1402,7 +1404,7 @@
                         </a>
 
                         <div className="flex gap-3 md:gap-2 flex-wrap mt-7 md:mt-5">
-                            <a href="mailto:hello@andreaonori.com?subject=Commission%20enquiry"
+                            <a href="mailto:video@andreaonori.com?subject=Commission%20enquiry"
                                onClick={() => track('contact_click', { method: 'email', location: 'header' })}
                                className="btn-primary" style={{ display: 'inline-flex' }}>
                                 <span>GET IN TOUCH</span> <span className="arrow">→</span>
@@ -1835,7 +1837,7 @@
                                 <button onClick={onPrev} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>← POST PREC.</button>
                                 <button onClick={onNext} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>POST SUCC. →</button>
                             </div>
-                            <a href={`mailto:hello@andreaonori.com?subject=${encodeURIComponent('Inquiry — ' + (post.title || 'project'))}`}
+                            <a href={`mailto:video@andreaonori.com?subject=${encodeURIComponent('Inquiry — ' + (post.title || 'project'))}`}
                                onClick={() => track('contact_click', { method: 'inquire', location: 'modal', project_title: post.title || '' })}
                                className="btn-primary mt-4" style={{ display: 'inline-flex' }}><span>INQUIRE</span> <span className="arrow">→</span></a>
                         </div>
@@ -1864,9 +1866,9 @@
                     <div className="colofone-cell reveal-on-scroll delay-2">
                         <div className="colofone-label">EMAIL</div>
                         <div className="colofone-value">
-                            <a href="mailto:hello@andreaonori.com"
+                            <a href="mailto:video@andreaonori.com"
                                onClick={() => track('contact_click', { method: 'email', location: 'footer' })}
-                               style={{ color: 'inherit' }}>hello@andreaonori.com</a>
+                               style={{ color: 'inherit' }}>video@andreaonori.com</a>
                         </div>
                     </div>
                     <div className="colofone-cell reveal-on-scroll delay-3">
@@ -1880,7 +1882,13 @@
                 </div>
                 <div className="flex justify-between items-center pt-6 mono uline reveal-on-scroll" style={{ fontSize: '10px', color: 'var(--mute)', borderTop: '1px solid var(--line)' }}>
                     <span>ARCHIVE — RELEASE / 25</span>
-                    <span>EDITION 01 / BOLD</span>
+                    {/* Il consenso dev'essere revocabile in modo sempre raggiungibile,
+                        non solo svuotando i dati del browser. */}
+                    <span style={{ display: 'flex', gap: '18px' }}>
+                        <a href="/privacy" style={{ color: 'inherit' }}>PRIVACY</a>
+                        <a href="#" onClick={(e) => { e.preventDefault(); window.aonCookiePrefs && window.aonCookiePrefs(); }} style={{ color: 'inherit' }}>COOKIE</a>
+                        <span>EDITION 01 / BOLD</span>
+                    </span>
                 </div>
             </footer>
         );
@@ -2188,6 +2196,17 @@
                 ad_personalization: state
             });
         }
+
+        // Riapre il banner su richiesta. Serve perché il consenso dev'essere
+        // revocabile in modo sempre accessibile: senza questo, per cambiare idea
+        // bisognerebbe cancellare i dati del sito dal browser.
+        // Esposto globalmente così ci si può agganciare dal footer, dalla pagina
+        // privacy e da qualsiasi punto del sito.
+        window.aonCookiePrefs = function () {
+            try { localStorage.removeItem(KEY); } catch (e) {}
+            apply('denied');              // si riparte da negato finché non si sceglie
+            el.classList.add('is-open');
+        };
 
         var saved = null;
         try { saved = localStorage.getItem(KEY); } catch (e) {}

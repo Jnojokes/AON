@@ -46,7 +46,7 @@ const SITE = {
   origin: 'https://www.andreaonori.com',
   name: 'Andrea Onori',
   role: 'Photographer & Filmmaker',
-  email: 'hello@andreaonori.com',
+  email: 'video@andreaonori.com',
   instagram: 'https://www.instagram.com/andrea__onori',
   instagramHandle: '@andrea__onori',
   city: 'Milan',
@@ -264,6 +264,8 @@ ${indexList
               <a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a>
               <span aria-hidden="true"> · </span>
               <a href="${esc(SITE.instagram)}" rel="me noopener" target="_blank">${esc(SITE.instagramHandle)}</a>
+              <span aria-hidden="true"> · </span>
+              <a href="/privacy">Privacy &amp; Cookie Policy</a>
             </p>
           </footer>
         </div>`;

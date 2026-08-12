@@ -30,6 +30,9 @@
         th { color:var(--fg); font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; }
         .back { font-size:10px; color:var(--mute); text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:2px; }
         .note { border:1px dashed var(--line); padding:14px 16px; margin:18px 0; }
+        button { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; padding:9px 16px; cursor:pointer; border:1px solid var(--fg); background:transparent; color:var(--fg); }
+        button:hover { background:var(--fg); color:var(--bg); }
+        #revoke-ok { font-size:10px; color:var(--mute); margin-left:10px; }
         .note p { color:var(--fg); font-size:13px; margin:0; }
         footer { margin-top:64px; padding-top:20px; border-top:1px solid var(--line); font-size:10px; color:var(--mute); }
         .lang { margin-top:56px; }
@@ -42,17 +45,14 @@
     <h1>Privacy &amp;<br>Cookie Policy</h1>
     <p class="mono" style="font-size:10px; color:var(--mute);">Ultimo aggiornamento: 11 agosto 2026</p>
 
-    <div class="note">
-        <p><strong>Da completare prima della pubblicazione.</strong> I campi contrassegnati con […] richiedono i dati anagrafici e fiscali del titolare. Senza di essi l'informativa non è conforme all'art. 13 GDPR.</p>
-    </div>
-
     <h2>1. Titolare del trattamento</h2>
     <p>
         <strong>Andrea Onori</strong><br>
-        […indirizzo sede / residenza…]<br>
-        […P. IVA o codice fiscale…]<br>
-        Email: <a href="mailto:hello@andreaonori.com">hello@andreaonori.com</a>
+        Partita IVA: 02491850448<br>
+        Milano, Italia<br>
+        Email: <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>
     </p>
+    <p>Per qualsiasi richiesta relativa al trattamento dei dati personali il titolare è raggiungibile all'indirizzo email indicato sopra.</p>
     <p>Il titolare non ha nominato un Responsabile della protezione dei dati (DPO), non essendone obbligato.</p>
 
     <h2>2. Quali dati raccogliamo</h2>
@@ -100,7 +100,18 @@
     <p>Il sito adotta <strong>Google Consent Mode v2</strong>: prima del tuo consenso gli strumenti di misurazione sono impostati su <em>denied</em> e non scrivono cookie né identificatori.</p>
 
     <h3>Come revocare il consenso</h3>
-    <p>Puoi cambiare idea in qualsiasi momento cancellando i dati del sito dal tuo browser (Impostazioni → Privacy → Dati dei siti): alla visita successiva il banner ricomparirà. Puoi anche bloccare i cookie dalle impostazioni del browser.</p>
+    <p>Puoi cambiare idea in qualsiasi momento. Premi il pulsante qui sotto: la tua scelta verrà cancellata e il banner ricomparirà alla prossima visita, con la misurazione di nuovo disattivata nel frattempo.</p>
+    <p><button type="button" id="revoke" class="mono">Revoca il consenso</button> <span id="revoke-ok" class="mono" hidden>✓ Consenso revocato</span></p>
+    <p>In alternativa puoi cancellare i dati del sito dal browser (Impostazioni → Privacy → Dati dei siti), oppure bloccare i cookie dalle impostazioni del browser. Lo stesso comando è raggiungibile in ogni momento dal link <strong>Cookie</strong> in fondo alla home.</p>
+    <script>
+      // Stessa chiave usata dal banner in index.html. Rimuoverla riporta il
+      // sito allo stato "consenso non ancora espresso": alla visita successiva
+      // il banner ricompare e Consent Mode resta su denied.
+      document.getElementById('revoke').addEventListener('click', function () {
+        try { localStorage.removeItem('aon-consent-v1'); } catch (e) {}
+        document.getElementById('revoke-ok').hidden = false;
+      });
+    </script>
 
     <h2>5. Servizi di terze parti</h2>
     <p>Il sito si appoggia a fornitori che, per erogare il servizio, possono trattare dati tecnici come l'indirizzo IP:</p>
@@ -112,14 +123,14 @@
 
     <h2>6. I tuoi diritti</h2>
     <p>Ai sensi degli artt. 15–22 del GDPR hai diritto di ottenere l'accesso ai tuoi dati, la loro rettifica o cancellazione, la limitazione del trattamento, la portabilità, e di opporti al trattamento fondato sul legittimo interesse. Quando il trattamento si basa sul consenso, puoi revocarlo in ogni momento senza pregiudicare la liceità del trattamento già effettuato.</p>
-    <p>Per esercitare questi diritti scrivi a <a href="mailto:hello@andreaonori.com">hello@andreaonori.com</a>. Hai inoltre diritto di proporre reclamo al <strong>Garante per la protezione dei dati personali</strong> (<a href="https://www.garanteprivacy.it" rel="noopener" target="_blank">garanteprivacy.it</a>).</p>
+    <p>Per esercitare questi diritti scrivi a <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>. Hai inoltre diritto di proporre reclamo al <strong>Garante per la protezione dei dati personali</strong> (<a href="https://www.garanteprivacy.it" rel="noopener" target="_blank">garanteprivacy.it</a>).</p>
 
     <h2>7. Modifiche</h2>
     <p>Questa informativa può essere aggiornata. Le modifiche sostanziali saranno segnalate con un nuovo banner di consenso. La data in alto indica l'ultima revisione.</p>
 
     <div class="lang">
         <h2>English summary</h2>
-        <p>This site is operated by Andrea Onori, photographer and filmmaker based in Milan, Italy. It sets no tracking cookies unless you accept them. Technical logs are kept for security and are retained for a maximum of 12 months. If you consent, Google Analytics 4 collects aggregated usage statistics with a 14-month retention. You may withdraw consent at any time by clearing this site's data in your browser. To exercise your rights under the GDPR — access, rectification, erasure, restriction, portability, objection — write to <a href="mailto:hello@andreaonori.com">hello@andreaonori.com</a>. You may also lodge a complaint with the Italian Data Protection Authority.</p>
+        <p>This site is operated by Andrea Onori, photographer and filmmaker based in Milan, Italy. It sets no tracking cookies unless you accept them. Technical logs are kept for security and are retained for a maximum of 12 months. If you consent, Google Analytics 4 collects aggregated usage statistics with a 14-month retention. You may withdraw consent at any time by clearing this site's data in your browser. To exercise your rights under the GDPR — access, rectification, erasure, restriction, portability, objection — write to <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>. You may also lodge a complaint with the Italian Data Protection Authority.</p>
     </div>
 
     <footer>
