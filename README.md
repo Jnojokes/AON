@@ -11,7 +11,7 @@ Tutto il contenuto del sito vive in un unico file dati, `media.json`, editabile 
 ```
 AON/
 ├── index.html          ← sito (versione bold nera, legge media.json)
-├── admin-edits.html    ← CMS, login admin/on2026
+├── admin-edits.html    ← CMS, login admin + ADMIN_PASSWORD
 ├── media.json          ← TUTTI i contenuti del sito (editabile dal CMS)
 ├── api/
 │   └── save.js         ← funzione serverless: salva su GitHub (token via env var)
@@ -36,7 +36,7 @@ fetch('./media.json', { cache: 'no-store' })
 
 `media.json` ha quattro sezioni: `feed`, `motion`, `series`, `index`. Modificandolo (a mano o dal CMS) cambia ciò che appare sul sito.
 
-`/admin-edits` è un CMS hard-coded protetto da login (`admin` / `on2026`). Da qui puoi: riordinare i media (↑ / ↓), caricare nuove immagini in `/media`, rimuovere media (✕), modificare titoli/anni/location/format, e salvare tutto con **Salva tutto**. La pagina è `noindex, nofollow`.
+`/admin-edits` è un CMS hard-coded protetto da login (`admin` / la password impostata in `ADMIN_PASSWORD` su Vercel). Da qui puoi: riordinare i media (↑ / ↓), caricare nuove immagini in `/media`, rimuovere media (✕), modificare titoli/anni/location/format, e salvare tutto con **Salva tutto**. La pagina è `noindex, nofollow`.
 
 Il salvataggio NON usa la chiave GitHub dal browser. Passa per `/api/save.js` (serverless su Vercel) che legge il token **solo** dalla Environment Variable `GITHUB_TOKEN`. Il token non sta mai nel repo, nel browser, o in chiaro.
 
@@ -52,7 +52,7 @@ In **Settings → Environment Variables** aggiungi:
 | `GITHUB_OWNER` | `Jnojokes` | opzionale (default) |
 | `GITHUB_REPO` | `AON` | opzionale (default) |
 | `GITHUB_BRANCH` | `main` | opzionale (default) |
-| `ADMIN_PASSWORD` | una password tua | opzionale (default `on2026`) |
+| `ADMIN_PASSWORD` | una password robusta a tua scelta | ✅ sì — non esiste più un default |
 
 Dopo aver salvato le variabili, fai un **redeploy** perché vengano lette.
 

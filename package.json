@@ -8,6 +8,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "build": "node scripts/prerender.mjs",
     "dev": "vercel dev",
     "deploy": "vercel --prod"
   }

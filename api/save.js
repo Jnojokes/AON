@@ -12,14 +12,15 @@
 //        -> commits the full media.json (the site's data source)
 //
 //  Auth: the admin password (same one used by /admin-edits) is checked against
-//  the ADMIN_PASSWORD env var, falling back to "on2026" if it is not set.
+//  the ADMIN_PASSWORD env var. There is NO fallback value — if the env var is
+//  missing the endpoint refuses every request with a 500.
 //
 //  Required Vercel Environment Variables:
 //    GITHUB_TOKEN     (required)  a fine-grained PAT with Contents: Read+Write
+//    ADMIN_PASSWORD   (required)  the /admin-edits password — no default
 //    GITHUB_OWNER     (optional)  defaults to "Jnojokes"
 //    GITHUB_REPO      (optional)  defaults to "AON"
 //    GITHUB_BRANCH    (optional)  defaults to "main"
-//    ADMIN_PASSWORD   (optional)  defaults to "on2026"
 // =============================================================================
 
 const GH_API = "https://api.github.com";
@@ -30,7 +31,10 @@ function cfg() {
     owner: process.env.GITHUB_OWNER || "Jnojokes",
     repo: process.env.GITHUB_REPO || "AON",
     branch: process.env.GITHUB_BRANCH || "main",
-    adminPassword: process.env.ADMIN_PASSWORD || "on2026",
+    // Nessun fallback: una password di default hardcoded è una porta aperta.
+    // Se ADMIN_PASSWORD non è impostata su Vercel l'endpoint si rifiuta di
+    // funzionare (vedi il controllo in handler) invece di accettare un valore noto.
+    adminPassword: process.env.ADMIN_PASSWORD,
   };
 }
 
@@ -105,6 +109,14 @@ export default async function handler(req, res) {
       .status(500)
       .json({ error: "Server not configured: missing GITHUB_TOKEN env var." });
   }
+  // Fail closed: senza ADMIN_PASSWORD l'endpoint non accetta nulla. Meglio un
+  // CMS che non salva finché non si configura la env var, che un CMS che
+  // accetta una password di default nota a chiunque.
+  if (!c.adminPassword) {
+    return res
+      .status(500)
+      .json({ error: "Server not configured: missing ADMIN_PASSWORD env var." });
+  }
 
   // Body may arrive parsed (Vercel) or as a raw string.
   let body = req.body;
@@ -143,6 +155,14 @@ export default async function handler(req, res) {
       if (!body.media || typeof body.media !== "object") {
         return res.status(400).json({ error: "media object richiesto" });
       }
+      // Timestamp del contenuto, stampato qui e non in fase di build.
+      // Serve al <lastmod> della sitemap: il mtime dei file su Vercel è l'ora
+      // del git clone, quindi userebbe una data nuova a ogni deploy anche
+      // quando nulla è cambiato — e Google ignora i lastmod inaffidabili.
+      // Sta lato server perché il pannello ricostruisce l'oggetto e potrebbe
+      // scartare campi che non conosce.
+      body.media.updatedAt = new Date().toISOString();
+
       const json = JSON.stringify(body.media, null, 2) + "\n";
       const b64 = Buffer.from(json, "utf8").toString("base64");
       await putFile(c, "media.json", b64, "cms: update media.json");

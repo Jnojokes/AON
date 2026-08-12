@@ -1,9 +1,208 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://andreaonori.com/</loc>
-    <lastmod>2026-07-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://www.andreaonori.com/</loc>
+    <lastmod>2026-08-11</lastmod>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-bto-4-1-1-mqunjfp4.jpg</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — BACKSTAGE — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-01.jpg</image:loc>
+      <image:title>GRETA BOLDINI — EDITORIAL — CAMPAIGN — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-02.jpg</image:loc>
+      <image:title>GRETA BOLDINI — EDITORIAL — CAMPAIGN — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-03.jpg</image:loc>
+      <image:title>GRETA BOLDINI — EDITORIAL — CAMPAIGN — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-04.jpg</image:loc>
+      <image:title>GRETA BOLDINI — EDITORIAL — CAMPAIGN — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/fabiana-01.jpg</image:loc>
+      <image:title>FABIANA FILIPPI — VETRINA — DW — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/fabiana-02.jpg</image:loc>
+      <image:title>FABIANA FILIPPI — VETRINA — DW — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/fabiana-03.jpg</image:loc>
+      <image:title>FABIANA FILIPPI — VETRINA — DW — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/okgiorgio-01.jpg</image:loc>
+      <image:title>OK GIORGIO — DJ SET — DOC — LIVE — GINOSTRA — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/okgiorgio-02.jpg</image:loc>
+      <image:title>OK GIORGIO — DJ SET — DOC — LIVE — GINOSTRA — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/okgiorgio-03.jpg</image:loc>
+      <image:title>OK GIORGIO — DJ SET — DOC — LIVE — GINOSTRA — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/ypsum-01.jpg</image:loc>
+      <image:title>YPSUM — CAMPAIGN — SCREEN — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/ypsum-02.jpg</image:loc>
+      <image:title>YPSUM — CAMPAIGN — SCREEN — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/ypsum-03.jpg</image:loc>
+      <image:title>YPSUM — CAMPAIGN — SCREEN — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/mugshot-backstage.jpg</image:loc>
+      <image:title>MUGSHOT — BACKSTAGE — 35MM — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-09.jpg</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — STUDIO — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-10.jpg</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — STUDIO — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-11.jpg</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — STUDIO — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-12.jpg</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — STUDIO — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-05.jpg</image:loc>
+      <image:title>GRETA BOLDINI — EDITORIAL — PORTRAIT — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-06.jpg</image:loc>
+      <image:title>GRETA BOLDINI — EDITORIAL — PORTRAIT — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-07.jpg</image:loc>
+      <image:title>GRETA BOLDINI — EDITORIAL — PORTRAIT — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-08.jpg</image:loc>
+      <image:title>GRETA BOLDINI — EDITORIAL — PORTRAIT — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/okgiorgio-06.jpg</image:loc>
+      <image:title>OK GIORGIO — GROTTA — DOC — LIVE — STROMBOLI — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/okgiorgio-07.jpg</image:loc>
+      <image:title>OK GIORGIO — GROTTA — DOC — LIVE — STROMBOLI — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-14.jpg</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — DETAIL — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-15.jpg</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — DETAIL — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-16.jpg</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — DETAIL — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-17.jpg</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — DETAIL — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-01.jpg</image:loc>
+      <image:title>SANTONI BTO — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-storyboard-story1-mqunxs15.jpeg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-storyboard-story-final-mqunwp71.jpeg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/ypsum-storyboard-story-mqunwqfo.jpeg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-storyboard-story2-mqunwrkt.jpeg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-storyboard-story1-mqunwt2t.jpeg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/mugshot-storyboard-story2-mqunwuc9.jpeg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/mugshot-storyboard-story1-mqunwvx6.jpeg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/ypsum-04.jpg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/ypsum-05.jpg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/story-greta.png</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/story-santoni-01.png</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/story-ypsum.png</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/story-mugshot-01.png</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/story-santoni-02.png</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/story-mugshot-02.png</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/greta-carousel.png</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-carousel.png</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/ypsum-carousel.png</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/andrea.jpg</image:loc>
+      <image:title>Andrea Onori — Milan</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.andreaonori.com/privacy</loc>
+    <lastmod>2026-08-11</lastmod>
   </url>
 </urlset>

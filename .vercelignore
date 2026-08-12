@@ -1,0 +1,18 @@
+# File che NON devono finire nel deploy pubblico.
+#
+# Contesto: prima di questo file, https://www.andreaonori.com/BRIEF.md rispondeva
+# 200 e pubblicava la password del pannello admin. Vercel esclude di default solo
+# README.md e package.json — tutti gli altri .md venivano serviti.
+
+# Documenti interni di consegna (contengono credenziali e note di lavorazione)
+*.md
+
+# Sorgenti non ottimizzate: duplicati delle foto già in /media, 28 MB,
+# non referenziati da media.json, ma scaricabili pubblicamente.
+POST/
+asset/
+
+# Lo script di prerender gira in fase di build: serve alla build, non al sito.
+scripts/
+
+.claude/

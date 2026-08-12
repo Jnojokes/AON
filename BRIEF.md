@@ -11,7 +11,7 @@ Tutto il contenuto del sito ora vive in un unico file dati (`media.json`) editab
 Lo splash con la scelta tra le due edition è stato rimosso. La root del dominio (`tuodominio.com/`) apre direttamente la versione nera. Il sito legge i contenuti da `media.json` a ogni caricamento (`fetch('./media.json', { cache: 'no-store' })`), quindi ogni modifica salvata dal CMS è subito live dopo il redeploy.
 
 **Nuova pagina `/admin-edits`** — CMS hard-coded.
-Login: **`admin` / `on2026`**. Da qui si può:
+Login: **`admin` / la password impostata in `ADMIN_PASSWORD` su Vercel**. Da qui si può:
 - riordinare i media (frecce ↑ / ↓)
 - caricare nuove immagini (upload diretto nel repo `/media`)
 - rimuovere media (✕)
@@ -52,9 +52,9 @@ Nel progetto Vercel di `AON`, vai su **Settings → Environment Variables** e ag
 | `GITHUB_OWNER` | `Jnojokes` | opzionale (è già il default) |
 | `GITHUB_REPO` | `AON` | opzionale (è già il default) |
 | `GITHUB_BRANCH` | `main` | opzionale (è già il default) |
-| `ADMIN_PASSWORD` | una password tua | opzionale (default `on2026`) |
+| `ADMIN_PASSWORD` | una password robusta a tua scelta | ✅ sì — non esiste più un default |
 
-> Consiglio: imposta `ADMIN_PASSWORD` con qualcosa di più robusto di `on2026`. Se lo fai, usa quella nuova password per entrare in `/admin-edits`.
+> `ADMIN_PASSWORD` è ora obbligatoria: senza, `/api/save` risponde 500 e il CMS non salva. Usa questa password per entrare in `/admin-edits`.
 
 Dopo aver salvato le variabili, fai un **redeploy** perché vengano lette.
 
@@ -104,7 +104,7 @@ Attualmente la griglia **MOTION** del sito mostra **immagini** (gli storyboard v
 Flusso normale, dopo il setup:
 
 1. Vai su `tuodominio.com/admin-edits`
-2. Login `admin` / `on2026` (o la password che hai messo)
+2. Login `admin` + la password impostata in `ADMIN_PASSWORD` su Vercel
 3. Riordina / carica / rimuovi / modifica i media
 4. Premi **Salva tutto**
 5. Il CMS scrive su `media.json` (e sulle immagini caricate) tramite GitHub → Vercel rifà il deploy in automatico in ~20 secondi → il sito è aggiornato.
@@ -124,7 +124,7 @@ vercel --prod
 ```
 AON/
 ├── index.html          ← sito (versione bold nera, legge media.json)
-├── admin-edits.html    ← CMS, login admin/on2026
+├── admin-edits.html    ← CMS, login admin + ADMIN_PASSWORD
 ├── media.json          ← TUTTI i contenuti del sito (editabile dal CMS)
 ├── api/
 │   └── save.js         ← funzione serverless: salva su GitHub (token via env var)

@@ -412,10 +412,12 @@ function Login({ onAuth }){
     const r = await checkPassword(p);
     setBusy(false);
     if (r.offline){
-      // Nessun /api/save raggiungibile (anteprima locale o hosting statico):
-      // si entra solo con la password di default, in sola lettura di fatto.
-      if (p === "on2026") onAuth(p);
-      else setErr("Non riesco a contattare /api/save per validare la password. Se il sito è su Vercel controlla il deploy; in anteprima locale usa la password di default.");
+      // Nessun /api/save raggiungibile (anteprima locale o hosting statico).
+      // Qui prima si entrava con una password di default scritta nel codice:
+      // rimossa, perché admin-edits.html è servito in chiaro e il repo è
+      // pubblico. Senza API non si può validare nulla e comunque non si
+      // potrebbe salvare, quindi non si entra.
+      setErr("Non riesco a contattare /api/save per validare la password. Se il sito è su Vercel controlla il deploy e che la env var ADMIN_PASSWORD sia impostata.");
       return;
     }
     if (r.ok) onAuth(p);

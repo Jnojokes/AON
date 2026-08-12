@@ -1,7 +1,63 @@
+# andreaonori.com
+#
+# NOTA SUL FUNZIONAMENTO DI QUESTO FILE
+# Un crawler legge SOLO il gruppo che nomina il suo user-agent. Se esiste un
+# gruppo "User-agent: GPTBot", GPTBot ignora completamente il gruppo "*" — per
+# questo ogni gruppo qui sotto ripete i propri Disallow. Ometterli avrebbe
+# aperto /admin-edits e /api/ a tutti i bot elencati.
+# Righe User-agent consecutive condividono lo stesso blocco di regole.
+
+# ── Motori di ricerca ────────────────────────────────────────────────────────
 User-agent: *
 Allow: /
 Disallow: /admin-edits
 Disallow: /admin-edits.html
 Disallow: /api/
+Disallow: /POST/
 
-Sitemap: https://andreaonori.com/sitemap.xml
+# ── Motori generativi: recupero e citazione ──────────────────────────────────
+# Questi bot leggono la pagina per rispondere a una domanda adesso, e possono
+# citare e linkare la fonte. Per un fotografo che vuole essere trovato,
+# bloccarli sarebbe controproducente.
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Applebot
+User-agent: DuckAssistBot
+User-agent: YouBot
+Allow: /
+Disallow: /admin-edits
+Disallow: /admin-edits.html
+Disallow: /api/
+Disallow: /POST/
+
+# ── Crawler di addestramento ─────────────────────────────────────────────────
+# Questi ingeriscono i contenuti nei pesi del modello, senza citazione e senza
+# traffico di ritorno. Per un fotografo è una scelta sui diritti delle proprie
+# immagini, non una scelta SEO: qui sono consentiti, ma è la riga da cambiare
+# in "Disallow: /" se Andrea preferisce escluderli.
+#
+# Google-Extended riguarda solo Gemini e l'addestramento: non ha alcun effetto
+# sull'indicizzazione in Google Search. Applebot-Extended vale lo stesso per
+# Apple Intelligence, ed è distinto da Applebot qui sopra (che è la ricerca).
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+User-agent: meta-externalagent
+User-agent: cohere-ai
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: Diffbot
+User-agent: Timpibot
+Allow: /
+Disallow: /admin-edits
+Disallow: /admin-edits.html
+Disallow: /api/
+Disallow: /POST/
+
+Sitemap: https://www.andreaonori.com/sitemap.xml

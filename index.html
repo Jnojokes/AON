@@ -7,43 +7,494 @@
     <meta name="description" content="Andrea Onori is a Milan-based photographer and filmmaker working across fashion, editorial and campaign imagery — stills and motion for brands and magazines.">
     <meta name="keywords" content="Andrea Onori, fashion photographer Milan, filmmaker Milan, editorial photography, campaign photography, motion, videographer Italy">
     <meta name="author" content="Andrea Onori">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
-    <link rel="canonical" href="https://andreaonori.com/">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://www.andreaonori.com/">
     <meta name="theme-color" content="#000000">
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         VERIFICA PROPRIETÀ — Search Console e Bing.
+         Togli il commento e incolla il token quando lo generiamo insieme.
+         Nota: per Search Console è preferibile la verifica DNS TXT (copre
+         www + apex in un colpo solo); questi meta sono il piano B.
+         ───────────────────────────────────────────────────────────────────── -->
+    <!-- <meta name="google-site-verification" content="INCOLLA_QUI_IL_TOKEN_GOOGLE"> -->
+    <!-- <meta name="msvalidate.01" content="INCOLLA_QUI_IL_TOKEN_BING"> -->
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Andrea Onori">
     <meta property="og:title" content="Andrea Onori — Fashion Photographer & Filmmaker, Milan">
     <meta property="og:description" content="Milan-based photographer and filmmaker. Fashion, editorial and campaign work — stills and motion for brands and magazines.">
-    <meta property="og:url" content="https://andreaonori.com/">
+    <meta property="og:url" content="https://www.andreaonori.com/">
     <meta property="og:locale" content="en_US">
-    <meta property="og:image" content="https://andreaonori.com/andrea.jpg">
+    <meta property="og:image" content="https://www.andreaonori.com/media/og-cover.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:alt" content="Andrea Onori — photographer and filmmaker, Milan">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Andrea Onori — Fashion Photographer & Filmmaker, Milan">
     <meta name="twitter:description" content="Milan-based photographer and filmmaker. Fashion, editorial and campaign work — stills and motion.">
-    <meta name="twitter:image" content="https://andreaonori.com/andrea.jpg">
+    <meta name="twitter:image" content="https://www.andreaonori.com/media/og-cover.jpg">
+    <meta name="twitter:image:alt" content="Andrea Onori — photographer and filmmaker, Milan">
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000%22/><rect x=%2230%22 y=%2230%22 width=%2240%22 height=%2240%22 fill=%22%23fff%22/></svg>">
 
-    <!-- Structured data: Person -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Andrea Onori",
-      "url": "https://andreaonori.com/",
-      "image": "https://andreaonori.com/andrea.jpg",
-      "jobTitle": "Photographer & Filmmaker",
-      "email": "hello@andreaonori.com",
-      "address": { "@type": "PostalAddress", "addressLocality": "Milan", "addressCountry": "IT" },
-      "sameAs": ["https://www.instagram.com/andrea__onori"],
-      "knowsAbout": ["Fashion Photography", "Editorial Photography", "Campaign Photography", "Motion", "Filmmaking"]
-    }
+    <!-- L'immagine dell'avatar è l'elemento LCP: la anticipiamo. -->
+    <link rel="preload" as="image" href="./andrea.jpg" fetchpriority="high">
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         GOOGLE CONSENT MODE v2 — DEVE restare prima di gtag.js.
+         Default "denied" su tutto ciò che è tracciamento: finché l'utente non
+         accetta, GA4 non scrive cookie e invia solo ping senza identificatori.
+         Il banner (in fondo al file) chiama gtag('consent','update',…).
+         ───────────────────────────────────────────────────────────────────── -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        functionality_storage: 'granted',
+        security_storage: 'granted',
+        wait_for_update: 500
+      });
+
+      /* ───────────────────────────────────────────────────────────────────
+         GA4 — incolla qui il Measurement ID quando lo creiamo insieme.
+         Finché la stringa è vuota gtag.js non viene nemmeno scaricato:
+         nessuna richiesta inutile, nessun errore in console.
+         Esempio:  window.AON_GA4_ID = 'G-XXXXXXXXXX';
+         ─────────────────────────────────────────────────────────────────── */
+      window.AON_GA4_ID = '';
+
+      if (window.AON_GA4_ID) {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.AON_GA4_ID;
+        document.head.appendChild(s);
+        gtag('js', new Date());
+        gtag('config', window.AON_GA4_ID, { anonymize_ip: true });
+      }
+
+      /* Wrapper unico usato dall'app. Se GA4 non è configurato è un no-op,
+         così il codice degli eventi resta identico prima e dopo il setup. */
+      window.aonTrack = function (name, params) {
+        if (window.AON_GA4_ID) gtag('event', name, params || {});
+      };
     </script>
+
+    <!-- Frasi About condivise tra il blocco statico e il render React, così i
+         due mostrano lo stesso testo. Necessario, non cosmetico: contenuto
+         presente solo nella versione statica sarebbe visibile ai soli crawler,
+         cioè esattamente la forma del cloaking. Rigenerato dal prerender. -->
+    <!-- ABOUT:START -->
+    <script>window.AON_ABOUT = ["Andrea Onori is a photographer and filmmaker based in Milan, Italy.","He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.","He has been working professionally since 2018.","His work has been selected by Vogue Italia, Numéro, Domus.","Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.","Shoots have taken place in MILANO, GINOSTRA, STROMBOLI.","He is available for commissions and can be reached at hello@andreaonori.com."];</script>
+        <!-- ABOUT:END -->
+
+    <!-- Structured data — rigenerato da scripts/prerender.mjs a ogni build.
+         Il blocco qui sotto è il fallback statico se la build non gira. -->
+    <!-- JSONLD:START -->
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Person",
+              "@id": "https://www.andreaonori.com/#person",
+              "name": "Andrea Onori",
+              "url": "https://www.andreaonori.com/",
+              "image": "https://www.andreaonori.com/andrea.jpg",
+              "jobTitle": "Photographer & Filmmaker",
+              "description": "Andrea Onori is a photographer and filmmaker based in Milan, Italy. He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines. He has been working professionally since 2018.",
+              "email": "mailto:hello@andreaonori.com",
+              "nationality": {
+                "@type": "Country",
+                "name": "Italy"
+              },
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Milan",
+                "addressRegion": "Lombardy",
+                "addressCountry": "IT"
+              },
+              "sameAs": [
+                "https://www.instagram.com/andrea__onori"
+              ],
+              "knowsAbout": [
+                "Fashion Photography",
+                "Editorial Photography",
+                "Campaign Photography",
+                "Portrait Photography",
+                "Motion",
+                "Filmmaking"
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.andreaonori.com/#website",
+              "url": "https://www.andreaonori.com/",
+              "name": "Andrea Onori — Photographer & Filmmaker",
+              "inLanguage": "en",
+              "publisher": {
+                "@id": "https://www.andreaonori.com/#person"
+              }
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://www.andreaonori.com/#webpage",
+              "url": "https://www.andreaonori.com/",
+              "name": "Andrea Onori — Fashion Photographer & Filmmaker, Milan",
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "about": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "primaryImageOfPage": "https://www.andreaonori.com/media/og-cover.jpg",
+              "inLanguage": "en"
+            },
+            {
+              "@type": "ProfessionalService",
+              "@id": "https://www.andreaonori.com/#service",
+              "name": "Andrea Onori — Photography & Motion",
+              "url": "https://www.andreaonori.com/",
+              "image": "https://www.andreaonori.com/media/og-cover.jpg",
+              "founder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "employee": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "email": "mailto:hello@andreaonori.com",
+              "priceRange": "$$$",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Milan",
+                "addressRegion": "Lombardy",
+                "addressCountry": "IT"
+              },
+              "areaServed": [
+                {
+                  "@type": "City",
+                  "name": "Milan"
+                },
+                {
+                  "@type": "AdministrativeArea",
+                  "name": "Lombardy"
+                },
+                {
+                  "@type": "Country",
+                  "name": "Italy"
+                }
+              ],
+              "serviceType": [
+                "Fashion Photography",
+                "Editorial Photography",
+                "Campaign Photography",
+                "Portrait Photography",
+                "Motion",
+                "Filmmaking"
+              ],
+              "sameAs": [
+                "https://www.instagram.com/andrea__onori"
+              ]
+            },
+            {
+              "@type": "Photograph",
+              "@id": "https://www.andreaonori.com/#work-santoni-bto",
+              "name": "SANTONI BTO",
+              "creator": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "copyrightHolder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "MILANO"
+              },
+              "genre": "DIGITAL — BACKSTAGE",
+              "image": {
+                "@type": "ImageObject",
+                "contentUrl": "https://www.andreaonori.com/media/santoni-bto-4-1-1-mqunjfp4.jpg",
+                "creator": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "copyrightHolder": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "creditText": "Andrea Onori",
+                "license": "https://www.andreaonori.com/"
+              }
+            },
+            {
+              "@type": "Photograph",
+              "@id": "https://www.andreaonori.com/#work-greta-boldini",
+              "name": "GRETA BOLDINI",
+              "creator": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "copyrightHolder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "MILANO"
+              },
+              "genre": "EDITORIAL — CAMPAIGN",
+              "image": {
+                "@type": "ImageObject",
+                "contentUrl": "https://www.andreaonori.com/media/greta-01.jpg",
+                "creator": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "copyrightHolder": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "creditText": "Andrea Onori",
+                "license": "https://www.andreaonori.com/"
+              }
+            },
+            {
+              "@type": "Photograph",
+              "@id": "https://www.andreaonori.com/#work-fabiana-filippi",
+              "name": "FABIANA FILIPPI",
+              "creator": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "copyrightHolder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "MILANO"
+              },
+              "genre": "VETRINA — DW",
+              "image": {
+                "@type": "ImageObject",
+                "contentUrl": "https://www.andreaonori.com/media/fabiana-01.jpg",
+                "creator": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "copyrightHolder": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "creditText": "Andrea Onori",
+                "license": "https://www.andreaonori.com/"
+              }
+            },
+            {
+              "@type": "Photograph",
+              "@id": "https://www.andreaonori.com/#work-ok-giorgio-dj-set",
+              "name": "OK GIORGIO — DJ SET",
+              "creator": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "copyrightHolder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "GINOSTRA"
+              },
+              "genre": "DOC — LIVE",
+              "image": {
+                "@type": "ImageObject",
+                "contentUrl": "https://www.andreaonori.com/media/okgiorgio-01.jpg",
+                "creator": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "copyrightHolder": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "creditText": "Andrea Onori",
+                "license": "https://www.andreaonori.com/"
+              }
+            },
+            {
+              "@type": "Photograph",
+              "@id": "https://www.andreaonori.com/#work-ypsum",
+              "name": "YPSUM",
+              "creator": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "copyrightHolder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "MILANO"
+              },
+              "genre": "CAMPAIGN — SCREEN",
+              "image": {
+                "@type": "ImageObject",
+                "contentUrl": "https://www.andreaonori.com/media/ypsum-01.jpg",
+                "creator": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "copyrightHolder": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "creditText": "Andrea Onori",
+                "license": "https://www.andreaonori.com/"
+              }
+            },
+            {
+              "@type": "Photograph",
+              "@id": "https://www.andreaonori.com/#work-mugshot",
+              "name": "MUGSHOT",
+              "creator": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "copyrightHolder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "MILANO"
+              },
+              "genre": "BACKSTAGE — 35MM",
+              "image": {
+                "@type": "ImageObject",
+                "contentUrl": "https://www.andreaonori.com/media/mugshot-backstage.jpg",
+                "creator": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "copyrightHolder": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "creditText": "Andrea Onori",
+                "license": "https://www.andreaonori.com/"
+              }
+            },
+            {
+              "@type": "Photograph",
+              "@id": "https://www.andreaonori.com/#work-ok-giorgio-grotta",
+              "name": "OK GIORGIO — GROTTA",
+              "creator": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "copyrightHolder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "STROMBOLI"
+              },
+              "genre": "DOC — LIVE",
+              "image": {
+                "@type": "ImageObject",
+                "contentUrl": "https://www.andreaonori.com/media/okgiorgio-06.jpg",
+                "creator": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "copyrightHolder": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "creditText": "Andrea Onori",
+                "license": "https://www.andreaonori.com/"
+              }
+            },
+            {
+              "@type": "Photograph",
+              "@id": "https://www.andreaonori.com/#work-santoni-bto-studio",
+              "name": "SANTONI BTO — STUDIO",
+              "creator": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "copyrightHolder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "MILANO"
+              },
+              "image": {
+                "@type": "ImageObject",
+                "contentUrl": "https://www.andreaonori.com/media/santoni-09.jpg",
+                "creator": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "copyrightHolder": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "creditText": "Andrea Onori",
+                "license": "https://www.andreaonori.com/"
+              }
+            },
+            {
+              "@type": "Photograph",
+              "@id": "https://www.andreaonori.com/#work-ok-giorgio-vulcano",
+              "name": "OK GIORGIO — VULCANO",
+              "creator": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "copyrightHolder": {
+                "@id": "https://www.andreaonori.com/#person"
+              },
+              "isPartOf": {
+                "@id": "https://www.andreaonori.com/#website"
+              },
+              "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "STROMBOLI"
+              },
+              "genre": "DOC — LIVE",
+              "image": {
+                "@type": "ImageObject",
+                "contentUrl": "https://www.andreaonori.com/media/okgiorgio-07.jpg",
+                "creator": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "copyrightHolder": {
+                  "@id": "https://www.andreaonori.com/#person"
+                },
+                "creditText": "Andrea Onori",
+                "license": "https://www.andreaonori.com/"
+              }
+            }
+          ]
+        }
+        </script>
+        <!-- JSONLD:END -->
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -461,6 +912,97 @@
             .reveal-line > span { animation: none !important; }
             *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
+        /* ─────────────────────────────────────────────────────────────────
+           PRERENDER FALLBACK
+           Il contenuto statico generato da scripts/prerender.mjs, che React
+           sostituisce al mount. È deliberatamente VISIBILE: nasconderlo con
+           display:none / opacity:0 / posizionamento fuori schermo verrebbe
+           classificato come testo nascosto dai sistemi antispam, anche se il
+           contenuto è identico a quello renderizzato.
+           Tenerlo visibile è anche meglio per l'utente: su rete lenta vede
+           nome, progetti e contatti subito, invece di uno schermo nero mentre
+           Babel compila il bundle JSX nel browser.
+           Stili volutamente essenziali — vive per pochi millisecondi.
+           ───────────────────────────────────────────────────────────────── */
+        .prerender-fallback {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 80px 24px 64px;
+            color: var(--fg);
+            background: var(--bg);
+        }
+        .prerender-fallback a { color: var(--fg); text-decoration: underline; }
+        .pf-eyebrow, .pf-meta, .pf-contact, .pf-footer, .pf-table {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--mute);
+        }
+        .prerender-fallback h1 {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(48px, 8vw, 96px);
+            line-height: 0.9;
+            text-transform: uppercase;
+            margin: 12px 0;
+        }
+        .prerender-fallback h2 {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 28px;
+            text-transform: uppercase;
+            margin: 48px 0 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--line);
+        }
+        .prerender-fallback h3 {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin: 10px 0 4px;
+        }
+        .pf-role {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .pf-about { max-width: 62ch; margin: 24px 0; }
+        .pf-about p {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--mute);
+            margin-bottom: 8px;
+        }
+        .pf-contact { margin-top: 20px; }
+        .pf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        /* aspect-ratio è impostato inline per cella (4/5, 1/1, 9/16): riserva lo
+           spazio prima che l'immagine arrivi, così non c'è salto di layout. */
+        .pf-item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+            background: #111;
+        }
+        .pf-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .pf-table th, .pf-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--line);
+        }
+        .pf-table th { color: var(--fg); }
+        .pf-footer {
+            margin-top: 56px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+        }
     </style>
 </head>
 <body>
@@ -476,7 +1018,197 @@
         </div>
     </div>
 
-    <div id="root"></div>
+    <!-- Il contenuto statico qui sotto è generato da scripts/prerender.mjs a ogni
+         build e sostituito da React al mount. Serve ai crawler che non eseguono
+         JavaScript (Bingbot e tutti i bot AI) e fa comparire il contenuto subito
+         anche su connessioni lente, prima che Babel abbia finito di compilare. -->
+    <div id="root">
+        <!-- PRERENDER:START -->
+        <div class="prerender-fallback">
+          <header class="pf-header">
+            <p class="pf-eyebrow">Photographer · Based in Milan</p>
+            <h1>Andrea Onori</h1>
+            <p class="pf-role">Photographer &amp; Filmmaker — Editorial · Portrait · Personal work</p>
+            <div class="pf-about">
+              <p>Andrea Onori is a photographer and filmmaker based in Milan, Italy.</p>
+              <p>He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.</p>
+              <p>He has been working professionally since 2018.</p>
+              <p>His work has been selected by Vogue Italia, Numéro, Domus.</p>
+              <p>Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.</p>
+              <p>Shoots have taken place in MILANO, GINOSTRA, STROMBOLI.</p>
+              <p>He is available for commissions and can be reached at hello@andreaonori.com.</p>
+            </div>
+            <p class="pf-contact">
+              <a href="mailto:hello@andreaonori.com">hello@andreaonori.com</a>
+              <span aria-hidden="true"> · </span>
+              <a href="https://www.instagram.com/andrea__onori" rel="me noopener" target="_blank">@andrea__onori</a>
+            </p>
+          </header>
+
+          <main class="pf-main">
+            <section class="pf-section" aria-labelledby="pf-work">
+              <h2 id="pf-work">Selected work</h2>
+              <div class="pf-grid">
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/santoni-bto-4-1-1-mqunjfp4.jpg" alt="SANTONI BTO — DIGITAL — BACKSTAGE — MILANO — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>SANTONI BTO</h3>
+              <p class="pf-meta">MILANO · 2025 · DIGITAL — BACKSTAGE</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/greta-01.jpg" alt="GRETA BOLDINI — EDITORIAL — CAMPAIGN — MILANO — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>GRETA BOLDINI</h3>
+              <p class="pf-meta">MILANO · 2025 · EDITORIAL — CAMPAIGN</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/fabiana-01.jpg" alt="FABIANA FILIPPI — VETRINA — DW — MILANO — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>FABIANA FILIPPI</h3>
+              <p class="pf-meta">MILANO · 2025 · VETRINA — DW</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/okgiorgio-01.jpg" alt="OK GIORGIO — DJ SET — DOC — LIVE — GINOSTRA — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>OK GIORGIO — DJ SET</h3>
+              <p class="pf-meta">GINOSTRA · 2025 · DOC — LIVE</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/ypsum-01.jpg" alt="YPSUM — CAMPAIGN — SCREEN — MILANO — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>YPSUM</h3>
+              <p class="pf-meta">MILANO · 2025 · CAMPAIGN — SCREEN</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/mugshot-backstage.jpg" alt="MUGSHOT — BACKSTAGE — 35MM — MILANO — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>MUGSHOT</h3>
+              <p class="pf-meta">MILANO · 2025 · BACKSTAGE — 35MM</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/santoni-09.jpg" alt="SANTONI BTO — DIGITAL — STUDIO — MILANO — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>SANTONI BTO</h3>
+              <p class="pf-meta">MILANO · 2025 · DIGITAL — STUDIO</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/greta-05.jpg" alt="GRETA BOLDINI — EDITORIAL — PORTRAIT — MILANO — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>GRETA BOLDINI</h3>
+              <p class="pf-meta">MILANO · 2025 · EDITORIAL — PORTRAIT</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/okgiorgio-06.jpg" alt="OK GIORGIO — GROTTA — DOC — LIVE — STROMBOLI — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>OK GIORGIO — GROTTA</h3>
+              <p class="pf-meta">STROMBOLI · 2025 · DOC — LIVE</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/fabiana-03.jpg" alt="FABIANA FILIPPI — VETRINA — DW — MILANO — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>FABIANA FILIPPI</h3>
+              <p class="pf-meta">MILANO · 2025 · VETRINA — DW</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/santoni-14.jpg" alt="SANTONI BTO — DIGITAL — DETAIL — MILANO — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>SANTONI BTO</h3>
+              <p class="pf-meta">MILANO · 2025 · DIGITAL — DETAIL</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/okgiorgio-07.jpg" alt="OK GIORGIO — VULCANO — DOC — LIVE — STROMBOLI — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <h3>OK GIORGIO — VULCANO</h3>
+              <p class="pf-meta">STROMBOLI · 2025 · DOC — LIVE</p>
+            </article>
+              </div>
+            </section>
+
+            <section class="pf-section" aria-labelledby="pf-series">
+              <h2 id="pf-series">Series</h2>
+              <div class="pf-grid">
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/santoni-01.jpg" alt="ABOUT ME — series by Andrea Onori" style="aspect-ratio:1 / 1" loading="lazy" decoding="async">
+              <h3>ABOUT ME</h3>
+              
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/greta-01.jpg" alt="SUPER8 — series by Andrea Onori" style="aspect-ratio:1 / 1" loading="lazy" decoding="async">
+              <h3>SUPER8</h3>
+              
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/santoni-storyboard-story1-mqunxs15.jpeg" alt="STORYBOARD — series by Andrea Onori" style="aspect-ratio:1 / 1" loading="lazy" decoding="async">
+              <h3>STORYBOARD</h3>
+              <p class="pf-meta">6 images</p>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/ypsum-01.jpg" alt="FRAMES — series by Andrea Onori" style="aspect-ratio:1 / 1" loading="lazy" decoding="async">
+              <h3>FRAMES</h3>
+              <p class="pf-meta">5 images</p>
+            </article>
+              </div>
+            </section>
+
+            <section class="pf-section" aria-labelledby="pf-motion">
+              <h2 id="pf-motion">Motion</h2>
+              <div class="pf-grid">
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/story-greta.png" alt="Motion frame 01 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>Motion frame 01</h3>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/story-santoni-01.png" alt="Motion frame 02 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>Motion frame 02</h3>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/story-ypsum.png" alt="Motion frame 03 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>Motion frame 03</h3>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/story-mugshot-01.png" alt="Motion frame 04 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>Motion frame 04</h3>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/story-santoni-02.png" alt="Motion frame 05 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>Motion frame 05</h3>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/story-mugshot-02.png" alt="Motion frame 06 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>Motion frame 06</h3>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/greta-carousel.png" alt="Motion frame 07 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>Motion frame 07</h3>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/santoni-carousel.png" alt="Motion frame 08 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>Motion frame 08</h3>
+            </article>
+            <article class="pf-item">
+              <img src="https://www.andreaonori.com/media/ypsum-carousel.png" alt="Motion frame 09 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>Motion frame 09</h3>
+            </article>
+              </div>
+            </section>
+
+            <section class="pf-section" aria-labelledby="pf-index">
+              <h2 id="pf-index">Index</h2>
+              <table class="pf-table">
+                <thead><tr><th scope="col">No.</th><th scope="col">Title</th><th scope="col">Location</th><th scope="col">Year</th></tr></thead>
+                <tbody>
+                  <tr><td>01</td><td>SANTONI BTO</td><td>MILANO</td><td>2025</td></tr>
+                  <tr><td>02</td><td>GRETA BOLDINI</td><td>MILANO</td><td>2025</td></tr>
+                  <tr><td>03</td><td>FABIANA FILIPPI</td><td>MILANO</td><td>2025</td></tr>
+                  <tr><td>04</td><td>OK GIORGIO — DJ SET</td><td>GINOSTRA</td><td>2025</td></tr>
+                  <tr><td>05</td><td>YPSUM</td><td>MILANO</td><td>2025</td></tr>
+                  <tr><td>06</td><td>MUGSHOT</td><td>MILANO</td><td>2025</td></tr>
+                  <tr><td>07</td><td>OK GIORGIO — GROTTA</td><td>STROMBOLI</td><td>2025</td></tr>
+                  <tr><td>08</td><td>SANTONI BTO — STUDIO</td><td>MILANO</td><td>2025</td></tr>
+                </tbody>
+              </table>
+            </section>
+          </main>
+
+          <footer class="pf-footer">
+            <p>© 2026 Andrea Onori — Studio Milan, Italy</p>
+            <p>
+              <a href="mailto:hello@andreaonori.com">hello@andreaonori.com</a>
+              <span aria-hidden="true"> · </span>
+              <a href="https://www.instagram.com/andrea__onori" rel="me noopener" target="_blank">@andrea__onori</a>
+            </p>
+          </footer>
+        </div>
+        <!-- PRERENDER:END -->
+    </div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
@@ -542,6 +1274,33 @@
         const firstVideoOf = (slides) => (slides.find(s => s.video) || {}).video || '';
         const altOf = (p) => [p.title, p.film, p.location || p.loc, p.year].filter(Boolean).join(' — ');
 
+        // Alt completo per le immagini: aggiunge l'autore. È la singola modifica
+        // più utile agli alt per la ricerca immagini e per come i modelli
+        // descrivono una foto quando la incontrano.
+        const altImg = (p) => {
+            const base = altOf(p);
+            return base ? `${base} — photographed by Andrea Onori` : 'Photograph by Andrea Onori';
+        };
+
+        // I file di MOTION sono stringhe tipo "media/story-greta.png": senza
+        // titolo l'alt degradava a "REEL #001", che non descrive nulla. Qui
+        // risaliamo al progetto dal nome del file. La soluzione definitiva è un
+        // campo titolo nel pannello admin, questa è la rete di sicurezza.
+        const titleFromFilename = (src) => {
+            const stem = String(src || '').split('/').pop().split('.')[0].toLowerCase();
+            const known = [...(M().feed || []), ...(M().index || [])];
+            for (const p of known) {
+                const slug = String(p.title || '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean)[0];
+                if (slug && stem.includes(slug)) return p.title;
+            }
+            return '';
+        };
+
+        // GA4 — no-op finché il Measurement ID non è configurato (vedi <head>).
+        const track = (name, params) => {
+            try { window.aonTrack && window.aonTrack(name, params); } catch (e) {}
+        };
+
         // Marquee
         const Marquee = () => {
             const items = [
@@ -581,7 +1340,8 @@
             >
                 <img
                     src="./andrea.jpg"
-                    alt="Andrea Onori"
+                    alt="Andrea Onori, fashion photographer and filmmaker based in Milan"
+                    width="160" height="160" fetchPriority="high"
                     style={{
                         width: '100%', height: '100%',
                         borderRadius: '50%',
@@ -636,14 +1396,17 @@
                             <p className="grot uline" style={{ color: 'var(--mute)', fontSize: '11px', letterSpacing: '0.15em' }}>SELECTED BY VOGUE ITALIA · NUMÉRO · DOMUS</p>
                         </div>
 
-                        <a href="#" className="mono uline mb-7 md:mb-5 inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
+                        <a href="https://www.andreaonori.com/"
+                           className="mono uline mb-7 md:mb-5 inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
                             ↗ ANDREAONORI.COM
                         </a>
 
                         <div className="flex gap-3 md:gap-2 flex-wrap mt-7 md:mt-5">
-                            <button className="btn-primary">
+                            <a href="mailto:hello@andreaonori.com?subject=Commission%20enquiry"
+                               onClick={() => track('contact_click', { method: 'email', location: 'header' })}
+                               className="btn-primary" style={{ display: 'inline-flex' }}>
                                 <span>GET IN TOUCH</span> <span className="arrow">→</span>
-                            </button>
+                            </a>
                             <button className="btn-secondary">
                                 <span className="pulse-dot"></span>
                                 AVAILABLE FOR WORK
@@ -653,6 +1416,30 @@
                 </div>
             </div>
         );
+
+        // About — le stesse frasi del blocco statico prerenderizzato, lette da
+        // window.AON_ABOUT (iniettato in <head> da scripts/prerender.mjs).
+        // Devono comparire in entrambi i render: testo presente solo nella
+        // versione statica sarebbe contenuto riservato ai crawler.
+        // Sono frasi brevi e autoconclusive di proposito — un modello che cita
+        // una pagina ne estrae frammenti, e "Andrea Onori è…" resta utile fuori
+        // contesto mentre "Lui è…" non lo è.
+        const About = () => {
+            const lines = window.AON_ABOUT || [];
+            if (!lines.length) return null;
+            return (
+                <section className="mb-12" aria-labelledby="about-h">
+                    <div className="flex items-baseline justify-between mb-5 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
+                        <h2 id="about-h" className="mono uline" style={{ fontSize: '10px', fontWeight: 400 }}>◇ ABOUT</h2>
+                    </div>
+                    <div className="grot" style={{ maxWidth: '62ch' }}>
+                        {lines.map((line, i) => (
+                            <p key={i} style={{ fontSize: '14px', lineHeight: 1.65, color: i === 0 ? 'var(--fg)' : 'var(--mute)', marginBottom: '8px' }}>{line}</p>
+                        ))}
+                    </div>
+                </section>
+            );
+        };
 
         // Clean empty-state shown when a section has no media (e.g. media.json
         // failed to load). No Unsplash, no fake data — just a neutral notice.
@@ -679,7 +1466,7 @@
                         {series.map((s, i) => (
                             <div key={s.id} className="flex flex-col items-center gap-3 flex-shrink-0 cursor-pointer" role="button" tabIndex={0} aria-label={s.label} onClick={() => onClick(s)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(s); } }}>
                                 <div className="series-circle">
-                                    <img src={normMedia(s.image).image || firstImageOf((s.images || []).map(normMedia)) || ''} alt={s.label} loading="lazy" decoding="async" />
+                                    <img src={normMedia(s.image).image || firstImageOf((s.images || []).map(normMedia)) || ''} alt={`${s.label} — series by Andrea Onori, Milan`} loading="lazy" decoding="async" />
                                 </div>
                                 <div className="text-center">
                                     <div className="mono uline" style={{ fontSize: '9px' }}>{s.label}</div>
@@ -759,7 +1546,7 @@
         // ricade sul primo fotogramma del video, caricato in lazy.
         const GridMedia = ({ image, video, alt }) => (
             image
-                ? <img src={image} alt={alt || ''} loading="lazy" decoding="async" />
+                ? <img src={image} alt={alt || 'Photograph by Andrea Onori'} loading="lazy" decoding="async" />
                 : video
                     ? <LazyFrame video={video} alt={alt} />
                     : <div style={{ width: '100%', height: '100%', background: '#0d0d0d' }} />
@@ -809,13 +1596,15 @@
                 <div className="grid grid-cols-3 gap-0">
                     {items.map((raw, i) => {
                         const m = normMedia(raw);
-                        const label = m.title || `REEL #${String(i+1).padStart(3,'0')}`;
+                        const derived = titleFromFilename(m.image || m.video);
+                        const label = m.title || derived || `REEL #${String(i+1).padStart(3,'0')}`;
+                        const alt = `${label} — motion still by Andrea Onori, Milan`;
                         return (
                         <div key={i} className="feed-item" style={{ aspectRatio: '9/16' }} role="button" tabIndex={0}
                             aria-label={m.video ? `Riproduci ${label}` : label}
-                            onClick={() => onClick(raw)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(raw); } }}>
+                            onClick={() => { track('motion_play', { reel_label: label, reel_index: i + 1 }); onClick(raw); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(raw); } }}>
                             <span className="feed-corner mono">MOV · {String(i+1).padStart(2,'0')}</span>
-                            <GridMedia image={m.image} video={m.video} alt={label} />
+                            <GridMedia image={m.image} video={m.video} alt={alt} />
                             {m.video && <PlayBadge />}
                             <div className="feed-meta">
                                 <div style={{ fontSize: '10px' }}>{label}</div>
@@ -1046,7 +1835,9 @@
                                 <button onClick={onPrev} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>← POST PREC.</button>
                                 <button onClick={onNext} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>POST SUCC. →</button>
                             </div>
-                            <a href="#" className="btn-primary mt-4" style={{ display: 'inline-flex' }}><span>INQUIRE</span> <span className="arrow">→</span></a>
+                            <a href={`mailto:hello@andreaonori.com?subject=${encodeURIComponent('Inquiry — ' + (post.title || 'project'))}`}
+                               onClick={() => track('contact_click', { method: 'inquire', location: 'modal', project_title: post.title || '' })}
+                               className="btn-primary mt-4" style={{ display: 'inline-flex' }}><span>INQUIRE</span> <span className="arrow">→</span></a>
                         </div>
                     </div>
                 </div>
@@ -1059,20 +1850,32 @@
             <footer>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
                     <div className="colofone-cell reveal-on-scroll">
-                        <div className="colofone-label">© 2025</div>
+                        <div className="colofone-label">© {new Date().getFullYear()}</div>
                         <div className="colofone-value">ANDREA ONORI</div>
                     </div>
                     <div className="colofone-cell reveal-on-scroll delay-1">
                         <div className="colofone-label">STUDIO</div>
                         <div className="colofone-value">MILAN — IT</div>
                     </div>
+                    {/* Email e social erano testo semplice: da qui in poi sono link
+                        veri. Il rel="me" sul profilo Instagram è il segnale che
+                        collega davvero le due identità — è ciò che rende il
+                        sameAs del JSON-LD corroborato invece che solo dichiarato. */}
                     <div className="colofone-cell reveal-on-scroll delay-2">
                         <div className="colofone-label">EMAIL</div>
-                        <div className="colofone-value">hello@andreaonori.com</div>
+                        <div className="colofone-value">
+                            <a href="mailto:hello@andreaonori.com"
+                               onClick={() => track('contact_click', { method: 'email', location: 'footer' })}
+                               style={{ color: 'inherit' }}>hello@andreaonori.com</a>
+                        </div>
                     </div>
                     <div className="colofone-cell reveal-on-scroll delay-3">
                         <div className="colofone-label">SOCIAL</div>
-                        <div className="colofone-value">@andrea__onori</div>
+                        <div className="colofone-value">
+                            <a href="https://www.instagram.com/andrea__onori" target="_blank" rel="me noopener"
+                               onClick={() => track('contact_click', { method: 'instagram', location: 'footer' })}
+                               style={{ color: 'inherit' }}>@andrea__onori</a>
+                        </div>
                     </div>
                 </div>
                 <div className="flex justify-between items-center pt-6 mono uline reveal-on-scroll" style={{ fontSize: '10px', color: 'var(--mute)', borderTop: '1px solid var(--line)' }}>
@@ -1232,6 +2035,38 @@
 
             const open = (i, list) => { setSelectedImg(i); setImgs(list); };
 
+            // ── Analytics ────────────────────────────────────────────────────
+            // Tutto lo stato di interazione vive qui, quindi gli eventi si
+            // agganciano in un punto solo invece che sparsi nei figli.
+            //
+            // Deliberatamente NON generiamo page_view finti sui cambi di tab o
+            // sull'apertura dei modali: gonfierebbe sessioni e pagine/sessione
+            // rendendo i numeri incomparabili con qualunque riferimento. GA4
+            // misura già l'engagement da sé; qui servono gli eventi, non le
+            // pagine. L'unico che conta davvero è contact_click — da marcare
+            // come Key Event nel pannello GA4.
+            useEffect(() => { track('tab_switch', { tab_name: active }); }, [active]);
+
+            useEffect(() => {
+                if (selectedImg === null) return;
+                const p = imgs[selectedImg] || {};
+                track('project_view', {
+                    project_title: p.title || '',
+                    project_location: p.location || p.loc || '',
+                    project_year: p.year || '',
+                    project_format: p.film || '',
+                    source_tab: active,
+                });
+            }, [selectedImg]);
+
+            useEffect(() => {
+                if (selectedSeries) track('series_open', { series_label: selectedSeries.label || selectedSeries.id || '' });
+            }, [selectedSeries]);
+
+            useEffect(() => {
+                if (showreelOpen) track('showreel_play', { source: 'avatar' });
+            }, [showreelOpen]);
+
             // Scroll-triggered reveal
             useEffect(() => {
                 const els = document.querySelectorAll('.reveal-on-scroll');
@@ -1257,8 +2092,9 @@
                         </div>
                     </div>
 
-                    <div className="max-w-[1100px] mx-auto px-6 py-16">
+                    <main className="max-w-[1100px] mx-auto px-6 py-16">
                         <ProfileHeader onAvatarClick={() => setShowreelOpen(true)} />
+                        <About />
                         <Series onClick={setSelectedSeries} />
                         <Tabs active={active} setActive={setActive} />
                         <div key={active} className="tab-panel">
@@ -1267,7 +2103,7 @@
                             {active === 'INDEX' && <IndexView onClick={open} />}
                         </div>
                         <Footer />
-                    </div>
+                    </main>
 
                     {selectedImg !== null && (
                         <PostModal
@@ -1293,6 +2129,89 @@
             .then(data => { if (data) window.MEDIA = data; })
             .catch(() => {})
             .finally(() => { root.render(<App />); });
+    </script>
+
+    <!-- ─────────────────────────────────────────────────────────────────────
+         BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:
+         React azzera i figli di #root al mount, e questo deve funzionare
+         anche prima che Babel abbia finito di compilare.
+
+         Aggiorna Consent Mode v2 (i default "denied" sono in <head>).
+         La scelta è in localStorage, quindi si chiede una volta sola.
+
+         SOSTITUIRE CON UNA CMP: se si passa a Cookiebot o Iubenda, si elimina
+         questo blocco e si lascia il resto intatto — l'unico contratto è la
+         chiamata gtag('consent','update',…), che ogni CMP sa fare.
+         ───────────────────────────────────────────────────────────────────── -->
+    <style>
+        #aon-consent {
+            position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 9999;
+            max-width: 560px; margin: 0 auto; padding: 18px 20px;
+            background: #0a0a0a; border: 1px solid rgba(255,255,255,0.18);
+            font-family: 'JetBrains Mono', monospace; color: #fff;
+            display: none;
+        }
+        #aon-consent.is-open { display: block; }
+        #aon-consent p { font-size: 11px; line-height: 1.6; color: rgba(255,255,255,0.68); margin-bottom: 14px; }
+        #aon-consent a { color: #fff; text-decoration: underline; }
+        #aon-consent .aon-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        #aon-consent button {
+            font-family: inherit; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+            padding: 9px 16px; cursor: pointer; border: 1px solid #fff; background: transparent; color: #fff;
+        }
+        #aon-consent button.aon-accept { background: #fff; color: #000; }
+        #aon-consent button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    </style>
+    <div id="aon-consent" role="dialog" aria-live="polite" aria-label="Cookie">
+        <p>
+            Questo sito usa cookie di misurazione per capire come viene usato.
+            Nessun cookie viene installato senza il tuo consenso.
+            <a href="/privacy">Informativa</a>
+        </p>
+        <div class="aon-row">
+            <button type="button" class="aon-accept" data-consent="granted">Accetta</button>
+            <button type="button" data-consent="denied">Rifiuta</button>
+        </div>
+    </div>
+    <script>
+    (function () {
+        var KEY = 'aon-consent-v1';
+        var el = document.getElementById('aon-consent');
+        if (!el) return;
+
+        function apply(state) {
+            if (typeof gtag !== 'function') return;
+            gtag('consent', 'update', {
+                analytics_storage: state,
+                ad_storage: state,
+                ad_user_data: state,
+                ad_personalization: state
+            });
+        }
+
+        var saved = null;
+        try { saved = localStorage.getItem(KEY); } catch (e) {}
+
+        if (saved === 'granted' || saved === 'denied') {
+            apply(saved);
+            return;                       // scelta già fatta: niente banner
+        }
+
+        // Nessuna misurazione da configurare → nessun cookie → nessun banner.
+        // Mostrarlo comunque sarebbe solo attrito inutile per l'utente.
+        if (!window.AON_GA4_ID) return;
+
+        el.classList.add('is-open');
+        el.addEventListener('click', function (e) {
+            var btn = e.target.closest('[data-consent]');
+            if (!btn) return;
+            var state = btn.getAttribute('data-consent');
+            try { localStorage.setItem(KEY, state); } catch (err) {}
+            apply(state);
+            el.classList.remove('is-open');
+            if (window.aonTrack) window.aonTrack('banner_consent', { choice: state });
+        });
+    })();
     </script>
 </body>
 </html>

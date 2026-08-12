@@ -12,7 +12,7 @@ Stack e file chiave:
 
 - **`index.html`** — sito single-page in **React 18 via CDN + Babel standalone** (nessuna build). Legge i contenuti da `media.json` a ogni caricamento con `fetch('./media.json', { cache: 'no-store' })`. Tre tab: `FEED`, `MOTION`, `INDEX` + sezione `SERIES` (storie a cerchi).
 - **`media.json`** — unica fonte dati del sito. Sezioni: `feed` (array di oggetti immagine 4:5), `motion` (array di stringhe URL, celle 9:16), `series` (cartelle di foto sfogliabili), `index` (tabella numerata).
-- **`admin-edits.html`** — CMS hard-coded (login `admin` / `on2026`), scrive su GitHub tramite `/api/save.js`. Pagina `noindex, nofollow`.
+- **`admin-edits.html`** — CMS hard-coded (login `admin` / la password impostata in `ADMIN_PASSWORD` su Vercel), scrive su GitHub tramite `/api/save.js`. Pagina `noindex, nofollow`.
 - **`api/save.js`** — funzione serverless Vercel. Due azioni: `upload` (committa una singola immagine in `/media` via GitHub Contents API) e `save` (committa `media.json`). Il token GitHub è **solo** nella env var `GITHUB_TOKEN`.
 - **`vercel.json`** — `cleanUrls`, rewrite `/admin-edits`, cache `no-store` su `media.json`, header `X-Robots-Tag: noindex` su `/admin-edits`.
 - **Cartelle nuove `POST/` e `MOTION/`** — contengono i media reali corretti (video + foto) da mettere online. **NON sono ancora usate dal sito.**
