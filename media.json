@@ -276,20 +276,20 @@
     },
     "topbar": {
       "left": "andrea__onori",
-      "right": "ARCHIVE / 25 · VOLUME 01"
+      "right": "ARCHIVE / 26 · VOLUME 01"
     },
     "profile": {
-      "badge": "VERIFIED · 25",
-      "eyebrow": "◌ PHOTOGRAPHER · BASED IN MILAN",
+      "badge": "26",
+      "eyebrow": "◌ FILM-MAKER · BASED IN MILAN",
       "nameFirst": "ANDREA",
       "nameLast": "ONORI",
       "handle": "@andrea__onori · ESTABLISHED MMXVIII",
-      "disciplines": "EDITORIAL · PORTRAIT · PERSONAL WORK.",
+      "disciplines": "EDITORIAL · WORKS · PERSONAL PROJECTS",
       "siteLabel": "↗ ANDREAONORI.COM",
       "siteUrl": "https://www.andreaonori.com/",
       "ctaPrimary": "GET IN TOUCH",
       "ctaEmail": "video@andreaonori.com",
-      "ctaSubject": "Commission enquiry",
+      "ctaSubject": "Production enquiry",
       "ctaSecondary": "AVAILABLE FOR WORK"
     },
     "sections": {
@@ -351,7 +351,8 @@
     "seo": {
       "author": "Andrea Onori",
       "avatarAlt": "Andrea Onori, fashion photographer and filmmaker based in Milan",
-      "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2018.\nHis work has been selected by Vogue Italia, Numéro, Domus.\nRecent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.\nShoots have taken place in MILANO, GINOSTRA, STROMBOLI.\nHe is available for commissions and can be reached at video@andreaonori.com."
+      "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2018.\nRecent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.\nShoots have taken place in MILANO, GINOSTRA, STROMBOLI.\nHe is available for commissions and can be reached at video@andreaonori.com."
     }
-  }
+  },
+  "updatedAt": "2026-08-29T14:32:45.800Z"
 }
