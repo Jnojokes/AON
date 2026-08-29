@@ -114,6 +114,40 @@
   details.help li{font-size:12px;color:#c9c9c9;margin-bottom:7px;line-height:1.5;}
   details.help code{font-family:'JetBrains Mono',monospace;font-size:11px;background:#141414;padding:1px 5px;border:1px solid var(--line);}
 
+  /* ── Impostazioni generali ───────────────────────────────────────────── */
+  .set-group{border:1px solid var(--line);background:#070707;padding:16px;}
+  .set-group + .set-group{margin-top:14px;}
+  .set-group h3{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.18em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:4px;
+  }
+  .set-group .hint{
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:#666;
+    line-height:1.6;margin-bottom:14px;
+  }
+  .set-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+  textarea.field{resize:vertical;min-height:96px;line-height:1.6;}
+
+  /* Checkbox "Contenuto Enhanced con AI": riga cliccabile, non una spunta
+     minuscola persa nel form. */
+  .check{
+    display:flex;align-items:center;gap:10px;cursor:pointer;
+    border:1px solid var(--line);background:#0c0c0c;padding:9px 11px;
+    transition:border-color .2s var(--ease-out),background .2s var(--ease-out);
+  }
+  .check:hover{border-color:var(--line-strong);}
+  .check.on{border-color:var(--accent);background:#140803;}
+  .check input{accent-color:var(--accent);width:14px;height:14px;flex-shrink:0;cursor:pointer;}
+  .check span{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--mute);line-height:1.4;
+  }
+  .check.on span{color:var(--fg);}
+
+  .row-mq{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) auto;gap:8px;align-items:center;}
+  .row-mq + .row-mq{margin-top:8px;}
+  @media (max-width:640px){ .row-mq{grid-template-columns:1fr;} }
+
   @keyframes spin{to{transform:rotate(360deg);}}
   .spin{animation:spin .8s linear infinite;}
   @keyframes slideUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
@@ -373,6 +407,136 @@ const SECTIONS = [
   { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link al video su Aruba: il video parte solo al click, quindi la griglia resta veloce." },
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
+  { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima e la descrizione per Google e i motori AI. Nessuna foto: solo parole." },
+];
+
+// ── Schema dei testi del sito ───────────────────────────────────────────────
+// Deve restare allineato a TEXT_DEFAULTS in index.html: là ci sono i valori di
+// default, qui le etichette con cui il pannello li presenta. Un campo assente
+// qui esiste comunque nel sito, semplicemente non è modificabile da qui.
+// Aggiungere una voce = aggiungerla in entrambi i file.
+const SETTINGS_SCHEMA = [
+  {
+    key: "profile",
+    title: "Intestazione — nome e presentazione",
+    hint: "Il blocco in cima alla pagina, accanto alla foto profilo.",
+    fields: [
+      ["eyebrow",     "Riga sopra il nome"],
+      ["nameFirst",   "Nome (1ª riga del titolo)"],
+      ["nameLast",    "Cognome (2ª riga del titolo)"],
+      ["handle",      "Riga sotto il nome"],
+      ["disciplines", "Riga discipline"],
+      ["badge",       "Etichetta sulla foto profilo"],
+      ["siteLabel",   "Testo del link al sito"],
+      ["siteUrl",     "Indirizzo del link al sito"],
+      ["ctaPrimary",  "Pulsante principale"],
+      ["ctaEmail",    "Email di contatto"],
+      ["ctaSubject",  "Oggetto dell'email"],
+      ["ctaSecondary","Pulsante secondario"],
+    ],
+  },
+  {
+    key: "topbar",
+    title: "Barra sotto il marquee",
+    hint: "La riga sottile con handle a sinistra e volume a destra.",
+    fields: [["left", "Testo a sinistra"], ["right", "Testo a destra"]],
+  },
+  {
+    key: "hud",
+    title: "Riquadro in alto a destra",
+    hint: "Orologio e coordinate. L'ora è automatica, questi sono i testi fissi.",
+    fields: [["tz", "Fuso orario"], ["coords", "Coordinate"]],
+  },
+  {
+    key: "sections",
+    title: "Sezioni e tab",
+    hint: "Nomi delle tre tab e intestazioni delle liste. Rinominare una tab cambia solo l'etichetta: la sezione resta la stessa.",
+    fields: [
+      ["tabFeed",       "Tab 1"],
+      ["tabMotion",     "Tab 2"],
+      ["tabIndex",      "Tab 3"],
+      ["seriesTitle",   "Titolo blocco serie"],
+      ["seriesUnit",    "Unità di misura serie"],
+      ["indexNo",       "Colonna indice — N."],
+      ["indexTitle",    "Colonna indice — titolo"],
+      ["indexLocation", "Colonna indice — luogo"],
+      ["indexYear",     "Colonna indice — anno"],
+      ["motionCorner",  "Contatore sui reel (in alto a sinistra)"],
+      ["motionPrefix",  "Prefisso reel senza titolo"],
+      ["motionYear",    "Anno mostrato sui reel senza video"],
+      ["empty",         "Messaggio sezione vuota ({SECTION})"],
+    ],
+  },
+  {
+    key: "post",
+    title: "Scheda del progetto",
+    hint: "Le etichette dentro la finestra che si apre cliccando una foto.",
+    fields: [
+      ["location", "Etichetta luogo"],
+      ["year",     "Etichetta anno"],
+      ["format",   "Etichetta formato"],
+      ["prev",     "Pulsante precedente"],
+      ["next",     "Pulsante successivo"],
+      ["inquire",  "Pulsante contatto"],
+      ["inquireSubject", "Oggetto dell'email di richiesta ({TITLE})"],
+      ["carousel", "Dicitura carosello"],
+      ["video",    "Dicitura video"],
+      ["play",     "Dicitura play sui reel"],
+      ["aiShort",  "Marchio AI sulla griglia"],
+      ["aiLabel",  "Dicitura AI nella scheda"],
+    ],
+  },
+  {
+    key: "showreel",
+    title: "Showreel",
+    hint: "La presentazione a schermo intero che parte cliccando la foto profilo.",
+    fields: [
+      ["title",    "Titolo"],
+      ["subtitle", "Sottotitolo"],
+      ["headline", "Frase grande (a capo consentiti)", "area"],
+      ["frame",    "Etichetta fotogramma"],
+      ["autoplay", "Etichetta autoplay"],
+    ],
+  },
+  {
+    key: "footer",
+    title: "Piè di pagina",
+    hint: "L'anno del copyright è automatico.",
+    fields: [
+      ["name",        "Nome"],
+      ["studioLabel", "Etichetta studio"],
+      ["studioValue", "Città studio"],
+      ["emailLabel",  "Etichetta email"],
+      ["emailValue",  "Email"],
+      ["socialLabel", "Etichetta social"],
+      ["socialValue", "Handle social"],
+      ["socialUrl",   "Link al profilo social"],
+      ["release",     "Riga finale a sinistra"],
+      ["privacy",     "Link privacy"],
+      ["cookie",      "Link cookie"],
+      ["edition",     "Riga finale a destra"],
+    ],
+  },
+  {
+    key: "consent",
+    title: "Banner cookie",
+    hint: "Testo informativo mostrato al primo accesso. È un obbligo di legge: cambiare le parole va bene, toglierle no.",
+    fields: [
+      ["text",   "Testo", "area"],
+      ["link",   "Testo del link all'informativa"],
+      ["accept", "Pulsante accetta"],
+      ["reject", "Pulsante rifiuta"],
+    ],
+  },
+  {
+    key: "seo",
+    title: "SEO",
+    hint: "Testi che i visitatori non vedono ma che descrivono le immagini a Google.",
+    fields: [
+      ["author",    "Autore citato negli alt delle foto"],
+      ["avatarAlt", "Descrizione della foto profilo"],
+    ],
+  },
 ];
 
 // ── Drag & drop hook ────────────────────────────────────────────────────────
@@ -719,6 +883,116 @@ function GalleryField({ images, password, onChange, onStatus, aspect }){
   );
 }
 
+// ── Barra scorrevole (marquee) ──────────────────────────────────────────────
+// Ogni voce è una coppia etichetta/valore: l'etichetta è la parola grigia, il
+// valore quella bianca. Svuotare la lista fa sparire la barra dal sito.
+function MarqueeEditor({ items, onChange }){
+  const list = Array.isArray(items) ? items : [];
+  const set = (i, k, v) => onChange(list.map((it, j) => j === i ? { ...it, [k]: v } : it));
+  return (
+    <div className="set-group">
+      <h3>Barra scorrevole in cima al sito</h3>
+      <p className="hint">
+        Il nastro che scorre sopra all'intestazione. Ogni riga è una voce: a sinistra
+        l'etichetta grigia, a destra il testo bianco. L'ordine è quello di scorrimento.
+        Senza voci la barra non compare.
+      </p>
+      {/* Lista assente e lista vuota non sono la stessa cosa: senza la chiave
+          il sito mostra la barra di default, con la lista vuota la nasconde. */}
+      {list.length === 0 && (
+        <p className="mono" style={{fontSize:11,color:"var(--mute)",marginBottom:10,lineHeight:1.6}}>
+          {Array.isArray(items)
+            ? "Barra disattivata: senza voci il nastro non compare sul sito."
+            : "Nessuna barra personalizzata: il sito mostra le voci predefinite. Aggiungine una per sostituirle."}
+        </p>
+      )}
+      {list.map((it, i) => (
+        <div className="row-mq" key={i}>
+          <input className="field sm mono" value={(it && it.label) || ""} placeholder="ETICHETTA"
+            onChange={e => set(i, "label", e.target.value)} />
+          <input className="field sm mono" value={(it && it.value) || ""} placeholder="Testo"
+            onChange={e => set(i, "value", e.target.value)} />
+          <div style={{display:"flex",gap:4}}>
+            <button className="btn btn-ghost btn-xs" onClick={() => onChange(move(list, i, i-1))} disabled={i===0} title="Su">↑</button>
+            <button className="btn btn-ghost btn-xs" onClick={() => onChange(move(list, i, i+1))} disabled={i===list.length-1} title="Giù">↓</button>
+            <button className="btn btn-ghost btn-xs" style={{color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}}
+              onClick={() => onChange(list.filter((_, j) => j !== i))} title="Elimina">✕</button>
+          </div>
+        </div>
+      ))}
+      <button className="btn btn-ghost" style={{marginTop:10}}
+        onClick={() => onChange(list.concat([{ label:"NUOVA", value:"" }]))}>+ Aggiungi voce</button>
+    </div>
+  );
+}
+
+// ── Gruppo di campi testuali ────────────────────────────────────────────────
+function TextGroup({ group, values, onChange }){
+  const v = values || {};
+  return (
+    <div className="set-group">
+      <h3>{group.title}</h3>
+      {group.hint && <p className="hint">{group.hint}</p>}
+      <div className="set-grid">
+        {group.fields.map(([k, lbl, kind]) => (
+          <div key={k} style={ kind === "area" ? { gridColumn:"1 / -1" } : null }>
+            <label className="lbl">{lbl}</label>
+            {kind === "area"
+              ? <textarea className="field" style={{minHeight:70}} value={v[k] != null ? v[k] : ""}
+                  onChange={e => onChange({ ...v, [k]: e.target.value })} />
+              : <input className="field" value={v[k] != null ? v[k] : ""}
+                  onChange={e => onChange({ ...v, [k]: e.target.value })} />}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Pannello "Impostazioni generali" ────────────────────────────────────────
+function SettingsEditor({ settings, onChange }){
+  const s = settings || {};
+  const patch = (k, v) => onChange({ ...s, [k]: v });
+  const seo = s.seo || {};
+
+  return (
+    <div>
+      <MarqueeEditor items={s.marquee} onChange={(v) => patch("marquee", v)} />
+
+      {/* Bio SEO: il campo più importante di questa pagina, quindi sta in alto
+          e ha una spiegazione lunga. Non è un testo di facciata, è ciò che
+          Google e ChatGPT leggono per capire chi è Andrea. */}
+      <div className="set-group" style={{borderColor:"var(--accent)"}}>
+        <h3>Descrizione per SEO &amp; Motori AI</h3>
+        <p className="hint">
+          Questo testo <b>non compare sul sito</b>: nessun visitatore lo legge.
+          Finisce nei dati strutturati della pagina e in un blocco nascosto che
+          Google, Bing, ChatGPT, Claude e Perplexity leggono per capire chi sei,
+          cosa fai e dove lavori.<br /><br />
+          Scrivi <b>frasi brevi, complete e in terza persona</b> — “Andrea Onori è
+          un fotografo…”, non “Sono un fotografo…”: i modelli citano frammenti
+          isolati, e una frase che si regge da sola viene ripresa meglio.
+          Vai a capo per separare i concetti: ogni riga diventa un paragrafo.
+          Inserisci città, discipline, clienti e contatto.<br /><br />
+          <b>Se lasci vuoto</b>, la descrizione viene generata automaticamente
+          dai progetti presenti nel sito.
+        </p>
+        <textarea className="field" style={{minHeight:200}} value={seo.bio || ""}
+          onChange={e => patch("seo", { ...seo, bio: e.target.value })}
+          placeholder={"Andrea Onori è un fotografo e filmmaker con base a Milano.\nLavora tra moda, editoriale e campagne, producendo foto e video per brand e magazine.\n…"} />
+        <p className="mono" style={{fontSize:10,color:"#555",marginTop:8}}>
+          {(seo.bio || "").trim().split(/\s+/).filter(Boolean).length} parole ·{" "}
+          {(seo.bio || "").split(/\r?\n/).filter(l => l.trim()).length} paragrafi
+        </p>
+      </div>
+
+      {SETTINGS_SCHEMA.map(g => (
+        <TextGroup key={g.key} group={g} values={s[g.key]} onChange={(v) => patch(g.key, v)} />
+      ))}
+    </div>
+  );
+}
+
 // ── Editable card for object-based sections ──────────────────────────────────
 function Card({ section, item, idx, total, password, onChange, onMove, onDelete, onStatus }){
   const set = (k, v) => onChange({ ...item, [k]: v });
@@ -770,6 +1044,16 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
           <input className="field" value={item[k] || ""} onChange={e=>set(k,e.target.value)} />
         </div>
       ))}
+      {/* Dichiarazione di contenuto generato o ritoccato con AI. Sul sito
+          diventa un marchio discreto sulla cella e una dicitura nella scheda
+          del progetto. */}
+      {(section === "feed" || section === "index") && (
+        <label className={"check" + (item.ai ? " on" : "")}>
+          <input type="checkbox" checked={!!item.ai}
+            onChange={e => set("ai", e.target.checked ? true : undefined)} />
+          <span>Contenuto Enhanced con AI</span>
+        </label>
+      )}
     </div>
   );
 }
@@ -844,8 +1128,8 @@ function CMS({ password }){
   useEffect(() => {
     fetch("./media.json", { cache:"no-store" })
       .then(r => r.ok ? r.json() : Promise.reject(new Error("media.json non trovato")))
-      .then(d => { setMedia({ feed:[], motion:[], series:[], index:[], ...d }); })
-      .catch(err => { status("Impossibile caricare media.json: " + err.message, "err"); setMedia({ feed:[], motion:[], series:[], index:[] }); })
+      .then(d => { setMedia({ feed:[], motion:[], series:[], index:[], settings:{}, ...d }); })
+      .catch(err => { status("Impossibile caricare media.json: " + err.message, "err"); setMedia({ feed:[], motion:[], series:[], index:[], settings:{} }); })
       .finally(() => setLoading(false));
   }, [status]);
 
@@ -856,7 +1140,8 @@ function CMS({ password }){
     return () => window.removeEventListener("beforeunload", onLeave);
   }, [dirty]);
 
-  const update = (key, nextArr) => { setMedia(m => ({ ...m, [key]: nextArr })); setDirty(true); };
+  // Vale sia per gli array delle sezioni sia per l'oggetto settings.
+  const update = (key, next) => { setMedia(m => ({ ...m, [key]: next })); setDirty(true); };
 
   const onItemChange = (key, idx, nextItem) => update(key, media[key].map((it,i)=> i===idx ? nextItem : it));
   const onItemMove   = (key, from, to)     => update(key, move(media[key], from, to));
@@ -885,8 +1170,8 @@ function CMS({ password }){
     );
   }
 
-  const list = media[tab] || [];
   const meta = SECTIONS.find(s => s.key === tab);
+  const list = meta.single ? [] : (media[tab] || []);
   const nVideo = (arr) => (arr || []).reduce((n, it) => {
     if (tab === "motion") return n + (normMedia(it).video ? 1 : 0);
     const slides = (it && it.images) ? it.images : [];
@@ -914,7 +1199,7 @@ function CMS({ password }){
         <div style={{maxWidth:1160,margin:"0 auto",padding:"0 24px",display:"flex",gap:24,overflowX:"auto"}}>
           {SECTIONS.map(s => (
             <button key={s.key} className={"tab" + (tab===s.key ? " active":"")} onClick={()=>setTab(s.key)}>
-              {s.label} <span style={{color:"#555"}}>{(media[s.key]||[]).length}</span>
+              {s.label}{!s.single && <span style={{color:"#555"}}> {(media[s.key]||[]).length}</span>}
             </button>
           ))}
         </div>
@@ -922,7 +1207,7 @@ function CMS({ password }){
 
       {/* Body */}
       <main style={{maxWidth:1160,margin:"0 auto",padding:"24px"}}>
-        <HelpBox />
+        {tab !== "settings" && <HelpBox />}
 
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",gap:16,marginBottom:18,flexWrap:"wrap"}}>
           <div>
@@ -930,12 +1215,14 @@ function CMS({ password }){
             <p className="mono" style={{fontSize:11,color:"var(--mute)",maxWidth:600,lineHeight:1.6}}>{meta.help}</p>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
-            {nVideo(list) > 0 && <span className="chip err">▶ {nVideo(list)} video</span>}
-            <button className="btn" onClick={()=>onItemAdd(tab)}>+ Aggiungi</button>
+            {!meta.single && nVideo(list) > 0 && <span className="chip err">▶ {nVideo(list)} video</span>}
+            {!meta.single && <button className="btn" onClick={()=>onItemAdd(tab)}>+ Aggiungi</button>}
           </div>
         </div>
 
-        {list.length === 0 ? (
+        {meta.single ? (
+          <SettingsEditor settings={media.settings} onChange={(v)=>update("settings", v)} />
+        ) : list.length === 0 ? (
           <div className="card" style={{padding:40,textAlign:"center"}}>
             <p className="mono" style={{fontSize:12,color:"var(--mute)"}}>Nessun elemento. Usa “+ Aggiungi” per iniziare.</p>
           </div>

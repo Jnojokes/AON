@@ -52,6 +52,10 @@ const SITE = {
   city: 'Milan',
   region: 'Lombardy',
   country: 'IT',
+  // Le stesse coordinate mostrate nell'HUD del sito. Servono a "fotografo a
+  // Milano" e alle risposte AI su base geografica: senza geo, un
+  // LocalBusiness/ProfessionalService è collocato solo dal testo dell'indirizzo.
+  geo: { lat: 45.4642, lon: 9.19 },
   since: '2018',
   avatar: '/andrea.jpg',
   ogImage: '/media/og-cover.jpg',
@@ -133,6 +137,20 @@ const replaceBetween = (source, startMarker, endMarker, replacement, label) => {
 function build() {
 
 const media = JSON.parse(readFileSync(join(ROOT, 'media.json'), 'utf8'));
+
+// ── Testi dal pannello ───────────────────────────────────────────────────────
+// media.settings è ciò che /admin-edits salva. Qui interessano solo i campi che
+// definiscono l'identità: nome, ruolo, contatti. Devono coincidere con quelli
+// mostrati a schermo, altrimenti JSON-LD e pagina descrivono due entità diverse
+// e nessun motore le collega. Un campo vuoto o assente lascia il default.
+const settings = (media.settings && typeof media.settings === 'object') ? media.settings : {};
+const str = (v) => (typeof v === 'string' && v.trim() ? v.trim() : null);
+
+SITE.name = str((settings.seo || {}).author) || str((settings.footer || {}).name) || SITE.name;
+SITE.email = str((settings.profile || {}).ctaEmail) || str((settings.footer || {}).emailValue) || SITE.email;
+SITE.instagram = str((settings.footer || {}).socialUrl) || SITE.instagram;
+SITE.instagramHandle = str((settings.footer || {}).socialValue) || SITE.instagramHandle;
+
 const feed = Array.isArray(media.feed) ? media.feed : [];
 const motion = Array.isArray(media.motion) ? media.motion : [];
 const series = Array.isArray(media.series) ? media.series : [];
@@ -157,7 +175,15 @@ const yearRange = years.length
     : `${years[0]}–${years[years.length - 1]}`
   : '';
 
-const aboutSentences = [
+// "Descrizione per SEO & Motori AI" dal pannello: ogni riga non vuota diventa
+// un paragrafo. Se il campo è vuoto si torna al testo generato dai progetti,
+// che resta un default sensato ma non dice nulla che i dati non dicano già.
+const customBio = String(((settings.seo || {}).bio) || '')
+  .split(/\r?\n/)
+  .map((l) => l.trim())
+  .filter(Boolean);
+
+const autoSentences = [
   `${SITE.name} is a photographer and filmmaker based in ${SITE.city}, Italy.`,
   `He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.`,
   `He has been working professionally since ${SITE.since}.`,
@@ -172,6 +198,8 @@ const aboutSentences = [
     : '',
   `He is available for commissions and can be reached at ${SITE.email}.`,
 ].filter(Boolean);
+
+const aboutSentences = customBio.length ? customBio : autoSentences;
 
 // ── 1. Blocco HTML statico ───────────────────────────────────────────────────
 
@@ -321,13 +349,18 @@ const graph = [
     name: `${SITE.name} — Fashion Photographer & Filmmaker, Milan`,
     isPartOf: { '@id': siteId },
     about: { '@id': personId },
+    description: aboutSentences.slice(0, 3).join(' '),
     primaryImageOfPage: abs(SITE.ogImage),
     inLanguage: 'en',
   },
   {
+    // ProfessionalService è una sottoclasse di LocalBusiness: dichiararlo qui
+    // copre sia le ricerche "fotografo a Milano" sia le risposte AI su base
+    // geografica, senza duplicare un secondo nodo per la stessa entità.
     '@type': 'ProfessionalService',
     '@id': `${SITE.origin}/#service`,
     name: `${SITE.name} — Photography & Motion`,
+    description: aboutSentences.join(' '),
     url: SITE.origin + '/',
     image: abs(SITE.ogImage),
     founder: { '@id': personId },
@@ -340,6 +373,11 @@ const graph = [
       addressRegion: SITE.region,
       addressCountry: SITE.country,
     },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: SITE.geo.lat,
+      longitude: SITE.geo.lon,
+    },
     areaServed: [
       { '@type': 'City', name: 'Milan' },
       { '@type': 'AdministrativeArea', name: 'Lombardy' },
@@ -349,6 +387,30 @@ const graph = [
     sameAs: [SITE.instagram],
   },
 ];
+
+// Vocabolario IPTC per il tipo di sorgente digitale: è lo standard con cui si
+// dichiara che un'immagine è stata generata o rielaborata con AI. schema.org non
+// ha una proprietà dedicata, quindi passa da additionalProperty/PropertyValue.
+const AI_PROPERTY = {
+  '@type': 'PropertyValue',
+  propertyID: 'https://cv.iptc.org/newscodes/digitalsourcetype/',
+  name: 'digitalSourceType',
+  value: 'compositeWithTrainedAlgorithmicMedia',
+};
+// La provenienza è una proprietà del FILE, non del post: la stessa foto può
+// comparire in più post (la copertina di feed[1] e quella di index[1] sono lo
+// stesso file), e non può essere AI in uno e non nell'altro. Quindi le
+// copertine marcate si raccolgono prima, e poi si applicano ovunque quel file
+// compaia — così il grafo non contiene mai due affermazioni opposte sullo
+// stesso contentUrl.
+const aiCovers = new Set(
+  [...feed, ...indexList]
+    .filter((p) => p.ai)
+    .map((p) => abs(coverOf(p)))
+    .filter(Boolean)
+);
+// contentUrl già dichiarate, per non emettere due volte lo stesso file.
+const aiStamped = new Set();
 
 // Un CreativeWork per progetto distinto — collegato all'autore via @id.
 for (const title of projectTitles) {
@@ -380,7 +442,47 @@ for (const title of projectTitles) {
       license: SITE.origin + '/',
     };
   }
+  // Spunta "Contenuto Enhanced con AI" nel pannello. Dichiararla nei dati
+  // strutturati non è un vezzo: è la stessa informazione che la dicitura
+  // mostra all'utente, in forma leggibile dalle macchine.
+  //
+  // Il confronto è sulla copertina effettiva del nodo, non su entries.some():
+  // i titoli si ripetono (SANTONI BTO sono tre servizi diversi) mentre
+  // work.image punta a UNA copertina sola. Aggregando sul gruppo, spuntare uno
+  // scatto marchiava come AI la foto di un altro — con tanto di contentUrl:
+  // una dichiarazione di provenienza falsa su un file specifico, per giunta
+  // contraddetta dalla griglia e da llms.txt, che ragionano per singolo post.
+  if (work.image && aiCovers.has(work.image.contentUrl)) {
+    work.additionalProperty = AI_PROPERTY;
+    work.image.additionalProperty = AI_PROPERTY;
+    aiStamped.add(work.image.contentUrl);
+  }
   graph.push(work);
+}
+
+// I nodi Photograph sono per titolo, il flag AI è per post: un post marcato che
+// non sia il primo del suo gruppo non avrebbe dove essere dichiarato, e la
+// dichiarazione sparirebbe dai dati strutturati pur restando sul sito e in
+// llms.txt. Qui ogni copertina marcata e non ancora coperta sopra ottiene il
+// proprio ImageObject: un nodo per file reale, nessuna attribuzione allargata.
+for (const p of [...feed, ...indexList]) {
+  if (!p.ai) continue;
+  const cover = coverOf(p);
+  if (!cover) continue;
+  const url = abs(cover);
+  if (aiStamped.has(url)) continue;
+  aiStamped.add(url);
+  graph.push({
+    '@type': 'ImageObject',
+    '@id': `${url}#ai`,
+    contentUrl: url,
+    name: altOf(p) || p.title || '',
+    creator: { '@id': personId },
+    copyrightHolder: { '@id': personId },
+    creditText: SITE.name,
+    license: SITE.origin + '/',
+    additionalProperty: AI_PROPERTY,
+  });
 }
 
 const jsonLd = { '@context': 'https://schema.org', '@graph': graph };
@@ -388,6 +490,23 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': graph };
 const jsonLdBlock = `        <script type="application/ld+json">
 ${JSON.stringify(jsonLd, null, 2).replace(/</g, '\\u003c').split('\n').map((l) => '        ' + l).join('\n')}
         </script>`;
+
+// ── 2b. Blocco sr-only con la descrizione ────────────────────────────────────
+// Sta fuori da #root, quindi React non lo cancella al mount: è l'unica copia
+// della descrizione che resta nel DOM anche dopo il render dell'app.
+// È nascosto alla vista (.visually-hidden) ma NON a screen reader e crawler, ed
+// è lo stesso testo che il blocco statico qui sopra mostra in chiaro a chi non
+// esegue JavaScript. Nessuno vede una versione della pagina che gli altri non
+// possono vedere: è la differenza fra testo fuori schermo e cloaking.
+
+const seoBioBlock = `    <section class="visually-hidden" id="aon-seo-bio" aria-label="About ${esc(SITE.name)}">
+      <h2>${esc(SITE.name)} — ${esc(SITE.role)}, ${esc(SITE.city)}, Italy</h2>
+${aboutSentences.map((s) => `      <p>${esc(s)}</p>`).join('\n')}
+      <p>Contact: <a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a> · <a href="${esc(SITE.instagram)}" rel="me noopener">${esc(SITE.instagramHandle)}</a></p>
+      <p>Disciplines: ${esc(SITE.disciplines.join(', '))}.</p>
+${projectTitles.length ? `      <p>Projects: ${esc(projectTitles.join(', '))}.</p>` : ''}
+${locations.length ? `      <p>Locations: ${esc(locations.join(', '))}.</p>` : ''}
+    </section>`;
 
 // ── 3. sitemap.xml ───────────────────────────────────────────────────────────
 // Con image sitemap: per un portfolio fotografico Google Images è un canale
@@ -477,12 +596,12 @@ ${indexList
 
 ## Work index
 
-| No. | Project | Location | Year | Format |
-| --- | ------- | -------- | ---- | ------ |
+| No. | Project | Location | Year | Format | AI-enhanced |
+| --- | ------- | -------- | ---- | ------ | ----------- |
 ${feed
   .map(
     (p, i) =>
-      `| ${String(i + 1).padStart(2, '0')} | ${p.title || ''} | ${p.location || p.loc || ''} | ${p.year || ''} | ${p.film || ''} |`
+      `| ${String(i + 1).padStart(2, '0')} | ${p.title || ''} | ${p.location || p.loc || ''} | ${p.year || ''} | ${p.film || ''} | ${p.ai ? 'yes' : 'no'} |`
   )
   .join('\n')}
 
@@ -500,14 +619,9 @@ Generated from media.json. Canonical source: ${SITE.origin}/
 const indexPath = join(ROOT, 'index.html');
 const original = readFileSync(indexPath, 'utf8');
 
-// Le stesse frasi finiscono nel blocco statico E in window.AON_ABOUT, da cui il
-// componente React <About/> renderizza. Un'unica sorgente per entrambi i render:
-// è ciò che tiene il sito fuori dal territorio del cloaking.
-const aboutBlock = `    <script>window.AON_ABOUT = ${JSON.stringify(aboutSentences).replace(/</g, '\\u003c')};</script>`;
-
 let html = original;
 html = replaceBetween(html, '<!-- PRERENDER:START -->', '<!-- PRERENDER:END -->', staticBlock, 'PRERENDER');
-html = replaceBetween(html, '<!-- ABOUT:START -->', '<!-- ABOUT:END -->', aboutBlock, 'ABOUT');
+html = replaceBetween(html, '<!-- SEOBIO:START -->', '<!-- SEOBIO:END -->', seoBioBlock, 'SEOBIO');
 html = replaceBetween(html, '<!-- JSONLD:START -->', '<!-- JSONLD:END -->', jsonLdBlock, 'JSONLD');
 
 // Controlli di sanità prima di toccare il disco. Se uno solo fallisce non
@@ -516,6 +630,8 @@ const checks = [
   [html.includes('id="root"'), 'il div #root è sparito'],
   [(html.match(/<!-- PRERENDER:START -->/g) || []).length === 1, 'marker PRERENDER duplicati o mancanti'],
   [(html.match(/<!-- JSONLD:START -->/g) || []).length === 1, 'marker JSONLD duplicati o mancanti'],
+  [(html.match(/<!-- SEOBIO:START -->/g) || []).length === 1, 'marker SEOBIO duplicati o mancanti'],
+  [html.includes('class="visually-hidden" id="aon-seo-bio"'), 'blocco sr-only della descrizione non generato'],
   [html.includes('<h1>'), 'nessun h1 nel blocco statico'],
   [html.length > original.length * 0.9, 'output sospettosamente più corto del sorgente'],
   [feed.length > 0 || indexList.length > 0, 'media.json non contiene progetti'],
@@ -531,6 +647,7 @@ const words = staticBlock.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).
 console.log(`✓ prerender — ${feed.length} progetti, ${series.length} serie, ${motion.length} motion`);
 console.log(`✓ index.html — blocco statico di ~${words} parole leggibili senza JS`);
 console.log(`✓ JSON-LD   — ${graph.length} nodi nel @graph`);
+console.log(`✓ about     — ${aboutSentences.length} frasi ${customBio.length ? '(dal pannello)' : '(generate dai progetti)'}`);
 console.log(`✓ sitemap   — ${sitemapImages.length} immagini, lastmod ${lastmod}`);
 console.log(`✓ llms.txt  — ${llms.split('\n').length} righe`);
 

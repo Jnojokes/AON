@@ -238,5 +238,120 @@
       "year": "2025",
       "image": "media/santoni-09.jpg"
     }
-  ]
+  ],
+  "settings": {
+    "marquee": [
+      {
+        "label": "ARCHIVE",
+        "value": "2025"
+      },
+      {
+        "label": "INDEX",
+        "value": "247 FRAMES ON FILE"
+      },
+      {
+        "label": "STATUS",
+        "value": "AVAILABLE FOR COMMISSIONS"
+      },
+      {
+        "label": "STUDIO",
+        "value": "MILAN — ITALY"
+      },
+      {
+        "label": "NOW BOOKING",
+        "value": "Q3 — Q4 / 2025"
+      },
+      {
+        "label": "EDITION",
+        "value": "BOLD / 01"
+      },
+      {
+        "label": "SHIPPING",
+        "value": "WORLDWIDE"
+      }
+    ],
+    "hud": {
+      "coords": "45.4642° N · 9.1900° E",
+      "tz": "CET"
+    },
+    "topbar": {
+      "left": "andrea__onori",
+      "right": "ARCHIVE / 25 · VOLUME 01"
+    },
+    "profile": {
+      "badge": "VERIFIED · 25",
+      "eyebrow": "◌ PHOTOGRAPHER · BASED IN MILAN",
+      "nameFirst": "ANDREA",
+      "nameLast": "ONORI",
+      "handle": "@andrea__onori · ESTABLISHED MMXVIII",
+      "disciplines": "EDITORIAL · PORTRAIT · PERSONAL WORK.",
+      "siteLabel": "↗ ANDREAONORI.COM",
+      "siteUrl": "https://www.andreaonori.com/",
+      "ctaPrimary": "GET IN TOUCH",
+      "ctaEmail": "video@andreaonori.com",
+      "ctaSubject": "Commission enquiry",
+      "ctaSecondary": "AVAILABLE FOR WORK"
+    },
+    "sections": {
+      "seriesTitle": "◯ SERIES",
+      "seriesUnit": "COLLECTIONS",
+      "tabFeed": "FEED",
+      "tabMotion": "MOTION",
+      "tabIndex": "INDEX",
+      "indexNo": "NO.",
+      "indexTitle": "TITLE",
+      "indexLocation": "LOCATION",
+      "indexYear": "YEAR",
+      "motionCorner": "MOV · ",
+      "motionPrefix": "REEL #",
+      "motionYear": "2025",
+      "empty": "NESSUN MEDIA IN {SECTION} — aggiungilo da /admin-edits"
+    },
+    "post": {
+      "location": "LOCATION",
+      "year": "YEAR",
+      "format": "FORMAT",
+      "prev": "← POST PREC.",
+      "next": "POST SUCC. →",
+      "inquire": "INQUIRE",
+      "inquireSubject": "Inquiry — {TITLE}",
+      "carousel": "CAROUSEL",
+      "video": "▶ VIDEO",
+      "play": "PLAY",
+      "aiShort": "◇ AI",
+      "aiLabel": "◇ AI-ENHANCED"
+    },
+    "showreel": {
+      "title": "SHOWREEL · 25",
+      "subtitle": "ANDREA ONORI · MMXXV",
+      "headline": "A YEAR\nIN FRAMES.",
+      "frame": "FRAME",
+      "autoplay": "AUTOPLAY"
+    },
+    "footer": {
+      "name": "ANDREA ONORI",
+      "studioLabel": "STUDIO",
+      "studioValue": "MILAN — IT",
+      "emailLabel": "EMAIL",
+      "emailValue": "video@andreaonori.com",
+      "socialLabel": "SOCIAL",
+      "socialValue": "@andrea__onori",
+      "socialUrl": "https://www.instagram.com/andrea__onori",
+      "release": "ARCHIVE — RELEASE / 25",
+      "privacy": "PRIVACY",
+      "cookie": "COOKIE",
+      "edition": "EDITION 01 / BOLD"
+    },
+    "consent": {
+      "text": "Questo sito usa cookie di misurazione per capire come viene usato. Nessun cookie viene installato senza il tuo consenso.",
+      "link": "Informativa",
+      "accept": "Accetta",
+      "reject": "Rifiuta"
+    },
+    "seo": {
+      "author": "Andrea Onori",
+      "avatarAlt": "Andrea Onori, fashion photographer and filmmaker based in Milan",
+      "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2018.\nHis work has been selected by Vogue Italia, Numéro, Domus.\nRecent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.\nShoots have taken place in MILANO, GINOSTRA, STROMBOLI.\nHe is available for commissions and can be reached at video@andreaonori.com."
+    }
+  }
 }

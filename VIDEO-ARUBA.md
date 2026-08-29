@@ -31,11 +31,20 @@ tecnicamente funziona, ma chi lo apre da telefono aspetta troppo e se ne va.
 
 ## 2. Carica su Aruba e rendi il file pubblico
 
-Carica il file nel tuo spazio Aruba (Cloud Object Storage o lo spazio web dell'hosting).
+> **Quale pannello Aruba.** Serve **Aruba Cloud Object Storage** (si gestisce da
+> `arubacloud.com` → Storage), non l'Area Clienti Hosting e domini di
+> `managehosting.aruba.it`: quella gestisce il dominio e le caselle email, e il suo
+> spazio web non è utilizzabile per i video perché il dominio `andreaonori.com` serve
+> il sito. Se nel pannello Aruba Cloud non vedi lo storage, va attivato: è a consumo
+> (pochi centesimi al mese per lo spazio, più il traffico in uscita).
 
-Nell'Object Storage Web Client: tasto destro sul file → **Modifica permessi** → spunta
-**"Download file"** per **"Tutti gli utenti"** → salva. Senza questo passaggio il file
-esiste ma il sito non può mostrarlo.
+Carica il file nel bucket, poi rendilo pubblico: nell'Object Storage Web Client
+tasto destro sul file → **Modifica permessi** → spunta **"Download file"** per
+**"Tutti gli utenti"** → salva. Senza questo passaggio il file esiste ma il sito non
+può mostrarlo.
+
+I file caricati dal Web Client devono stare **sotto i 2 GB** — nessun problema con dei
+reel esportati come al punto 1.
 
 ## 3. Copia il link diretto
 

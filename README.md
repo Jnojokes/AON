@@ -34,7 +34,7 @@ AON/
 fetch('./media.json', { cache: 'no-store' })
 ```
 
-`media.json` ha quattro sezioni: `feed`, `motion`, `series`, `index`. Modificandolo (a mano o dal CMS) cambia ciò che appare sul sito.
+`media.json` ha cinque sezioni: `feed`, `motion`, `series`, `index` e `settings`. Le prime quattro sono i media, `settings` sono **tutti i testi del sito**. Modificandolo (a mano o dal CMS) cambia ciò che appare sul sito.
 
 `/admin-edits` è un CMS hard-coded protetto da login (`admin` / la password impostata in `ADMIN_PASSWORD` su Vercel). Da qui puoi: riordinare i media (↑ / ↓), caricare nuove immagini in `/media`, rimuovere media (✕), modificare titoli/anni/location/format, e salvare tutto con **Salva tutto**. La pagina è `noindex, nofollow`.
 
@@ -69,6 +69,19 @@ vercel --prod
 ```
 
 Dopo il setup, il flusso normale è: `/admin-edits` → login → modifica → **Salva tutto** → il CMS scrive su `media.json` via GitHub → Vercel rifà il deploy in automatico (~20s).
+
+### Puntare `andreaonori.com` su Vercel (da fare)
+
+Oggi il dominio risolve su **62.149.128.40**, cioè lo spazio web condiviso Aruba: finché resta così `/api/save` non esiste e **il CMS non può salvare** (è una funzione serverless, gira solo su Vercel).
+
+Cosa cambiare nel **Gestione DNS di Aruba** (non spostare i nameserver):
+
+- record **A** di `@` → l'IP mostrato nella *domain card* del progetto Vercel (non riusare `76.76.21.21` preso dalle guide: i progetti nuovi ricevono un anycast IP diverso)
+- record **CNAME** di `www` → il target indicato nella stessa domain card
+
+⚠️ **Non** spostare i nameserver su Vercel e **non** toccare i record **MX**: le caselle email del dominio (webmail Aruba, `hello@andreaonori.com`) restano su Aruba e si romperebbero. Cambiando solo A e CNAME, mail e DNS restano dove sono.
+
+Conseguenza sui video: una volta repuntato il dominio, lo **spazio web Aruba non è più raggiungibile da nessun hostname** (Aruba non consente di puntare un terzo livello a un hosting condiviso), quindi i video vanno su **Aruba Cloud Object Storage** — vedi `VIDEO-ARUBA.md`.
 
 ---
 
@@ -109,7 +122,28 @@ Il CMS scrive sempre la forma **più semplice possibile**: una foto resta una st
 - **Campo link video** con **"Verifica link"**: carica i metadati e riporta durata/risoluzione, oppure l'errore esatto (file non pubblico, link non diretto, codec non supportato, `http://`).
 - **"Copertina auto"**: estrae un fotogramma dal video via canvas e lo committa come poster. Richiede gli header CORS sullo storage; se mancano, il messaggio indirizza al drag & drop manuale.
 - Trascinare un **video** viene intercettato con la spiegazione del flusso Aruba, invece di fallire con un errore tecnico.
+- **Tab IMPOSTAZIONI** — tutti i testi del sito, senza toccare il codice (vedi sotto).
 - Il login valida la password **contro il server** (`ADMIN_PASSWORD` su Vercel), non più contro una costante nel browser.
+
+### Tab IMPOSTAZIONI — i testi del sito
+
+Tutte le stringhe visibili stanno in `media.json → settings` e si modificano dalla quinta tab del pannello. Nel codice i valori di partenza sono in `TEXT_DEFAULTS` (`index.html`): un campo assente o non salvato usa il default, un campo **svuotato di proposito** toglie quel testo dal sito.
+
+| Gruppo | Cosa contiene |
+|--------|---------------|
+| `marquee` | le voci del nastro che scorre in cima — coppie etichetta/valore, riordinabili. Lista vuota = barra nascosta |
+| `profile` | intestazione: nome, riga sopra, handle, discipline, pulsanti, email di contatto |
+| `topbar`, `hud` | la riga sotto il marquee e il riquadro con ora e coordinate |
+| `sections` | nomi delle tab, intestazioni di colonna dell'indice, messaggio di sezione vuota |
+| `post` | etichette della scheda progetto e diciture carosello / video / AI |
+| `showreel`, `footer`, `consent` | showreel, piè di pagina, banner cookie |
+| `seo` | autore negli `alt`, descrizione della foto profilo e la **descrizione per SEO & motori AI** |
+
+> Aggiungere un nuovo testo modificabile richiede due modifiche coordinate: la voce in `TEXT_DEFAULTS` (`index.html`) e la sua etichetta in `SETTINGS_SCHEMA` (`admin-edits.html`).
+
+**Descrizione per SEO & Motori AI** (`settings.seo.bio`) — la vecchia sezione ABOUT. **Non è più renderizzata a schermo**: `scripts/prerender.mjs` la scrive nel JSON-LD (`Person`, `WebPage`, `ProfessionalService`) e in un `<section class="visually-hidden">` fuori da `#root`, così React non la cancella al mount. Google, Bing e i crawler generativi la leggono, gli screen reader pure, i visitatori no. Ogni riga non vuota diventa un paragrafo; lasciando il campo vuoto il testo torna a essere generato dai progetti presenti nel sito.
+
+**Contenuto Enhanced con AI** — spunta booleana (`ai: true`) sulle card di FEED e INDEX. Sul sito diventa un marchio `◇ AI` sulla cella e una dicitura `◇ AI-ENHANCED` nella scheda del progetto; nei dati strutturati diventa un `additionalProperty` con il codice IPTC `digitalSourceType`, e una colonna in `llms.txt`.
 
 Dettagli di consegna in `BRIEF.md`.
 

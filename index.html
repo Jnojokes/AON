@@ -88,14 +88,6 @@
       };
     </script>
 
-    <!-- Frasi About condivise tra il blocco statico e il render React, così i
-         due mostrano lo stesso testo. Necessario, non cosmetico: contenuto
-         presente solo nella versione statica sarebbe visibile ai soli crawler,
-         cioè esattamente la forma del cloaking. Rigenerato dal prerender. -->
-    <!-- ABOUT:START -->
-    <script>window.AON_ABOUT = ["Andrea Onori is a photographer and filmmaker based in Milan, Italy.","He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.","He has been working professionally since 2018.","Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.","Shoots have taken place in MILANO, GINOSTRA, STROMBOLI.","He is available for commissions and can be reached at video@andreaonori.com."];</script>
-        <!-- ABOUT:END -->
-
     <!-- Structured data — rigenerato da scripts/prerender.mjs a ogni build.
          Il blocco qui sotto è il fallback statico se la build non gira. -->
     <!-- JSONLD:START -->
@@ -155,6 +147,7 @@
               "about": {
                 "@id": "https://www.andreaonori.com/#person"
               },
+              "description": "Andrea Onori is a photographer and filmmaker based in Milan, Italy. He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines. He has been working professionally since 2018.",
               "primaryImageOfPage": "https://www.andreaonori.com/media/og-cover.jpg",
               "inLanguage": "en"
             },
@@ -162,6 +155,7 @@
               "@type": "ProfessionalService",
               "@id": "https://www.andreaonori.com/#service",
               "name": "Andrea Onori — Photography & Motion",
+              "description": "Andrea Onori is a photographer and filmmaker based in Milan, Italy. He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines. He has been working professionally since 2018. His work has been selected by Vogue Italia, Numéro, Domus. Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT. Shoots have taken place in MILANO, GINOSTRA, STROMBOLI. He is available for commissions and can be reached at video@andreaonori.com.",
               "url": "https://www.andreaonori.com/",
               "image": "https://www.andreaonori.com/media/og-cover.jpg",
               "founder": {
@@ -177,6 +171,11 @@
                 "addressLocality": "Milan",
                 "addressRegion": "Lombardy",
                 "addressCountry": "IT"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 45.4642,
+                "longitude": 9.19
               },
               "areaServed": [
                 {
@@ -637,9 +636,11 @@
             .btn-primary, .btn-secondary { padding: 9px 18px; font-size: 10px; }
         }
 
-        /* Carousel — grid badge (multi-photo posts) + in-modal arrows */
+        /* Carousel — grid badge (multi-photo posts) + in-modal arrows.
+           Il badge non si posiziona da sé: sta nel contenitore .cell-badges
+           insieme all'eventuale marchio AI, che li allinea in fila. */
         .carousel-badge {
-            position: absolute; top: 10px; right: 10px; z-index: 4; color: #fff;
+            display: flex; color: #fff; line-height: 0;
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.65)); pointer-events: none;
         }
         .carousel-arrow {
@@ -913,6 +914,62 @@
             *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
         /* ─────────────────────────────────────────────────────────────────
+           SR-ONLY — visibile solo ad assistive tech e crawler.
+           Qui ci vive la biografia lunga ("Descrizione per SEO & Motori AI"),
+           che non compare più nell'interfaccia: il testo resta nel DOM per
+           screen reader e motori di ricerca, non occupa spazio a schermo.
+           Tecnica standard di accessibilità: clip + 1px, NON display:none —
+           display:none verrebbe ignorato anche dagli screen reader.
+           ───────────────────────────────────────────────────────────────── */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            clip-path: inset(50%);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           MARCHIO "CONTENUTO ENHANCED CON AI"
+           Dichiarazione, non decorazione: deve leggersi senza rubare la scena
+           alla foto. Hairline, monospace, opacità bassa che sale in hover.
+           ───────────────────────────────────────────────────────────────── */
+        .cell-badges {
+            position: absolute; top: 10px; right: 10px; z-index: 4;
+            display: flex; align-items: center; gap: 8px;
+            pointer-events: none;
+        }
+        .ai-mark {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            letter-spacing: 0.18em;
+            line-height: 1;
+            padding: 4px 6px;
+            color: rgba(255,255,255,0.92);
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(255,255,255,0.34);
+            backdrop-filter: blur(4px);
+            opacity: 0.6;
+            transition: opacity .35s var(--ease-out), border-color .35s var(--ease-out);
+        }
+        .feed-item:hover .ai-mark { opacity: 1; border-color: rgba(255,255,255,0.6); }
+        .ai-tag {
+            display: inline-flex; align-items: center; gap: 7px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--mute);
+            border: 1px solid var(--line);
+            padding: 5px 10px;
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
            PRERENDER FALLBACK
            Il contenuto statico generato da scripts/prerender.mjs, che React
            sostituisce al mount. È deliberatamente VISIBILE: nasconderlo con
@@ -1011,9 +1068,9 @@
         <div class="hud-row hud-pill mono">
             <span class="live-dot"></span>
             <span id="liveTime">--:--:--</span>
-            <span style="color: var(--mute);">CET</span>
+            <span id="hudTz" style="color: var(--mute);">CET</span>
         </div>
-        <div class="hud-row hud-pill mono" style="color: var(--mute);">
+        <div class="hud-row hud-pill mono" id="hudCoords" style="color: var(--mute);">
             45.4642° N · 9.1900° E
         </div>
     </div>
@@ -1033,7 +1090,7 @@
               <p>Andrea Onori is a photographer and filmmaker based in Milan, Italy.</p>
               <p>He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.</p>
               <p>He has been working professionally since 2018.</p>
-        
+              <p>His work has been selected by Vogue Italia, Numéro, Domus.</p>
               <p>Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.</p>
               <p>Shoots have taken place in MILANO, GINOSTRA, STROMBOLI.</p>
               <p>He is available for commissions and can be reached at video@andreaonori.com.</p>
@@ -1212,6 +1269,33 @@
         <!-- PRERENDER:END -->
     </div>
 
+    <!-- ─────────────────────────────────────────────────────────────────────
+         DESCRIZIONE PER SEO & MOTORI AI
+         Il testo è quello del campo omonimo in /admin-edits. Non è renderizzato
+         a schermo (classe .visually-hidden) ma resta nel markup: Google, Bing e
+         i crawler generativi lo leggono, gli screen reader pure.
+         Sta FUORI da #root di proposito — React sostituisce i figli di #root al
+         mount e lo cancellerebbe.
+         Rigenerato da scripts/prerender.mjs a ogni build; il blocco qui sotto è
+         il fallback statico se la build non gira.
+         ───────────────────────────────────────────────────────────────────── -->
+    <!-- SEOBIO:START -->
+    <section class="visually-hidden" id="aon-seo-bio" aria-label="About Andrea Onori">
+      <h2>Andrea Onori — Photographer &amp; Filmmaker, Milan, Italy</h2>
+      <p>Andrea Onori is a photographer and filmmaker based in Milan, Italy.</p>
+      <p>He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.</p>
+      <p>He has been working professionally since 2018.</p>
+      <p>His work has been selected by Vogue Italia, Numéro, Domus.</p>
+      <p>Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.</p>
+      <p>Shoots have taken place in MILANO, GINOSTRA, STROMBOLI.</p>
+      <p>He is available for commissions and can be reached at video@andreaonori.com.</p>
+      <p>Contact: <a href="mailto:video@andreaonori.com">video@andreaonori.com</a> · <a href="https://www.instagram.com/andrea__onori" rel="me noopener">@andrea__onori</a></p>
+      <p>Disciplines: Fashion Photography, Editorial Photography, Campaign Photography, Portrait Photography, Motion, Filmmaking.</p>
+      <p>Projects: SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT, OK GIORGIO — GROTTA, SANTONI BTO — STUDIO, OK GIORGIO — VULCANO.</p>
+      <p>Locations: MILANO, GINOSTRA, STROMBOLI.</p>
+    </section>
+        <!-- SEOBIO:END -->
+
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
@@ -1230,6 +1314,136 @@
         // render time. If the fetch failed, M() is empty and each section falls
         // back to a clean empty-state (no placeholder images).
         const M = () => (window.MEDIA || {});
+
+        // ── Copy del sito ────────────────────────────────────────────────────
+        // Ogni stringa visibile vive qui, non più sparsa nel JSX. I valori sono
+        // i default storici: sono ciò che il sito mostra finché media.json non
+        // contiene un "settings" che li sovrascrive.
+        // Il pannello /admin-edits scrive esattamente questa struttura, quindi
+        // aggiungere una voce qui significa poterla modificare da lì — a patto
+        // di aggiungerla anche allo schema del pannello.
+        const TEXT_DEFAULTS = {
+            // Barra scorrevole in cima: coppie etichetta/valore, in ordine.
+            marquee: [
+                { label: 'ARCHIVE',     value: '2025' },
+                { label: 'INDEX',       value: '247 FRAMES ON FILE' },
+                { label: 'STATUS',      value: 'AVAILABLE FOR COMMISSIONS' },
+                { label: 'STUDIO',      value: 'MILAN — ITALY' },
+                { label: 'NOW BOOKING', value: 'Q3 — Q4 / 2025' },
+                { label: 'EDITION',     value: 'BOLD / 01' },
+                { label: 'SHIPPING',    value: 'WORLDWIDE' },
+            ],
+            hud: { coords: '45.4642° N · 9.1900° E', tz: 'CET' },
+            topbar: { left: 'andrea__onori', right: 'ARCHIVE / 25 · VOLUME 01' },
+            profile: {
+                badge: 'VERIFIED · 25',
+                eyebrow: '◌ PHOTOGRAPHER · BASED IN MILAN',
+                nameFirst: 'ANDREA',
+                nameLast: 'ONORI',
+                handle: '@andrea__onori · ESTABLISHED MMXVIII',
+                disciplines: 'EDITORIAL · PORTRAIT · PERSONAL WORK.',
+                siteLabel: '↗ ANDREAONORI.COM',
+                siteUrl: 'https://www.andreaonori.com/',
+                ctaPrimary: 'GET IN TOUCH',
+                ctaEmail: 'video@andreaonori.com',
+                ctaSubject: 'Commission enquiry',
+                ctaSecondary: 'AVAILABLE FOR WORK',
+            },
+            sections: {
+                seriesTitle: '◯ SERIES',
+                seriesUnit: 'COLLECTIONS',
+                tabFeed: 'FEED',
+                tabMotion: 'MOTION',
+                tabIndex: 'INDEX',
+                indexNo: 'NO.',
+                indexTitle: 'TITLE',
+                indexLocation: 'LOCATION',
+                indexYear: 'YEAR',
+                motionCorner: 'MOV · ',
+                motionPrefix: 'REEL #',
+                motionYear: '2025',
+                // {SECTION} viene sostituito col nome della sezione vuota.
+                empty: 'NESSUN MEDIA IN {SECTION} — aggiungilo da /admin-edits',
+            },
+            post: {
+                location: 'LOCATION',
+                year: 'YEAR',
+                format: 'FORMAT',
+                prev: '← POST PREC.',
+                next: 'POST SUCC. →',
+                inquire: 'INQUIRE',
+                // {TITLE} viene sostituito col titolo del progetto.
+                inquireSubject: 'Inquiry — {TITLE}',
+                carousel: 'CAROUSEL',
+                video: '▶ VIDEO',
+                play: 'PLAY',
+                // Dicitura mostrata quando un post ha la spunta "Contenuto
+                // Enhanced con AI". Cambiarla qui la cambia ovunque.
+                aiShort: '◇ AI',
+                aiLabel: '◇ AI-ENHANCED',
+            },
+            showreel: {
+                title: 'SHOWREEL · 25',
+                subtitle: 'ANDREA ONORI · MMXXV',
+                // A capo consentiti: vengono resi come <br>.
+                headline: 'A YEAR\nIN FRAMES.',
+                frame: 'FRAME',
+                autoplay: 'AUTOPLAY',
+            },
+            footer: {
+                name: 'ANDREA ONORI',
+                studioLabel: 'STUDIO',
+                studioValue: 'MILAN — IT',
+                emailLabel: 'EMAIL',
+                emailValue: 'video@andreaonori.com',
+                socialLabel: 'SOCIAL',
+                socialValue: '@andrea__onori',
+                socialUrl: 'https://www.instagram.com/andrea__onori',
+                release: 'ARCHIVE — RELEASE / 25',
+                privacy: 'PRIVACY',
+                cookie: 'COOKIE',
+                edition: 'EDITION 01 / BOLD',
+            },
+            consent: {
+                text: 'Questo sito usa cookie di misurazione per capire come viene usato. Nessun cookie viene installato senza il tuo consenso.',
+                link: 'Informativa',
+                accept: 'Accetta',
+                reject: 'Rifiuta',
+            },
+            seo: {
+                author: 'Andrea Onori',
+                avatarAlt: 'Andrea Onori, fashion photographer and filmmaker based in Milan',
+                // "Descrizione per SEO & Motori AI": non compare a schermo.
+                // Finisce in JSON-LD, nella sezione sr-only e in llms.txt,
+                // tutti generati da scripts/prerender.mjs. Vuoto = il testo
+                // viene ricavato automaticamente dai progetti.
+                bio: '',
+            },
+        };
+
+        // Fonde i default con quello che c'è in media.json. Una stringa vuota
+        // salvata dal pannello vince sul default: cancellare un campo è un modo
+        // legittimo di togliere quel testo dal sito.
+        const deepMerge = (base, over) => {
+            if (over === undefined || over === null) return base;
+            if (Array.isArray(base)) return Array.isArray(over) ? over : base;
+            if (base && typeof base === 'object') {
+                if (typeof over !== 'object' || Array.isArray(over)) return base;
+                const out = { ...base };
+                for (const k of Object.keys(over)) out[k] = deepMerge(base[k], over[k]);
+                return out;
+            }
+            return over;
+        };
+
+        // media.json è già stato scaricato quando i componenti renderizzano
+        // (root.render sta nel .finally della fetch), quindi memoizzare qui è
+        // sicuro e evita di rifondere l'oggetto a ogni render.
+        let _S = null;
+        const S = () => (_S || (_S = deepMerge(TEXT_DEFAULTS, M().settings)));
+
+        // Rende un testo multiriga come righe separate da <br>.
+        const brLines = (s) => String(s || '').split(/\r?\n/);
 
         // ── Modello media ────────────────────────────────────────────────────
         // Un elemento media può essere:
@@ -1280,8 +1494,10 @@
         // più utile agli alt per la ricerca immagini e per come i modelli
         // descrivono una foto quando la incontrano.
         const altImg = (p) => {
+            const author = S().seo.author || '';
             const base = altOf(p);
-            return base ? `${base} — photographed by Andrea Onori` : 'Photograph by Andrea Onori';
+            if (!author) return base;
+            return base ? `${base} — photographed by ${author}` : `Photograph by ${author}`;
         };
 
         // I file di MOTION sono stringhe tipo "media/story-greta.png": senza
@@ -1304,23 +1520,19 @@
         };
 
         // Marquee
+        // Marquee — le voci arrivano da settings.marquee (pannello → "Barra
+        // scorrevole"). Svuotare la lista fa sparire la barra invece di
+        // lasciare una striscia vuota.
         const Marquee = () => {
-            const items = [
-                ['ARCHIVE', '2025'],
-                ['INDEX', '247 FRAMES ON FILE'],
-                ['STATUS', 'AVAILABLE FOR COMMISSIONS'],
-                ['STUDIO', 'MILAN — ITALY'],
-                ['NOW BOOKING', 'Q3 — Q4 / 2025'],
-                ['EDITION', 'BOLD / 01'],
-                ['SHIPPING', 'WORLDWIDE'],
-            ];
+            const items = (S().marquee || []).filter(it => it && (it.label || it.value));
+            if (!items.length) return null;
             const Block = () => (
-                <div className="marquee-track grot uline">
+                <div className="marquee-track grot uline" aria-hidden="true">
                     {items.map((it, i) => (
                         <span key={i} className="marquee-item">
                             <span className="marquee-dot"></span>
-                            <span style={{color: 'var(--mute)'}}>{it[0]}</span>
-                            <span>{it[1]}</span>
+                            <span style={{color: 'var(--mute)'}}>{it.label}</span>
+                            <span>{it.value}</span>
                         </span>
                     ))}
                 </div>
@@ -1341,7 +1553,7 @@
             >
                 <img
                     src="./andrea.jpg"
-                    alt="Andrea Onori, fashion photographer and filmmaker based in Milan"
+                    alt={S().seo.avatarAlt}
                     width="160" height="160" fetchPriority="high"
                     style={{
                         width: '100%', height: '100%',
@@ -1369,77 +1581,70 @@
                     fontSize: '8px', padding: '4px 7px',
                     letterSpacing: '0.18em', textTransform: 'uppercase',
                     zIndex: 2,
-                }}>VERIFIED · 25</div>
+                }}>{S().profile.badge}</div>
             </div>
         );
 
-        const ProfileHeader = ({ onAvatarClick }) => (
+        const ProfileHeader = ({ onAvatarClick }) => {
+            const p = S().profile;
+            const mailto = 'mailto:' + p.ctaEmail + (p.ctaSubject ? '?subject=' + encodeURIComponent(p.ctaSubject) : '');
+            return (
             <div>
                 <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-start mb-14 md:mb-10">
                     <Avatar onClick={onAvatarClick} />
                     <div className="flex-1 w-full">
-                        <div className="mb-3 mono uline" style={{ color: 'var(--mute)', fontSize: '10px' }}>
-                            ◌ PHOTOGRAPHER · BASED IN MILAN
-                        </div>
+                        {p.eyebrow && <div className="mb-3 mono uline" style={{ color: 'var(--mute)', fontSize: '10px' }}>
+                            {p.eyebrow}
+                        </div>}
 
                         <h1 className="display" style={{ fontSize: 'clamp(48px, 8vw, 96px)' }}>
-                            <span className="reveal-line d1"><span>ANDREA</span></span>{' '}
-                            <span className="reveal-line d2"><span>ONORI</span></span>
+                            <span className="reveal-line d1"><span>{p.nameFirst}</span></span>{' '}
+                            <span className="reveal-line d2"><span>{p.nameLast}</span></span>
                             <span className="verified"></span>
                         </h1>
 
-                        <p className="mono uline mt-3 mb-7 md:mb-5" style={{ color: 'var(--mute)', fontSize: '11px' }}>
-                            @andrea__onori &nbsp;·&nbsp; ESTABLISHED MMXVIII
-                        </p>
+                        {p.handle && <p className="mono uline mt-3 mb-7 md:mb-5" style={{ color: 'var(--mute)', fontSize: '11px' }}>
+                            {p.handle}
+                        </p>}
 
-                        <div className="mb-7 md:mb-5 space-y-1">
-                            <p className="grot uline" style={{ fontSize: '13px', fontWeight: 600 }}>EDITORIAL · PORTRAIT · PERSONAL WORK.</p>
-                        </div>
+                        {p.disciplines && <div className="mb-7 md:mb-5 space-y-1">
+                            <p className="grot uline" style={{ fontSize: '13px', fontWeight: 600 }}>{p.disciplines}</p>
+                        </div>}
 
-                        <a href="https://www.andreaonori.com/"
-                           className="mono uline mb-7 md:mb-5 inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
-                            ↗ ANDREAONORI.COM
-                        </a>
+                        {/* Svuotare un campo dal pannello toglie il testo dal sito
+                            (è voluto), ma un indirizzo vuoto non deve lasciare in
+                            piedi un link rotto: href="" ricarica la pagina e
+                            "mailto:" apre il client di posta senza destinatario.
+                            Senza indirizzo il testo resta, il link no. */}
+                        {p.siteLabel && (p.siteUrl
+                            ? <a href={p.siteUrl}
+                                 className="mono uline mb-7 md:mb-5 inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
+                                {p.siteLabel}
+                              </a>
+                            : <span className="mono uline mb-7 md:mb-5 inline-block" style={{ fontSize: '11px' }}>{p.siteLabel}</span>)}
 
                         <div className="flex gap-3 md:gap-2 flex-wrap mt-7 md:mt-5">
-                            <a href="mailto:video@andreaonori.com?subject=Commission%20enquiry"
+                            {p.ctaPrimary && p.ctaEmail && <a href={mailto}
                                onClick={() => track('contact_click', { method: 'email', location: 'header' })}
                                className="btn-primary" style={{ display: 'inline-flex' }}>
-                                <span>GET IN TOUCH</span> <span className="arrow">→</span>
-                            </a>
-                            <button className="btn-secondary">
+                                <span>{p.ctaPrimary}</span> <span className="arrow">→</span>
+                            </a>}
+                            {p.ctaSecondary && <button className="btn-secondary">
                                 <span className="pulse-dot"></span>
-                                AVAILABLE FOR WORK
-                            </button>
+                                {p.ctaSecondary}
+                            </button>}
                         </div>
                     </div>
                 </div>
             </div>
-        );
-
-        // About — le stesse frasi del blocco statico prerenderizzato, lette da
-        // window.AON_ABOUT (iniettato in <head> da scripts/prerender.mjs).
-        // Devono comparire in entrambi i render: testo presente solo nella
-        // versione statica sarebbe contenuto riservato ai crawler.
-        // Sono frasi brevi e autoconclusive di proposito — un modello che cita
-        // una pagina ne estrae frammenti, e "Andrea Onori è…" resta utile fuori
-        // contesto mentre "Lui è…" non lo è.
-        const About = () => {
-            const lines = window.AON_ABOUT || [];
-            if (!lines.length) return null;
-            return (
-                <section className="mb-12" aria-labelledby="about-h">
-                    <div className="flex items-baseline justify-between mb-5 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
-                        <h2 id="about-h" className="mono uline" style={{ fontSize: '10px', fontWeight: 400 }}>◇ ABOUT</h2>
-                    </div>
-                    <div className="grot" style={{ maxWidth: '62ch' }}>
-                        {lines.map((line, i) => (
-                            <p key={i} style={{ fontSize: '14px', lineHeight: 1.65, color: i === 0 ? 'var(--fg)' : 'var(--mute)', marginBottom: '8px' }}>{line}</p>
-                        ))}
-                    </div>
-                </section>
             );
         };
+
+        // La sezione ABOUT non è più renderizzata: il testo vive nel blocco
+        // <section class="visually-hidden"> in fondo al <body> e nel JSON-LD,
+        // entrambi generati da scripts/prerender.mjs dal campo "Descrizione per
+        // SEO & Motori AI" del pannello. Nessun visitatore lo vede, Google e i
+        // motori generativi sì.
 
         // Clean empty-state shown when a section has no media (e.g. media.json
         // failed to load). No Unsplash, no fake data — just a neutral notice.
@@ -1448,7 +1653,7 @@
                 color: 'var(--mute)', fontSize: '11px', textAlign: 'center',
                 padding: '64px 16px', border: '1px dashed var(--line)',
             }}>
-                NESSUN MEDIA IN {section} — aggiungilo da /admin-edits
+                {String(S().sections.empty || '').replace('{SECTION}', section)}
             </div>
         );
 
@@ -1459,14 +1664,14 @@
             return (
                 <div className="mb-12">
                     <div className="flex items-baseline justify-between mb-5 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
-                        <div className="mono uline" style={{ fontSize: '10px' }}>◯ SERIES</div>
-                        <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '9px' }}>{String(series.length).padStart(2,'0')} COLLECTIONS</div>
+                        <div className="mono uline" style={{ fontSize: '10px' }}>{S().sections.seriesTitle}</div>
+                        <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '9px' }}>{String(series.length).padStart(2,'0')} {S().sections.seriesUnit}</div>
                     </div>
                     <div className="flex gap-7 overflow-x-auto pb-2">
                         {series.map((s, i) => (
                             <div key={s.id} className="flex flex-col items-center gap-3 flex-shrink-0 cursor-pointer" role="button" tabIndex={0} aria-label={s.label} onClick={() => onClick(s)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(s); } }}>
                                 <div className="series-circle">
-                                    <img src={normMedia(s.image).image || firstImageOf((s.images || []).map(normMedia)) || ''} alt={`${s.label} — series by Andrea Onori, Milan`} loading="lazy" decoding="async" />
+                                    <img src={normMedia(s.image).image || firstImageOf((s.images || []).map(normMedia)) || ''} alt={S().seo.author ? `${s.label} — series by ${S().seo.author}` : s.label} loading="lazy" decoding="async" />
                                 </div>
                                 <div className="text-center">
                                     <div className="mono uline" style={{ fontSize: '9px' }}>{s.label}</div>
@@ -1480,8 +1685,17 @@
         };
 
         // Tabs
+        // Le chiavi ('FEED'/'MOTION'/'INDEX') restano interne: rinominare una
+        // tab dal pannello cambia l'etichetta, non la logica né gli eventi GA4.
+        const TAB_KEYS = ['FEED', 'MOTION', 'INDEX'];
+        const tabLabel = (k) => ({
+            FEED: S().sections.tabFeed,
+            MOTION: S().sections.tabMotion,
+            INDEX: S().sections.tabIndex,
+        }[k] || k);
+
         const Tabs = ({ active, setActive }) => {
-            const tabs = ['FEED', 'MOTION', 'INDEX'];
+            const tabs = TAB_KEYS;
             const refs = useRef([]);
             const [ind, setInd] = useState({ left: 0, width: 0 });
 
@@ -1502,7 +1716,7 @@
                                 onClick={() => setActive(t)}
                             >
                                 <span style={{ color: 'var(--mute)', marginRight: '8px', fontSize: '9px' }}>0{i + 1}</span>
-                                {t}
+                                {tabLabel(t)}
                             </button>
                         ))}
                     </div>
@@ -1546,7 +1760,7 @@
         // ricade sul primo fotogramma del video, caricato in lazy.
         const GridMedia = ({ image, video, alt }) => (
             image
-                ? <img src={image} alt={alt || 'Photograph by Andrea Onori'} loading="lazy" decoding="async" />
+                ? <img src={image} alt={alt || altImg({})} loading="lazy" decoding="async" />
                 : video
                     ? <LazyFrame video={video} alt={alt} />
                     : <div style={{ width: '100%', height: '100%', background: '#0d0d0d' }} />
@@ -1565,11 +1779,14 @@
                         return (
                         <div key={i} className="feed-item" style={{ aspectRatio: '4 / 5' }} role="button" tabIndex={0} aria-label={altOf(img)} onClick={() => onClick(i, images)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(i, images); } }}>
                             <span className="feed-corner mono">{String(i + 1).padStart(2, '0')}</span>
-                            {slides.length > 1 && (
-                                <span className="carousel-badge" title={slides.length + ' media'}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"><rect x="8" y="3" width="13" height="13" rx="1.5"></rect><path d="M3 8v11a2 2 0 0 0 2 2h11"></path></svg>
-                                </span>
-                            )}
+                            <div className="cell-badges">
+                                {slides.length > 1 && (
+                                    <span className="carousel-badge" title={slides.length + ' media'}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"><rect x="8" y="3" width="13" height="13" rx="1.5"></rect><path d="M3 8v11a2 2 0 0 0 2 2h11"></path></svg>
+                                    </span>
+                                )}
+                                {img.ai && <span className="ai-mark">{S().post.aiShort}</span>}
+                            </div>
                             <GridMedia image={firstImageOf(slides)} video={firstVideoOf(slides)} alt={altOf(img)} />
                             {nVideo > 0 && <PlayBadge />}
                             <div className="feed-meta">
@@ -1597,18 +1814,18 @@
                     {items.map((raw, i) => {
                         const m = normMedia(raw);
                         const derived = titleFromFilename(m.image || m.video);
-                        const label = m.title || derived || `REEL #${String(i+1).padStart(3,'0')}`;
-                        const alt = `${label} — motion still by Andrea Onori, Milan`;
+                        const label = m.title || derived || `${S().sections.motionPrefix}${String(i+1).padStart(3,'0')}`;
+                        const alt = S().seo.author ? `${label} — motion still by ${S().seo.author}` : label;
                         return (
                         <div key={i} className="feed-item" style={{ aspectRatio: '9/16' }} role="button" tabIndex={0}
                             aria-label={m.video ? `Riproduci ${label}` : label}
                             onClick={() => { track('motion_play', { reel_label: label, reel_index: i + 1 }); onClick(raw); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(raw); } }}>
-                            <span className="feed-corner mono">MOV · {String(i+1).padStart(2,'0')}</span>
+                            <span className="feed-corner mono">{S().sections.motionCorner}{String(i+1).padStart(2,'0')}</span>
                             <GridMedia image={m.image} video={m.video} alt={alt} />
                             {m.video && <PlayBadge />}
                             <div className="feed-meta">
                                 <div style={{ fontSize: '10px' }}>{label}</div>
-                                <div style={{ color: 'var(--mute)' }}>{m.video ? 'PLAY' : '2025'}</div>
+                                <div style={{ color: 'var(--mute)' }}>{m.video ? S().post.play : S().sections.motionYear}</div>
                             </div>
                         </div>
                         );
@@ -1650,10 +1867,10 @@
                 <div className="max-w-4xl mx-auto">
                     <div className="mono uline mb-6 pb-3" style={{ fontSize: '10px', color: 'var(--mute)', borderBottom: '1px solid var(--line-strong)' }}>
                         <div className="grid items-center" style={{ gridTemplateColumns: '50px 1fr 160px 90px 30px', gap: '24px' }}>
-                            <div>NO.</div>
-                            <div>TITLE</div>
-                            <div className="hide-mobile">LOCATION</div>
-                            <div className="hide-mobile">YEAR</div>
+                            <div>{S().sections.indexNo}</div>
+                            <div>{S().sections.indexTitle}</div>
+                            <div className="hide-mobile">{S().sections.indexLocation}</div>
+                            <div className="hide-mobile">{S().sections.indexYear}</div>
                             <div></div>
                         </div>
                     </div>
@@ -1822,22 +2039,27 @@
                         <div className="w-full md:w-80 space-y-6">
                             <div className="mono uline" style={{ fontSize: '10px', color: 'var(--mute)' }}>
                                 {String(idx + 1).padStart(2,'0')} / {String(images.length).padStart(2,'0')}
-                                {multi && <span> &nbsp;·&nbsp; CAROUSEL {photos.length}</span>}
-                                {photos.some(s => s.video) && <span style={{ color: 'var(--accent)' }}> &nbsp;·&nbsp; ▶ VIDEO</span>}
+                                {multi && <span> &nbsp;·&nbsp; {S().post.carousel} {photos.length}</span>}
+                                {photos.some(s => s.video) && <span style={{ color: 'var(--accent)' }}> &nbsp;·&nbsp; {S().post.video}</span>}
                             </div>
                             <h2 className="display" style={{ fontSize: '32px' }}>{post.title}</h2>
+                            {/* Dicitura "Contenuto Enhanced con AI": compare solo
+                                se la spunta è attiva sul post nel pannello. */}
+                            {post.ai && <p className="ai-tag">{S().post.aiLabel}</p>}
                             <div className="mono uline space-y-1" style={{ fontSize: '10px' }}>
-                                <p><span style={{ color: 'var(--mute)' }}>LOCATION&nbsp;&nbsp;</span>{post.location || post.loc || '—'}</p>
-                                <p><span style={{ color: 'var(--mute)' }}>YEAR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{post.year || '—'}</p>
-                                <p><span style={{ color: 'var(--mute)' }}>FORMAT&nbsp;&nbsp;&nbsp;&nbsp;</span>{post.film || '—'}</p>
+                                <p><span style={{ color: 'var(--mute)' }}>{S().post.location}&nbsp;&nbsp;</span>{post.location || post.loc || '—'}</p>
+                                <p><span style={{ color: 'var(--mute)' }}>{S().post.year}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{post.year || '—'}</p>
+                                <p><span style={{ color: 'var(--mute)' }}>{S().post.format}&nbsp;&nbsp;&nbsp;&nbsp;</span>{post.film || '—'}</p>
                             </div>
                             <div className="flex gap-6 pt-4">
-                                <button onClick={onPrev} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>← POST PREC.</button>
-                                <button onClick={onNext} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>POST SUCC. →</button>
+                                <button onClick={onPrev} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>{S().post.prev}</button>
+                                <button onClick={onNext} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>{S().post.next}</button>
                             </div>
-                            <a href={`mailto:video@andreaonori.com?subject=${encodeURIComponent('Inquiry — ' + (post.title || 'project'))}`}
-                               onClick={() => track('contact_click', { method: 'inquire', location: 'modal', project_title: post.title || '' })}
-                               className="btn-primary mt-4" style={{ display: 'inline-flex' }}><span>INQUIRE</span> <span className="arrow">→</span></a>
+                            {S().profile.ctaEmail && (
+                                <a href={`mailto:${S().profile.ctaEmail}?subject=${encodeURIComponent(String(S().post.inquireSubject || '').replace('{TITLE}', post.title || 'project'))}`}
+                                   onClick={() => track('contact_click', { method: 'inquire', location: 'modal', project_title: post.title || '' })}
+                                   className="btn-primary mt-4" style={{ display: 'inline-flex' }}><span>{S().post.inquire}</span> <span className="arrow">→</span></a>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -1851,41 +2073,45 @@
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
                     <div className="colofone-cell reveal-on-scroll">
                         <div className="colofone-label">© {new Date().getFullYear()}</div>
-                        <div className="colofone-value">ANDREA ONORI</div>
+                        <div className="colofone-value">{S().footer.name}</div>
                     </div>
                     <div className="colofone-cell reveal-on-scroll delay-1">
-                        <div className="colofone-label">STUDIO</div>
-                        <div className="colofone-value">MILAN — IT</div>
+                        <div className="colofone-label">{S().footer.studioLabel}</div>
+                        <div className="colofone-value">{S().footer.studioValue}</div>
                     </div>
                     {/* Email e social erano testo semplice: da qui in poi sono link
                         veri. Il rel="me" sul profilo Instagram è il segnale che
                         collega davvero le due identità — è ciò che rende il
                         sameAs del JSON-LD corroborato invece che solo dichiarato. */}
                     <div className="colofone-cell reveal-on-scroll delay-2">
-                        <div className="colofone-label">EMAIL</div>
+                        <div className="colofone-label">{S().footer.emailLabel}</div>
                         <div className="colofone-value">
-                            <a href="mailto:video@andreaonori.com"
-                               onClick={() => track('contact_click', { method: 'email', location: 'footer' })}
-                               style={{ color: 'inherit' }}>video@andreaonori.com</a>
+                            {S().footer.emailValue
+                                ? <a href={'mailto:' + S().footer.emailValue}
+                                     onClick={() => track('contact_click', { method: 'email', location: 'footer' })}
+                                     style={{ color: 'inherit' }}>{S().footer.emailValue}</a>
+                                : null}
                         </div>
                     </div>
                     <div className="colofone-cell reveal-on-scroll delay-3">
-                        <div className="colofone-label">SOCIAL</div>
+                        <div className="colofone-label">{S().footer.socialLabel}</div>
                         <div className="colofone-value">
-                            <a href="https://www.instagram.com/andrea__onori" target="_blank" rel="me noopener"
-                               onClick={() => track('contact_click', { method: 'instagram', location: 'footer' })}
-                               style={{ color: 'inherit' }}>@andrea__onori</a>
+                            {S().footer.socialUrl
+                                ? <a href={S().footer.socialUrl} target="_blank" rel="me noopener"
+                                     onClick={() => track('contact_click', { method: 'instagram', location: 'footer' })}
+                                     style={{ color: 'inherit' }}>{S().footer.socialValue}</a>
+                                : S().footer.socialValue}
                         </div>
                     </div>
                 </div>
                 <div className="flex justify-between items-center pt-6 mono uline reveal-on-scroll" style={{ fontSize: '10px', color: 'var(--mute)', borderTop: '1px solid var(--line)' }}>
-                    <span>ARCHIVE — RELEASE / 25</span>
+                    <span>{S().footer.release}</span>
                     {/* Il consenso dev'essere revocabile in modo sempre raggiungibile,
                         non solo svuotando i dati del browser. */}
                     <span style={{ display: 'flex', gap: '18px' }}>
-                        <a href="/privacy" style={{ color: 'inherit' }}>PRIVACY</a>
-                        <a href="#" onClick={(e) => { e.preventDefault(); window.aonCookiePrefs && window.aonCookiePrefs(); }} style={{ color: 'inherit' }}>COOKIE</a>
-                        <span>EDITION 01 / BOLD</span>
+                        <a href="/privacy" style={{ color: 'inherit' }}>{S().footer.privacy}</a>
+                        <a href="#" onClick={(e) => { e.preventDefault(); window.aonCookiePrefs && window.aonCookiePrefs(); }} style={{ color: 'inherit' }}>{S().footer.cookie}</a>
+                        <span>{S().footer.edition}</span>
                     </span>
                 </div>
             </footer>
@@ -1951,8 +2177,8 @@
                         }}>
                             <img src="./andrea.jpg" alt="" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid white' }} />
                             <div style={{ letterSpacing: '0.22em' }}>
-                                <div style={{ fontWeight: 700 }}>SHOWREEL · 25</div>
-                                <div style={{ opacity: 0.55, marginTop: '3px', fontSize: '9px' }}>ANDREA ONORI · MMXXV</div>
+                                <div style={{ fontWeight: 700 }}>{S().showreel.title}</div>
+                                <div style={{ opacity: 0.55, marginTop: '3px', fontSize: '9px' }}>{S().showreel.subtitle}</div>
                             </div>
                         </div>
                         <button onClick={onClose} style={{
@@ -2016,15 +2242,17 @@
                         <p className="display" style={{
                             color: 'white', fontSize: '44px', lineHeight: 0.95,
                         }}>
-                            A YEAR<br/>IN FRAMES.
+                            {brLines(S().showreel.headline).map((l, i) => (
+                                <React.Fragment key={i}>{i > 0 && <br/>}{l}</React.Fragment>
+                            ))}
                         </p>
                         <p className="mono uline" style={{
                             color: 'rgba(255,255,255,0.65)',
                             fontSize: '10px',
                             marginTop: '14px',
                         }}>
-                            FRAME {String(cur + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
-                            &nbsp;·&nbsp; <span style={{ color: 'var(--accent)' }}>AUTOPLAY</span>
+                            {S().showreel.frame} {String(cur + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+                            &nbsp;·&nbsp; <span style={{ color: 'var(--accent)' }}>{S().showreel.autoplay}</span>
                         </p>
                     </div>
                 </div>
@@ -2093,14 +2321,13 @@
                     <Marquee />
                     <div style={{ borderBottom: '1px solid var(--line)' }}>
                         <div className="max-w-[1100px] mx-auto px-6 py-3 flex justify-between items-center">
-                            <div className="mono uline" style={{ fontSize: '10px' }}>andrea__onori</div>
-                            <div className="mono uline" style={{ fontSize: '9px', color: 'var(--mute)' }}>ARCHIVE / 25 &nbsp;·&nbsp; VOLUME 01</div>
+                            <div className="mono uline" style={{ fontSize: '10px' }}>{S().topbar.left}</div>
+                            <div className="mono uline" style={{ fontSize: '9px', color: 'var(--mute)' }}>{S().topbar.right}</div>
                         </div>
                     </div>
 
                     <main className="max-w-[1100px] mx-auto px-6 py-16">
                         <ProfileHeader onAvatarClick={() => setShowreelOpen(true)} />
-                        <About />
                         <Series onClick={setSelectedSeries} />
                         <Tabs active={active} setActive={setActive} />
                         <div key={active} className="tab-panel">
@@ -2127,6 +2354,27 @@
             );
         };
 
+        // HUD e banner cookie vivono fuori da #root (devono esserci anche prima
+        // che Babel abbia compilato il JSX), quindi React non li tocca: i loro
+        // testi si aggiornano qui, una volta sola, dopo il fetch di media.json.
+        const hydrateStatic = () => {
+            const s = S();
+            const set = (id, text) => {
+                const el = document.getElementById(id);
+                if (el && text != null) el.textContent = text;
+            };
+            set('hudCoords', s.hud.coords);
+            set('hudTz', s.hud.tz);
+            set('consentAccept', s.consent.accept);
+            set('consentReject', s.consent.reject);
+            const link = document.getElementById('consentLink');
+            if (link) link.textContent = s.consent.link;
+            const txt = document.getElementById('consentText');
+            // Il testo si sostituisce senza toccare il link all'informativa:
+            // resta un obbligo di legge, non una stringa qualsiasi.
+            if (txt) txt.textContent = s.consent.text + ' ';
+        };
+
         const root = ReactDOM.createRoot(document.getElementById('root'));
         // Load editable media from media.json, then render. Falls back to the
         // hardcoded defaults baked into each component if the fetch fails.
@@ -2134,7 +2382,10 @@
             .then(r => (r.ok ? r.json() : null))
             .then(data => { if (data) window.MEDIA = data; })
             .catch(() => {})
-            .finally(() => { root.render(<App />); });
+            .finally(() => {
+                try { hydrateStatic(); } catch (e) {}
+                root.render(<App />);
+            });
     </script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
@@ -2169,14 +2420,11 @@
         #aon-consent button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
     </style>
     <div id="aon-consent" role="dialog" aria-live="polite" aria-label="Cookie">
-        <p>
-            Questo sito usa cookie di misurazione per capire come viene usato.
-            Nessun cookie viene installato senza il tuo consenso.
-            <a href="/privacy">Informativa</a>
-        </p>
+        <p><span id="consentText">Questo sito usa cookie di misurazione per capire come viene usato.
+            Nessun cookie viene installato senza il tuo consenso. </span><a href="/privacy" id="consentLink">Informativa</a></p>
         <div class="aon-row">
-            <button type="button" class="aon-accept" data-consent="granted">Accetta</button>
-            <button type="button" data-consent="denied">Rifiuta</button>
+            <button type="button" class="aon-accept" data-consent="granted" id="consentAccept">Accetta</button>
+            <button type="button" data-consent="denied" id="consentReject">Rifiuta</button>
         </div>
     </div>
     <script>
