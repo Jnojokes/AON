@@ -45,6 +45,12 @@ da incollare nel pannello admin: nessun deploy.
 **Procedura completa in [`SETUP-TALLY.md`](SETUP-TALLY.md)** — creazione
 account, campi, tema, notifiche, ID. Circa 15 minuti.
 
+> ⚠️ **Limite del piano gratuito, verificato con un invio di prova:** il campo
+> destinatario delle notifiche **non è modificabile**. Tally memorizza il valore
+> ma lo ignora, e manda sempre all'email dell'account. Perché le richieste
+> arrivino ad Andrea, **l'account Tally deve essere il suo** — oppure si torna al
+> modulo interno del sito (§1.3-bis). Dettagli in `SETUP-TALLY.md` §4.
+
 Due punti che vanno decisi, non subiti:
 - **Chi possiede l'account.** Meglio Andrea (`video@andreaonori.com`): è lui il
   Titolare del trattamento nell'informativa, e i dati dei suoi clienti stanno
@@ -207,7 +213,17 @@ Il tag è installato e i dati arrivano.
 Il problema **non è il codice**: gli eventi ci sono e sono ben fatti. È che nella
 console GA4 sono quasi tutti invisibili.
 
-### 2.1 Registrare le 12 dimensioni personalizzate — procedura esatta
+### 2.1 ✅ Le 12 dimensioni personalizzate — registrate il 3 settembre 2026
+
+> **Da verificare una volta sola:** un nome di parametro sbagliato non produce
+> alcun errore, la dimensione resta semplicemente vuota per sempre. Il controllo
+> si fa in **Esplora → Esplorazione libera**, aggiungendo *Titolo progetto* come
+> dimensione: dopo 24-48 ore dalla registrazione deve mostrare i titoli reali dei
+> progetti e non `(not set)`.
+>
+> I nomi corretti sono quelli della tabella qui sotto, colonna *Parametro*.
+
+Procedura originale, conservata come riferimento:
 
 In GA4 **un parametro evento non registrato non compare in nessun report**.
 `project_title` viene raccolto da settimane ma oggi non è interrogabile: un

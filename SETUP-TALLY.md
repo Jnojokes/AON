@@ -98,27 +98,43 @@ del testo vanno impostati qui: senza, si vedrebbe testo scuro su fondo scuro.
 
 ---
 
-## 4. Attivare le notifiche via email
+## 4. Le notifiche via email — e un limite del piano gratuito
 
-Senza questo passaggio le richieste arrivano **solo** nel cruscotto Tally, e
-Andrea dovrebbe ricordarsi di controllarlo. Va fatto.
+Senza notifiche le richieste arrivano **solo** nel cruscotto Tally, e bisogna
+ricordarsi di controllarlo. Le notifiche vanno quindi attivate:
 
-**Settings** (in alto nell'editor) → scorri fino a **Email notifications**:
+**Icona ⚙ in alto** (nell'editor del modulo, a sinistra di *Customize*) → scorri
+fino a **Email notifications** → attiva **Self email notifications**.
 
-| Campo | Valore |
-|---|---|
-| **To** | `video@andreaonori.com` |
-| **Subject** | `Nuova richiesta dal sito — {{Nome}}` |
-| **From name** | `Sito Andrea Onori` |
+> ⚠️ **VERIFICATO IL 3 SETTEMBRE 2026 — il destinatario NON è modificabile sul
+> piano gratuito.**
+>
+> I campi *To*, *Subject* e *From name* esistono e si compilano, e l'API li
+> memorizza anche — ma **Tally li ignora**: la personalizzazione delle email è
+> una funzione Pro. Le notifiche arrivano sempre all'email dell'account, con
+> oggetto e mittente predefiniti.
+>
+> Lo abbiamo scoperto con un invio di prova: pur avendo impostato
+> `selfEmailTo = video@andreaonori.com`, l'email è arrivata a
+> `n.bartoli@blulang.co` con oggetto «New Tally Form Submission for…» e mittente
+> «Tally Forms».
+>
+> **Conseguenza:** l'unico modo gratuito perché le richieste arrivino ad Andrea è
+> che **l'account Tally sia il suo**. Non è più una preferenza organizzativa
+> (punto 0): è l'unica configurazione che funziona.
 
-Il destinatario predefinito è l'email dell'account: se l'account è intestato
-all'agenzia, **questo campo va cambiato**, altrimenti Andrea non riceve nulla.
+### Come far arrivare le richieste ad Andrea
 
-> La risposta automatica a chi invia (*Respondent email notifications*) è una
-> funzione **Pro**, a pagamento. Non è necessaria: il sito mostra già una
-> conferma a schermo dopo l'invio.
+| Opzione | Costo | Note |
+|---|---|---|
+| **Cambiare l'email dell'account** in `video@andreaonori.com` (*Settings → My account → Change email*), impostare una password e consegnarla | gratis | **Consigliata.** Le notifiche seguono l'account. Chi la esegue perde l'accesso, che alla consegna è corretto. |
+| Tally Pro | a pagamento | Sblocca il campo *To*. Sproporzionato per cambiare un destinatario. |
+| Inoltro automatico dalla casella dell'agenzia | gratis | Funziona, ma tiene l'agenzia dentro la corrispondenza commerciale di Andrea a tempo indeterminato. |
+| Tornare al modulo interno del sito | gratis | Svuotare `tallyId` nel pannello e impostare `SMTP_USER`/`SMTP_PASS` su Vercel (vedi `CONSEGNA.md` §1.3-bis). L'email parte dalla casella di Andrea e arriva direttamente a lui, con `Reply-To` su chi ha scritto e senza il badge «Made with Tally». |
 
----
+> In ogni caso le richieste restano archiviate **nel cruscotto dell'account
+> Tally**: l'email è solo una notifica. Trasferire l'account è anche ciò che
+> sposta i dati dalla parte giusta.
 
 ## 5. Pubblicare e prendere l'ID
 
