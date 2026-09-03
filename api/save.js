@@ -23,7 +23,72 @@
 //    GITHUB_BRANCH    (optional)  defaults to "main"
 // =============================================================================
 
+import { timingSafeEqual } from "node:crypto";
+
 const GH_API = "https://api.github.com";
+
+// --- Brute-force protection --------------------------------------------------
+//  /api/save è l'unica porta d'ingresso al repo: una password indovinata vale
+//  Contents: Read+Write. Il pannello, per validare il login, manda una POST con
+//  action "__ping" — comodo per l'utente, comodo anche per chi prova password a
+//  raffica, perché fallisce senza effetti collaterali.
+//
+//  Il contatore vive nella memoria dell'istanza serverless. Su Vercel questo
+//  copre le raffiche da una singola istanza calda, che è esattamente la forma
+//  che ha un attacco automatizzato; NON è una difesa distribuita. Se un giorno
+//  servisse davvero, la sede giusta è Vercel Firewall o un KV store — non
+//  questo file.
+const RL_WINDOW_MS = 15 * 60 * 1000; // 15 minuti
+const RL_MAX_FAILS = 10;             // tentativi falliti tollerati per IP
+const rlFails = new Map();           // ip -> { count, first }
+
+function clientIp(req) {
+  const fwd = req.headers["x-forwarded-for"];
+  if (typeof fwd === "string" && fwd) return fwd.split(",")[0].trim();
+  return req.headers["x-real-ip"] || req.socket?.remoteAddress || "unknown";
+}
+
+// Scade le finestre chiuse e tiene la Map piccola: senza questo, un'istanza
+// calda a lungo accumulerebbe una entry per ogni IP visto.
+function rlSweep(now) {
+  for (const [ip, rec] of rlFails) {
+    if (now - rec.first > RL_WINDOW_MS) rlFails.delete(ip);
+  }
+}
+
+function rlCheck(ip) {
+  const now = Date.now();
+  if (rlFails.size > 500) rlSweep(now);
+  const rec = rlFails.get(ip);
+  if (!rec || now - rec.first > RL_WINDOW_MS) return { blocked: false };
+  if (rec.count >= RL_MAX_FAILS) {
+    return {
+      blocked: true,
+      retryAfter: Math.ceil((RL_WINDOW_MS - (now - rec.first)) / 1000),
+    };
+  }
+  return { blocked: false };
+}
+
+function rlFail(ip) {
+  const now = Date.now();
+  const rec = rlFails.get(ip);
+  if (!rec || now - rec.first > RL_WINDOW_MS) rlFails.set(ip, { count: 1, first: now });
+  else rec.count += 1;
+}
+
+function rlReset(ip) {
+  rlFails.delete(ip);
+}
+
+// Confronto a tempo costante: con !== il tempo di risposta dipende da quanti
+// caratteri iniziali coincidono, il che si misura da remoto.
+function samePassword(given, expected) {
+  const a = Buffer.from(String(given ?? ""), "utf8");
+  const b = Buffer.from(String(expected ?? ""), "utf8");
+  if (a.length !== b.length) return false;   // la lunghezza trapela comunque
+  return timingSafeEqual(a, b);
+}
 
 function cfg() {
   return {
@@ -97,6 +162,27 @@ function safeName(name) {
   return `${base}-${stamp}.${ext || "jpg"}`;
 }
 
+// Un Origin estraneo significa che la richiesta parte dalla pagina di qualcun
+// altro. La password nel body rende il CSRF classico impossibile (il browser
+// non la conoscerebbe), ma senza questo controllo una pagina malevola potrebbe
+// usare i propri visitatori come rete distribuita per provare password,
+// aggirando il rate limit per IP. Origin assente (curl, server-to-server) non
+// viene bloccato: li' la password resta l'unica difesa, ed e' voluto.
+function originAllowed(req) {
+  const origin = req.headers.origin;
+  if (!origin) return true;
+  let host;
+  try {
+    host = new URL(origin).hostname;
+  } catch {
+    return false;
+  }
+  if (host === "localhost" || host === "127.0.0.1") return true;
+  if (host.endsWith(".vercel.app")) return true;          // deploy di preview
+  const self = String(req.headers.host || "").split(":")[0];
+  return Boolean(self) && (host === self || host.endsWith("." + self));
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -130,9 +216,31 @@ export default async function handler(req, res) {
   body = body || {};
 
   // --- Auth -----------------------------------------------------------------
-  if (!body.password || body.password !== c.adminPassword) {
+  const ip = clientIp(req);
+
+  if (!originAllowed(req)) {
+    console.error(`[auth] blocked origin=${req.headers.origin} ip=${ip}`);
+    return res.status(403).json({ error: "Origine non consentita" });
+  }
+
+  const rl = rlCheck(ip);
+  if (rl.blocked) {
+    console.error(`[auth] rate-limited ip=${ip} action=${body.action || "?"}`);
+    res.setHeader("Retry-After", String(rl.retryAfter));
+    return res.status(429).json({
+      error:
+        "Troppi tentativi falliti. Riprova tra qualche minuto: per sicurezza l'accesso e' temporaneamente bloccato.",
+    });
+  }
+
+  if (!samePassword(body.password, c.adminPassword)) {
+    rlFail(ip);
+    // Traccia del tentativo fallito nei log Vercel. Non registra mai la
+    // password provata: serve sapere che e' successo e da dove, non cosa.
+    console.error(`[auth] failed ip=${ip} action=${body.action || "?"}`);
     return res.status(401).json({ error: "Non autorizzato" });
   }
+  rlReset(ip);
 
   try {
     // --- Upload a single image -------------------------------------------

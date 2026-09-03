@@ -57,11 +57,15 @@ const SITE = {
   // LocalBusiness/ProfessionalService è collocato solo dal testo dell'indirizzo.
   geo: { lat: 45.4642, lon: 9.19 },
   since: '2018',
+  // P. IVA: l'art. 7 del D.Lgs. 70/2003 la vuole facilmente accessibile.
+  // Stava solo dentro l'informativa privacy; ora e' anche nel footer.
+  vat: '02491850448',
   avatar: '/andrea.jpg',
   ogImage: '/media/og-cover.jpg',
-  // Le testate citate sono quelle già dichiarate nell'header del sito
-  // ("SELECTED BY VOGUE ITALIA · NUMÉRO · DOMUS"). Da confermare col cliente
-  // prima di trattarle come fatto verificato nei dati strutturati.
+  // Testate confermate dal cliente (settembre 2026). Compaiono nell'header del
+  // sito, nella bio e nei dati strutturati: sono un segnale E-E-A-T, quindi la
+  // fonte di verita' e' settings.seo.bio dal pannello e questo resta il
+  // fallback se la bio venisse svuotata.
   published: ['Vogue Italia', 'Numéro', 'Domus'],
   disciplines: [
     'Fashion Photography',
@@ -95,6 +99,21 @@ const altOf = (p) =>
   [p.title, p.film, p.location || p.loc, p.year].filter(Boolean).join(' — ');
 
 const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
+
+/** Ricava un titolo leggibile dal nome del file. Serve dove il pannello non
+ *  fornisce un titolo: meglio "GRETA STORYBOARD" che "Motion frame 03".
+ *  Scarta il suffisso base-36 che il CMS aggiunge agli upload
+ *  ("greta-storyboard-story-final-mqunwp71.jpeg" -> "GRETA STORYBOARD STORY FINAL"). */
+const titleFromFilename = (src) => {
+  if (!src) return '';
+  const base = String(src).split('/').pop().replace(/\.[a-z0-9]+$/i, '');
+  const words = base
+    .split(/[-_]+/)
+    .filter((w) => w && !/^m[a-z0-9]{7,}$/i.test(w) && !/^\d+$/.test(w))
+    .filter((w) => !['story', 'final'].includes(w.toLowerCase()) || true);
+  if (!words.length) return '';
+  return words.join(' ').toUpperCase();
+};
 
 /** media.json ammette stringhe o oggetti; qui serve solo l'immagine di copertina. */
 const coverOf = (item) => {
@@ -260,7 +279,14 @@ ${motion.length ? `            <section class="pf-section" aria-labelledby="pf-m
 ${motion
   .map((m, i) => {
     const cover = coverOf(m);
-    const title = (typeof m === 'object' && m.title) || `Motion frame ${String(i + 1).padStart(2, '0')}`;
+    // Se il pannello non da' un titolo, si ricava dal nome del file: quasi
+    // sempre contiene il progetto ("story-greta.png" -> "GRETA"). Un alt come
+    // "Motion frame 03" non dice nulla ne' a un motore ne' a chi usa uno
+    // screen reader; il nome del file, almeno, e' informazione vera.
+    const title =
+      (typeof m === 'object' && m.title) ||
+      titleFromFilename(cover) ||
+      `Motion frame ${String(i + 1).padStart(2, '0')}`;
     return `            <article class="pf-item">
               ${cover ? `<img src="${esc(abs(cover))}" alt="${esc(title)} — motion still by ${esc(SITE.name)}, ${esc(SITE.city)}" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">` : ''}
               <h3>${esc(title)}</h3>
@@ -288,12 +314,15 @@ ${indexList
 
           <footer class="pf-footer">
             <p>© ${new Date().getFullYear()} ${esc(SITE.name)} — Studio ${esc(SITE.city)}, Italy</p>
+            <p>P. IVA ${esc(SITE.vat)}</p>
             <p>
               <a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a>
               <span aria-hidden="true"> · </span>
               <a href="${esc(SITE.instagram)}" rel="me noopener" target="_blank">${esc(SITE.instagramHandle)}</a>
               <span aria-hidden="true"> · </span>
               <a href="/privacy">Privacy &amp; Cookie Policy</a>
+              <span aria-hidden="true"> · </span>
+              <a href="/note-legali">Note legali</a>
             </p>
           </footer>
         </div>`;
@@ -422,8 +451,11 @@ for (const title of projectTitles) {
     '@type': 'Photograph',
     '@id': `${SITE.origin}/#work-${encodeURIComponent(title.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, ''))}`,
     name: title,
+    // Solo creator, non copyrightHolder: la paternita' dello scatto e' sempre di
+    // Andrea, la titolarita' dei diritti economici sul lavoro commissionato e'
+    // spesso ceduta al brand per contratto. Dichiararla a macchina su ogni opera
+    // sarebbe un'affermazione che il sito non puo' sostenere.
     creator: { '@id': personId },
-    copyrightHolder: { '@id': personId },
     isPartOf: { '@id': siteId },
   };
   const year = entries.map((e) => e.year).find(Boolean);
@@ -437,9 +469,8 @@ for (const title of projectTitles) {
       '@type': 'ImageObject',
       contentUrl: abs(cover),
       creator: { '@id': personId },
-      copyrightHolder: { '@id': personId },
       creditText: SITE.name,
-      license: SITE.origin + '/',
+      license: SITE.origin + '/note-legali',
     };
   }
   // Spunta "Contenuto Enhanced con AI" nel pannello. Dichiararla nei dati
@@ -478,9 +509,8 @@ for (const p of [...feed, ...indexList]) {
     contentUrl: url,
     name: altOf(p) || p.title || '',
     creator: { '@id': personId },
-    copyrightHolder: { '@id': personId },
     creditText: SITE.name,
-    license: SITE.origin + '/',
+    license: SITE.origin + '/note-legali',
     additionalProperty: AI_PROPERTY,
   });
 }
@@ -499,9 +529,15 @@ ${JSON.stringify(jsonLd, null, 2).replace(/</g, '\\u003c').split('\n').map((l) =
 // esegue JavaScript. Nessuno vede una versione della pagina che gli altri non
 // possono vedere: è la differenza fra testo fuori schermo e cloaking.
 
-const seoBioBlock = `    <section class="visually-hidden" id="aon-seo-bio" aria-label="About ${esc(SITE.name)}">
+// Blocco di riferimento fuori da #root. NON contiene piu' la bio: quella e' ora
+// resa visibile dal componente <About/> in index.html, dallo stesso
+// settings.seo.bio. Prima le frasi vivevano solo qui, clippate a 1x1px, quindi
+// leggibili dai crawler e da nessun visitatore — testo nascosto a tutti gli
+// effetti. Qui restano solo dati di riferimento gia' visibili altrove nella
+// pagina (contatti nel footer, progetti nelle griglie): un riepilogo compatto
+// per i crawler che non eseguono JS, non contenuto esclusivo.
+const seoBioBlock = `    <section class="visually-hidden" id="aon-seo-bio" aria-label="Reference — ${esc(SITE.name)}">
       <h2>${esc(SITE.name)} — ${esc(SITE.role)}, ${esc(SITE.city)}, Italy</h2>
-${aboutSentences.map((s) => `      <p>${esc(s)}</p>`).join('\n')}
       <p>Contact: <a href="mailto:${esc(SITE.email)}">${esc(SITE.email)}</a> · <a href="${esc(SITE.instagram)}" rel="me noopener">${esc(SITE.instagramHandle)}</a></p>
       <p>Disciplines: ${esc(SITE.disciplines.join(', '))}.</p>
 ${projectTitles.length ? `      <p>Projects: ${esc(projectTitles.join(', '))}.</p>` : ''}
@@ -538,7 +574,24 @@ const titleForImage = (src) => {
   const hit = [...feed, ...indexList].find(
     (p) => coverOf(p) === src || (p.images || []).map(coverOf).includes(src)
   );
-  return hit ? altOf(hit) : `${SITE.name} — ${SITE.city}`;
+  if (hit) return altOf(hit);
+
+  // Le slide delle serie e i motion non stanno in feed/indexList: prima
+  // cadevano tutte sul generico "Andrea Onori — Milan", 19 immagini su 49.
+  // Un titolo ripetuto identico su decine di immagini non aiuta Google Images.
+  const serie = series.find(
+    (s) => coverOf(s) === src || (s.images || []).map(coverOf).includes(src)
+  );
+  if (serie && serie.label) return `${serie.label} — series by ${SITE.name}, ${SITE.city}`;
+
+  const mo = motion.find((m) => coverOf(m) === src);
+  if (mo) {
+    const t = (typeof mo === 'object' && mo.title) || titleFromFilename(src);
+    if (t) return `${t} — motion still by ${SITE.name}, ${SITE.city}`;
+  }
+
+  const guess = titleFromFilename(src);
+  return guess ? `${guess} — ${SITE.name}, ${SITE.city}` : `${SITE.name} — ${SITE.city}`;
 };
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -558,6 +611,10 @@ ${sitemapImages
   </url>
   <url>
     <loc>${SITE.origin}/privacy</loc>
+    <lastmod>${lastmod}</lastmod>
+  </url>
+  <url>
+    <loc>${SITE.origin}/note-legali</loc>
     <lastmod>${lastmod}</lastmod>
   </url>
 </urlset>

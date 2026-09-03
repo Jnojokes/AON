@@ -17,3 +17,19 @@ node_modules/
 
 # Vercel
 .vercel/
+
+# Cartella di lavoro: originali ad alta risoluzione dei clienti.
+# Non è un asset del sito (escluso anche da .vercelignore e robots.txt) e non
+# deve stare in un repository, tantomeno pubblico.
+POST/
+
+# Segreti: mai committare env locali.
+.env
+.env.*
+!.env.example
+
+# Artefatti della guida: gli screenshot si rigenerano con `npm run guide:shots`
+# e il PDF con `npm run guide:pdf`. Tenere binari in un repo di testo li fa
+# solo crescere a ogni rigenerazione.
+scripts/guide/shots/
+Guida-Pannello-Admin-AON.pdf

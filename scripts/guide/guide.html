@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Guida al pannello admin — Andrea Onori</title>
+<link rel="stylesheet" href="/fonts/fonts.css">
+<style>
+  :root{
+    --ink:#111; --mute:#5b5b5b; --line:#dcdcdc; --accent:#d9401a;
+    --paper:#fff; --panel:#f6f5f3;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:var(--paper);color:var(--ink);font-family:'Bricolage Grotesque',sans-serif;font-size:10.5pt;line-height:1.55}
+  .mono{font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+  @page{size:A4;margin:16mm 15mm 18mm}
+  /* Ogni capitolo inizia su una pagina nuova, ma il contenuto poi SCORRE.
+     Con page-break-after su ogni sezione, un capitolo lungo un filo piu' di una
+     pagina lasciava la pagina successiva quasi vuota. */
+  .page{break-before:page}
+  .page:first-of-type{break-before:auto}
+  h2,h3{break-after:avoid}
+  h3+p,h3+ul,h3+ol,h3+table{break-before:avoid}
+  p,li{orphans:2;widows:2}
+  h1{font-family:'Archivo Black',sans-serif;font-size:34pt;line-height:.95;text-transform:uppercase;letter-spacing:-.01em}
+  h2{font-family:'Archivo Black',sans-serif;font-size:17pt;text-transform:uppercase;margin:0 0 10pt;padding-bottom:5pt;border-bottom:2px solid var(--ink)}
+  h3{font-size:11pt;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin:16pt 0 5pt;color:var(--ink)}
+  h4{font-size:10pt;font-weight:600;margin:11pt 0 3pt}
+  p{margin-bottom:7pt;color:#2a2a2a}
+  ul,ol{margin:0 0 8pt 16pt}
+  li{margin-bottom:4pt;color:#2a2a2a}
+  strong{font-weight:600;color:#000}
+  code{font-family:'JetBrains Mono',monospace;font-size:8.5pt;background:var(--panel);padding:1px 4px;border-radius:2px;color:#000}
+  a{color:var(--ink)}
+  /* Le schermate sono 16:10: a piena larghezza colonna occupano ~112 mm di
+     altezza, e due per capitolo bastano a spingere il testo finale su una
+     pagina quasi vuota. Ridotte e centrate restano perfettamente leggibili in
+     stampa e liberano circa un terzo dell'altezza. */
+  figure{margin:9pt auto 12pt;break-inside:avoid;max-width:134mm}
+  figure.wide{max-width:none}
+  figure img{width:100%;display:block;border:1px solid var(--line)}
+  figcaption{font-family:'JetBrains Mono',monospace;font-size:7.5pt;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-top:5pt}
+  figcaption b{color:var(--accent);font-weight:400}
+  table{width:100%;border-collapse:collapse;margin:8pt 0 12pt;font-size:9pt;break-inside:avoid}
+  th,td{text-align:left;padding:5pt 7pt;border-bottom:1px solid var(--line);vertical-align:top;color:#2a2a2a}
+  th{font-family:'JetBrains Mono',monospace;font-size:7.5pt;letter-spacing:.1em;text-transform:uppercase;color:#000;border-bottom:1.5px solid var(--ink)}
+  .box{background:var(--panel);border-left:3px solid var(--ink);padding:9pt 12pt;margin:10pt 0;break-inside:avoid}
+  .box.warn{border-left-color:var(--accent);background:#fdf1ee}
+  .box p:last-child{margin-bottom:0}
+  .box .lbl{font-family:'JetBrains Mono',monospace;font-size:7.5pt;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:4pt;display:block}
+  .box.plain .lbl{color:var(--ink)}
+  .cover{height:255mm;display:flex;flex-direction:column;justify-content:space-between}
+  .cover .top{margin-top:38mm}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:8.5pt;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:10pt}
+  .cover .sub{font-size:12pt;color:var(--mute);margin-top:12pt;max-width:110mm;line-height:1.5}
+  .cover .foot{font-family:'JetBrains Mono',monospace;font-size:8pt;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border-top:1px solid var(--line);padding-top:8pt}
+  .toc{list-style:none;margin-left:0}
+  .toc li{display:flex;gap:8pt;align-items:baseline;border-bottom:1px dotted var(--line);padding:5pt 0;margin:0}
+  .toc .n{font-family:'JetBrains Mono',monospace;font-size:8.5pt;color:var(--accent);min-width:20pt}
+  .toc .t{font-weight:600}
+  .toc .d{margin-left:auto;font-size:8.5pt;color:var(--mute);text-align:right;max-width:82mm}
+  .steps{counter-reset:s;list-style:none;margin-left:0}
+  .steps>li{counter-increment:s;position:relative;padding-left:22pt;margin-bottom:8pt}
+  .steps>li::before{content:counter(s);position:absolute;left:0;top:0;font-family:'JetBrains Mono',monospace;font-size:8.5pt;color:#fff;background:var(--ink);width:15pt;height:15pt;display:flex;align-items:center;justify-content:center}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12pt}
+  .two figure{max-width:none;margin:9pt 0 12pt}
+  .kbd{font-family:'JetBrains Mono',monospace;font-size:8.5pt;border:1px solid var(--line);border-bottom-width:2px;padding:1px 5px;border-radius:3px;background:#fff}
+  .lede{font-size:11.5pt;color:var(--mute);margin-bottom:12pt;line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ COPERTINA ══════════════════ -->
+<section class="page cover">
+  <div class="top">
+    <div class="eyebrow">Andrea Onori · andreaonori.com</div>
+    <h1>Guida al<br>pannello<br>admin</h1>
+    <p class="sub">Come cambiare le foto, i testi e l'ordine dei progetti sul tuo sito, senza toccare una riga di codice e senza dover chiedere a nessuno.</p>
+  </div>
+  <div class="foot">Versione 1.0 · Settembre 2026</div>
+</section>
+
+<!-- ══════════════════ INDICE ══════════════════ -->
+<section class="page">
+  <h2>Indice</h2>
+  <ul class="toc">
+    <li><span class="n">01</span><span class="t">In due minuti</span><span class="d">Cosa fa il pannello e come arriva online una modifica</span></li>
+    <li><span class="n">02</span><span class="t">Entrare</span><span class="d">Indirizzo, utente, password e i messaggi d'errore</span></li>
+    <li><span class="n">03</span><span class="t">Le cinque sezioni</span><span class="d">FEED, MOTION, SERIES, INDEX, IMPOSTAZIONI</span></li>
+    <li><span class="n">04</span><span class="t">Le operazioni di tutti i giorni</span><span class="d">Aggiungere, caricare, riordinare, eliminare, salvare</span></li>
+    <li><span class="n">05</span><span class="t">I video</span><span class="d">Perché non si caricano qui e come si collegano</span></li>
+    <li><span class="n">06</span><span class="t">Le regole d'oro</span><span class="d">Proporzioni, pesi, campi da non toccare</span></li>
+    <li><span class="n">07</span><span class="t">Quando qualcosa non va</span><span class="d">Ogni messaggio d'errore e cosa fare</span></li>
+    <li><span class="n">08</span><span class="t">Rimediare a un errore</span><span class="d">Non c'è annulla: ecco come si torna indietro</span></li>
+  </ul>
+
+</section>
+
+<section class="page">
+  <h2>01 · In due minuti</h2>
+  <p class="lede">Tutto il contenuto del sito — foto, titoli, anni, luoghi, perfino le scritte dei pulsanti — vive in un unico posto. Il pannello è la finestra su quel posto.</p>
+
+  <h3>Cosa puoi fare</h3>
+  <ul>
+    <li>Aggiungere, togliere e riordinare le foto e i progetti.</li>
+    <li>Cambiare titoli, anni, luoghi e formati.</li>
+    <li>Collegare i video ospitati sullo storage esterno.</li>
+    <li>Riscrivere praticamente ogni testo del sito, comprese le etichette dei pulsanti.</li>
+  </ul>
+
+  <h3>Cosa non puoi fare (e va bene così)</h3>
+  <ul>
+    <li>Cambiare la grafica, i colori o la disposizione degli elementi.</li>
+    <li>Aggiungere pagine nuove.</li>
+    <li>Caricare video direttamente: vanno sullo storage esterno, vedi capitolo 05.</li>
+  </ul>
+
+  <h3>Come arriva online una modifica</h3>
+  <ol class="steps">
+    <li>Modifichi qualcosa nel pannello. In alto compare <strong>● modifiche non salvate</strong>.</li>
+    <li>Premi <strong>Salva tutto</strong>.</li>
+    <li>Il sito si ripubblica da solo. Dopo circa <strong>20 secondi</strong> ricarichi andreaonori.com e la modifica è lì.</li>
+  </ol>
+  <div class="box warn">
+    <span class="lbl">Da ricordare</span>
+    <p>Finché non premi <strong>Salva tutto</strong>, sul sito non cambia nulla. E se chiudi la scheda senza salvare, le modifiche si perdono: il browser ti avvisa prima di lasciarti uscire.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ 02 ACCESSO ══════════════════ -->
+<section class="page">
+  <h2>02 · Entrare</h2>
+  <p>Il pannello sta all'indirizzo <code>andreaonori.com/admin-edits</code>. Non è raggiungibile da nessun link del sito ed è escluso da Google: ci si arriva solo scrivendo l'indirizzo.</p>
+
+  <figure>
+    <img src="/scripts/guide/shots/01-login-vuoto.jpg" alt="Schermata di accesso del pannello">
+    <figcaption>La schermata di accesso. L'utente è sempre <b>admin</b>; la password è quella che ti è stata consegnata.</figcaption>
+  </figure>
+
+  <ol class="steps">
+    <li>Nel campo <strong>Utente</strong> scrivi <code>admin</code>. È sempre questo e non si può cambiare.</li>
+    <li>Nel campo <strong>Password</strong> scrivi la tua password.</li>
+    <li>Premi <strong>Entra</strong>.</li>
+  </ol>
+
+  <figure>
+    <img src="/scripts/guide/shots/02-login-errore.jpg" alt="Messaggio di password errata">
+    <figcaption>Password sbagliata. Il messaggio compare in arancione sotto i campi.</figcaption>
+  </figure>
+
+  <h3>Se non entri</h3>
+  <table>
+    <thead><tr><th style="width:44%">Messaggio</th><th>Cosa significa</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Utente non valido.</strong></td><td>Nel primo campo c'è scritto qualcosa di diverso da <code>admin</code>.</td></tr>
+      <tr><td><strong>Password errata.</strong></td><td>La password non è quella giusta. Attenzione alle maiuscole.</td></tr>
+      <tr><td><strong>Troppi tentativi falliti.</strong></td><td>Per sicurezza l'accesso si blocca dopo dieci tentativi sbagliati. Aspetta un quarto d'ora e riprova.</td></tr>
+      <tr><td><strong>Non riesco a contattare /api/save…</strong></td><td>Non è un problema di password: il sito non risponde. Riprova tra poco; se persiste, va segnalato a chi gestisce il sito.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box">
+    <span class="lbl">Nessun logout, nessuna scadenza</span>
+    <p>Non c'è un pulsante per uscire, e non serve: la sessione vive solo finché tieni aperta quella scheda. <strong>Se ricarichi la pagina o la chiudi, devi rientrare con la password</strong> — e le modifiche non salvate se ne vanno con lei. Anche il pulsante <strong>Sito</strong> in alto ti porta fuori: usalo solo dopo aver salvato.</p>
+  </div>
+</section>
+
+<!-- ══════════════════ 03 SEZIONI ══════════════════ -->
+<section class="page">
+  <h2>03 · Le cinque sezioni</h2>
+  <p class="lede">Appena entri vedi cinque schede in alto. Ognuna governa una parte precisa del sito. Il numerino accanto al nome dice quanti elementi contiene.</p>
+
+  <figure>
+    <img src="/scripts/guide/shots/03-panoramica-feed.jpg" alt="Il pannello aperto sulla sezione FEED">
+    <figcaption>Il pannello aperto su <b>FEED</b>. In alto le cinque schede; ogni riquadro è un progetto.</figcaption>
+  </figure>
+
+  <table>
+    <thead><tr><th style="width:22%">Sezione</th><th>Cosa governa sul sito</th></tr></thead>
+    <tbody>
+      <tr><td><strong>FEED</strong></td><td>La griglia principale, quella che si vede appena si apre il sito. Ogni riquadro è un progetto e può contenere più foto: la prima è la copertina, le altre si sfogliano cliccando.</td></tr>
+      <tr><td><strong>MOTION</strong></td><td>I reel verticali. Una copertina più, se c'è, il collegamento al video.</td></tr>
+      <tr><td><strong>SERIES</strong></td><td>Le storie in evidenza, quelle nei cerchi. Ogni serie è una cartella di immagini che si sfogliano come le storie di Instagram.</td></tr>
+      <tr><td><strong>INDEX</strong></td><td>L'elenco numerato in fondo alla pagina.</td></tr>
+      <tr><td><strong>IMPOSTAZIONI</strong></td><td>Tutti i testi del sito. Nessuna foto: solo parole.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>FEED — i campi di ogni progetto</h3>
+  <table>
+    <thead><tr><th style="width:26%">Campo</th><th>Dove finisce</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Media del post</strong></td><td>Le foto. <strong>La prima è la copertina</strong> e si riconosce dall'etichetta arancione <code>COVER</code>.</td></tr>
+      <tr><td><strong>Titolo</strong></td><td>Il nome del progetto, sotto la foto nella griglia e in cima alla scheda.</td></tr>
+      <tr><td><strong>Anno</strong></td><td>In basso a destra sulla foto.</td></tr>
+      <tr><td><strong>Luogo</strong></td><td>Sopra l'anno.</td></tr>
+      <tr><td><strong>Pellicola / Formato</strong></td><td>La riga grigia sopra il titolo. Testo libero: la convenzione è <code>CATEGORIA — DETTAGLIO</code>.</td></tr>
+      <tr><td><strong>Contenuto Enhanced con AI</strong></td><td>Se spuntata, sul sito appare il marchio <code>◇ AI</code>. Oggi non è spuntata da nessuna parte: lasciala così finché non pubblichi qualcosa realizzato con l'IA.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="page">
+  <div class="two">
+    <figure><img src="/scripts/guide/shots/05-tab-motion.jpg" alt="Sezione MOTION"><figcaption><b>MOTION</b> — reel verticali 9:16</figcaption></figure>
+    <figure><img src="/scripts/guide/shots/06-tab-series.jpg" alt="Sezione SERIES"><figcaption><b>SERIES</b> — le storie nei cerchi</figcaption></figure>
+  </div>
+  <div class="two">
+    <figure><img src="/scripts/guide/shots/07-tab-index.jpg" alt="Sezione INDEX"><figcaption><b>INDEX</b> — l'elenco numerato</figcaption></figure>
+    <figure><img src="/scripts/guide/shots/08-tab-impostazioni.jpg" alt="Sezione IMPOSTAZIONI"><figcaption><b>IMPOSTAZIONI</b> — tutti i testi del sito</figcaption></figure>
+  </div>
+
+</section>
+
+<section class="page">
+  <h2>IMPOSTAZIONI — il riquadro arancione</h2>
+  <p>In cima alle impostazioni c'è un campo bordato di arancione, <strong>Descrizione per SEO &amp; Motori AI</strong>. Merita una spiegazione perché è l'unico che si comporta diversamente da tutti gli altri.</p>
+
+  <figure>
+    <img src="/scripts/guide/shots/09-impostazioni-seo.jpg" alt="Il campo della descrizione per i motori di ricerca">
+    <figcaption>Il testo che non si vede sul sito ma che leggono Google e gli assistenti IA.</figcaption>
+  </figure>
+
+  <div class="box">
+    <span class="lbl">Come si scrive</span>
+    <p><strong>In terza persona</strong>: «Andrea Onori è un fotografo…», non «Sono un fotografo…». I modelli linguistici citano frasi isolate, e una frase che si regge da sola viene ripresa meglio.</p>
+    <p><strong>Frasi brevi e complete</strong>, una per riga. Ogni riga diventa un paragrafo.</p>
+    <p><strong>Metti i fatti</strong>: città, discipline, clienti, testate, contatto. Sono le informazioni che un assistente IA riporterà quando qualcuno chiederà di te.</p>
+  </div>
+  <p>Da settembre 2026 questo testo <strong>è anche visibile sul sito</strong>, in fondo alla pagina prima del footer. Quello che scrivi qui lo leggono sia le persone sia i motori: è un motivo in più per curarlo.</p>
+</section>
+
+<!-- ══════════════════ 04 OPERAZIONI ══════════════════ -->
+<section class="page">
+  <h2>04 · Le operazioni di tutti i giorni</h2>
+
+  <h3>Aggiungere un progetto</h3>
+  <p>Il pulsante <strong>+ Aggiungi</strong> sta in alto a destra, accanto al nome della sezione. Il nuovo elemento compare <strong>in fondo</strong> alla lista, vuoto, pronto da riempire.</p>
+  <div class="two">
+    <figure><img src="/scripts/guide/shots/10-bottone-aggiungi.jpg" alt="Il pulsante Aggiungi evidenziato"><figcaption>Il pulsante <b>+ Aggiungi</b></figcaption></figure>
+    <figure><img src="/scripts/guide/shots/11-elemento-aggiunto.jpg" alt="Nuovo elemento in fondo alla lista"><figcaption>Il nuovo riquadro, in fondo</figcaption></figure>
+  </div>
+
+  <h3>Caricare le foto</h3>
+  <p>Due modi, indifferenti:</p>
+  <ul>
+    <li><strong>Trascinale</strong> dal Finder direttamente sul riquadro delle immagini. Il bordo diventa arancione tratteggiato.</li>
+    <li>Oppure premi <strong>Scegli foto</strong> / <strong>+ Aggiungi foto</strong> e selezionale. Puoi selezionarne più di una insieme.</li>
+  </ul>
+  <div class="box warn">
+    <span class="lbl">Il limite: 3 MB per foto</span>
+    <p>Oltre quel peso il pannello rifiuta il file e te lo dice. Esporta a <strong>lato lungo 2000 px, qualità 80</strong>: è più che sufficiente per il web e il sito si apre molto più in fretta.</p>
+  </div>
+  <div class="box">
+    <span class="lbl">Attenzione, non è ovvio</span>
+    <p>Le foto vengono <strong>caricate subito</strong>, appena le trascini — prima e indipendentemente da <em>Salva tutto</em>. Quel pulsante serve a salvare <em>dove</em> le foto vanno e i testi che hai scritto, non le foto in sé.</p>
+  </div>
+
+  <h3>Riordinare</h3>
+  <ul>
+    <li><span class="kbd">↑</span> <span class="kbd">↓</span> in alto a destra di ogni riquadro spostano <strong>l'intero progetto</strong> nella lista.</li>
+    <li><span class="kbd">←</span> <span class="kbd">→</span> sotto ogni miniatura spostano <strong>una singola foto</strong> dentro il progetto. Ricorda: la prima è la copertina.</li>
+  </ul>
+  <p>Non si trascina per riordinare: il trascinamento serve solo a caricare le foto.</p>
+
+  <h3>Eliminare</h3>
+  <p>La <span class="kbd">✕</span> arancione elimina: quella in alto nel riquadro toglie l'intero progetto, quella sulla miniatura toglie una sola foto.</p>
+  <div class="box warn">
+    <span class="lbl">Non c'è conferma</span>
+    <p>Nessuna finestra che chiede «sei sicuro?»: quello che premi sparisce subito. Se è stato un errore, <strong>non salvare</strong> e ricarica la pagina: tutto torna com'era.</p>
+  </div>
+
+  <h3>Salvare</h3>
+  <figure>
+    <img src="/scripts/guide/shots/12-modifiche-non-salvate.jpg" alt="La barra in alto con l'indicatore di modifiche non salvate">
+    <figcaption>Appena tocchi qualcosa compare <b>● modifiche non salvate</b> e <b>Salva tutto</b> si accende.</figcaption>
+  </figure>
+  <figure>
+    <img src="/scripts/guide/shots/15-salvato.jpg" alt="Il messaggio verde di conferma del salvataggio">
+    <figcaption>Il messaggio verde di conferma. Da qui il sito si aggiorna da solo in una ventina di secondi.</figcaption>
+  </figure>
+</section>
+
+<!-- ══════════════════ 05 VIDEO ══════════════════ -->
+<section class="page">
+  <h2>05 · I video</h2>
+  <div class="box warn">
+    <span class="lbl">La regola</span>
+    <p><strong>I video non si caricano mai nel pannello.</strong> Restano sullo storage Aruba; qui si incolla solo il loro indirizzo. Se provi a trascinare un <code>.mp4</code>, il pannello lo rifiuta e te lo ricorda.</p>
+  </div>
+  <p>Il motivo è pratico: un video pesa quanto centinaia di foto. Tenendolo fuori, il sito resta leggero e il video parte solo quando qualcuno lo clicca.</p>
+
+  <ol class="steps">
+    <li><strong>Esporta e carica.</strong> MP4 (H.264 + AAC), 1080p, e caricalo sul tuo spazio Aruba. Un reel da 30 secondi dovrebbe stare in 5–15 MB: più è leggero, più parte subito.</li>
+    <li><strong>Prendi il link giusto.</strong> Sullo storage imposta il file come <strong>pubblico</strong> e copia il link diretto: deve finire in <code>.mp4</code> e, aperto in una scheda nuova, deve far partire il video. Se apre una pagina di anteprima o chiede il login, non è quello giusto.</li>
+    <li><strong>Incollalo</strong> nel campo <strong>Link video esterno</strong> e premi <strong>Verifica link</strong>. Se compare ✓ con durata e risoluzione, il sito lo riprodurrà.</li>
+    <li><strong>Metti una copertina.</strong> Trascina una foto nel riquadro (consigliato) oppure premi <strong>Copertina auto</strong>, che prova a estrarre un fotogramma dal video. Poi <strong>Salva tutto</strong>.</li>
+  </ol>
+
+  <h3>Se «Verifica link» dà errore</h3>
+  <table>
+    <thead><tr><th style="width:46%">Cosa dice</th><th>Cosa fare</th></tr></thead>
+    <tbody>
+      <tr><td>File non raggiungibile</td><td>Sullo storage il file non è pubblico. Cambia il permesso.</td></tr>
+      <tr><td>Il link non apre un file video diretto</td><td>Hai copiato il link della pagina di condivisione, non del file. Serve un indirizzo che finisca in <code>.mp4</code>.</td></tr>
+      <tr><td>Il browser non riesce a decodificare</td><td>Il formato non va bene: riesporta in MP4, H.264 + AAC.</td></tr>
+      <tr><td>usa https://</td><td>Il link è in <code>http://</code>. Su un sito sicuro i video in http vengono bloccati: serve <code>https://</code>.</td></tr>
+      <tr><td>Timeout</td><td>Lo storage non ha risposto in 20 secondi. File molto grande o server lento: riprova, e valuta di comprimere il video.</td></tr>
+    </tbody>
+  </table>
+  <p>Se <strong>Copertina auto</strong> non funziona non è un tuo errore: alcuni storage non permettono al browser di leggere il fotogramma. In quel caso trascina tu una foto come copertina.</p>
+</section>
+
+<!-- ══════════════════ 06 REGOLE ══════════════════ -->
+<section class="page">
+  <h2>06 · Le regole d'oro</h2>
+
+  <h3>Le proporzioni delle foto</h3>
+  <p>Le immagini vengono <strong>ritagliate</strong>, non rimpicciolite, per entrare nel loro spazio. Se il taglio ti sorprende, è per questo.</p>
+  <table>
+    <thead><tr><th style="width:26%">Sezione</th><th style="width:20%">Proporzione</th><th>In pratica</th></tr></thead>
+    <tbody>
+      <tr><td><strong>FEED</strong></td><td>4:5</td><td>Verticale, come un post Instagram</td></tr>
+      <tr><td><strong>MOTION</strong></td><td>9:16</td><td>Verticale pieno, come una storia</td></tr>
+      <tr><td><strong>SERIES</strong> — copertina</td><td>1:1 in cerchio</td><td>Il soggetto va al centro</td></tr>
+      <tr><td><strong>SERIES</strong> — slide</td><td>9:16</td><td>Come le storie</td></tr>
+    </tbody>
+  </table>
+
+  <h3>I campi da non toccare</h3>
+  <ul>
+    <li><strong>Il segnaposto <code>{TITLE}</code></strong> nell'oggetto dell'email di richiesta: viene sostituito con il nome del progetto. Se lo cancelli, l'oggetto resta generico.</li>
+    <li><strong>Il segnaposto <code>{SECTION}</code></strong> nel messaggio di sezione vuota: stessa logica.</li>
+    <li><strong>L'ID (slug)</strong> delle serie: può restare com'è. Se lo cambi, dev'essere diverso da quello di ogni altra serie.</li>
+    <li><strong>I testi del banner cookie</strong>: riformularli va bene, cancellarli no. È un obbligo di legge.</li>
+  </ul>
+
+  <div class="box warn">
+    <span class="lbl">Svuotare un campo lo cancella dal sito</span>
+    <p>Non esiste un «torna al valore predefinito». Se svuoti <strong>Email di contatto</strong>, il pulsante di contatto sparisce dalla scheda progetto. Se svuoti tutte le voci della barra scorrevole, la barra sparisce. È voluto — serve a poter togliere le cose — ma è utile saperlo.</p>
+  </div>
+
+  <h3>Piccole cose che fanno la differenza</h3>
+  <ul>
+    <li><strong>Comprimi le foto prima di caricarle.</strong> È la cosa che più incide sulla velocità del sito.</li>
+    <li><strong>Compila sempre titolo, luogo e anno.</strong> Finiscono nelle descrizioni che leggono Google e gli assistenti IA: un progetto senza titolo è un progetto che non verrà mai citato.</li>
+    <li><strong>Ricaricare la stessa foto ne crea una copia.</strong> Non è un problema, ma evita di farlo per abitudine.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════ 07 ERRORI ══════════════════ -->
+<section class="page">
+  <h2>07 · Quando qualcosa non va</h2>
+  <p class="lede">I messaggi compaiono in basso al centro: verdi se è andata bene, arancioni se c'è un problema. Quelli d'errore restano dodici secondi, così c'è tempo di leggerli.</p>
+
+  <table>
+    <thead><tr><th style="width:40%">Messaggio</th><th>Cosa fare</th></tr></thead>
+    <tbody>
+      <tr><td><strong>«…» pesa 4,2 MB: il limite dal pannello è 3 MB</strong></td><td>Comprimi la foto: lato lungo 2000 px, qualità 80.</td></tr>
+      <tr><td><strong>«…» è un video: i video non vanno caricati nel sito</strong></td><td>Caricalo su Aruba e incolla il link. Vedi capitolo 05.</td></tr>
+      <tr><td><strong>Trascina un file immagine (jpg, png, webp)</strong></td><td>Hai trascinato un file che non è una foto — spesso un PDF o un file di Photoshop.</td></tr>
+      <tr><td><strong>Password errata (401)</strong></td><td>La password è cambiata mentre eri dentro. Salva quello che puoi, ricarica, rientra.</td></tr>
+      <tr><td><strong>Rete non raggiungibile</strong></td><td>Manca la connessione. Le modifiche sono ancora lì: riconnettiti e ripremi <strong>Salva tutto</strong>.</td></tr>
+      <tr><td><strong>Errore di configurazione server (500)</strong></td><td>Non dipende da te: manca un'impostazione sul server. Va segnalato a chi gestisce il sito.</td></tr>
+      <tr><td><strong>GitHub ha rifiutato la scrittura (502)</strong></td><td>La chiave d'accesso è scaduta. Da segnalare: non è risolvibile dal pannello.</td></tr>
+      <tr><td><strong>File troppo grande per l'upload (413)</strong></td><td>Come sopra: comprimi la foto.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box warn">
+    <span class="lbl">Il caso da conoscere assolutamente</span>
+    <p>Se all'apertura compare <strong>«Impossibile caricare media.json»</strong>, il pannello non è riuscito a leggere i contenuti del sito e parte <strong>vuoto</strong>.</p>
+    <p><strong>In quel caso non premere Salva tutto.</strong> Salvare da uno stato vuoto svuoterebbe il sito. Chiudi la scheda e riprova più tardi.</p>
+  </div>
+
+  <h3>Se lavorate in due</h3>
+  <p>Il pannello non avvisa se qualcun altro sta modificando nello stesso momento: <strong>vince l'ultimo che salva</strong>. Se il sito è gestito da più di una persona, mettetevi d'accordo prima.</p>
+</section>
+
+<!-- ══════════════════ 08 RIMEDIARE ══════════════════ -->
+<section class="page">
+  <h2>08 · Rimediare a un errore</h2>
+  <p class="lede">Nel pannello non c'è un pulsante «annulla». Ma niente è mai perso davvero: ogni salvataggio lascia una traccia permanente.</p>
+
+  <h3>Se non hai ancora salvato</h3>
+  <p>È il caso più semplice: <strong>ricarica la pagina senza salvare</strong>. Il browser chiede conferma, tu accetti, e tutto torna all'ultimo stato salvato. Poi rientri con la password.</p>
+
+  <h3>Se hai già salvato</h3>
+  <p>Ogni <em>Salva tutto</em> crea un punto di ripristino. Si torna indietro in due modi, entrambi per mano di chi gestisce il sito:</p>
+  <ul>
+    <li><strong>Ripristinare il contenuto precedente</strong> dallo storico dei salvataggi su GitHub.</li>
+    <li><strong>Riportare online la versione precedente del sito</strong> dal pannello di Vercel.</li>
+  </ul>
+  <p>In entrambi i casi bastano pochi minuti. La cosa utile da comunicare è <strong>quando</strong> hai fatto la modifica e <strong>cosa</strong> hai cambiato: con quelle due informazioni il punto giusto si trova subito.</p>
+
+  <div class="box plain">
+    <span class="lbl">In sintesi</span>
+    <p>Le foto già caricate restano nel sito anche se togli il progetto che le usava: non occupano spazio visibile e non fanno danno.</p>
+    <p>Le due protezioni contro la perdita di lavoro sono l'indicatore <strong>● modifiche non salvate</strong> e l'avviso del browser quando chiudi. Se li vedi, fermati un attimo prima di procedere.</p>
+  </div>
+
+  <h3>Il risultato</h3>
+  <figure>
+    <img src="/scripts/guide/shots/16-sito-pubblico.jpg" alt="Il sito pubblico">
+    <figcaption>Il sito pubblico. Quello che modifichi nel pannello è quello che compare qui.</figcaption>
+  </figure>
+
+  <div class="box">
+    <span class="lbl">Per qualsiasi dubbio</span>
+    <p>Se un messaggio d'errore non è in questa guida, o se il sito non si aggiorna dopo qualche minuto, <strong>non provare a risolverlo salvando di nuovo</strong>: fai uno screenshot del messaggio e segnalalo. È molto più veloce così.</p>
+  </div>
+</section>
+
+</body>
+</html>

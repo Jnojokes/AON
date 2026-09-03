@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Andrea Onori">
+  <rect width="64" height="64" fill="#000"/>
+  <!-- Monogramma AO. Geometrico e non tipografico: resta leggibile a 16px,
+       dove un carattere reale diventerebbe una macchia. -->
+  <g fill="none" stroke="#fff" stroke-width="5.5">
+    <path d="M11 47 L20.5 17 L30 47" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M14.6 38.5 H26.4" stroke-linecap="butt"/>
+    <circle cx="45" cy="32" r="10.5"/>
+  </g>
+</svg>

@@ -9,6 +9,11 @@
     <meta name="author" content="Andrea Onori">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://www.andreaonori.com/">
+    <!-- Riserva TDM leggibile a macchina (art. 4 Dir. UE 2019/790, art. 70-quater
+         L. 633/1941): le immagini sono lavoro su commissione, l'opt-out
+         dall'addestramento va espresso, non sottinteso. Termini: /note-legali -->
+    <meta name="tdm-reservation" content="1">
+    <meta name="tdm-policy" content="https://www.andreaonori.com/note-legali">
     <meta name="theme-color" content="#000000">
 
     <!-- ─────────────────────────────────────────────────────────────────────
@@ -40,7 +45,9 @@
     <meta name="twitter:image" content="https://www.andreaonori.com/media/og-cover.jpg">
     <meta name="twitter:image:alt" content="Andrea Onori — photographer and filmmaker, Milan">
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23000%22/><rect x=%2230%22 y=%2230%22 width=%2240%22 height=%2240%22 fill=%22%23fff%22/></svg>">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
 
     <!-- L'immagine dell'avatar è l'elemento LCP: la anticipiamo. -->
     <link rel="preload" as="image" href="./andrea.jpg" fetchpriority="high">
@@ -65,26 +72,39 @@
       });
 
       /* ───────────────────────────────────────────────────────────────────
-         GA4 — incolla qui il Measurement ID quando lo creiamo insieme.
-         Finché la stringa è vuota gtag.js non viene nemmeno scaricato:
-         nessuna richiesta inutile, nessun errore in console.
-         Esempio:  window.AON_GA4_ID = 'G-XXXXXXXXXX';
+         GA4 — Measurement ID. Stringa vuota = misurazione disattivata:
+         niente gtag.js, niente banner, nessuna richiesta a Google.
          ─────────────────────────────────────────────────────────────────── */
       window.AON_GA4_ID = 'G-EG1T5HLFSX';
 
-      if (window.AON_GA4_ID) {
+      /* ───────────────────────────────────────────────────────────────────
+         Blocco preventivo. gtag.js NON viene caricato al load: partirebbe una
+         richiesta a googletagmanager.com con IP, User-Agent e referrer prima
+         che l'utente abbia scelto. Consent Mode impedisce i cookie, non la
+         richiesta di rete — e per il Garante è la richiesta il trattamento.
+         Lo script viene iniettato solo da aonLoadGA(), che il banner chiama
+         esclusivamente dopo un consenso esplicito.
+         ─────────────────────────────────────────────────────────────────── */
+      var aonGaLoaded = false;
+      window.aonLoadGA = function () {
+        if (aonGaLoaded || !window.AON_GA4_ID) return;
+        aonGaLoaded = true;
         var s = document.createElement('script');
         s.async = true;
         s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window.AON_GA4_ID;
         document.head.appendChild(s);
         gtag('js', new Date());
-        gtag('config', window.AON_GA4_ID, { anonymize_ip: true });
-      }
+        // Niente anonymize_ip: era un flag di Universal Analytics, GA4 lo
+        // ignora e tronca comunque l'IP. Tenerlo dava l'impressione di una
+        // tutela che quel parametro non fornisce.
+        gtag('config', window.AON_GA4_ID);
+      };
 
-      /* Wrapper unico usato dall'app. Se GA4 non è configurato è un no-op,
-         così il codice degli eventi resta identico prima e dopo il setup. */
+      /* Wrapper unico usato dall'app. Finché il consenso non è stato dato
+         è un no-op: gli eventi non vengono accodati né inviati, così il
+         codice degli handler resta identico in entrambi gli stati. */
       window.aonTrack = function (name, params) {
-        if (window.AON_GA4_ID) gtag('event', name, params || {});
+        if (aonGaLoaded) gtag('event', name, params || {});
       };
     </script>
 
@@ -210,9 +230,6 @@
               "creator": {
                 "@id": "https://www.andreaonori.com/#person"
               },
-              "copyrightHolder": {
-                "@id": "https://www.andreaonori.com/#person"
-              },
               "isPartOf": {
                 "@id": "https://www.andreaonori.com/#website"
               },
@@ -228,11 +245,8 @@
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
-                "copyrightHolder": {
-                  "@id": "https://www.andreaonori.com/#person"
-                },
                 "creditText": "Andrea Onori",
-                "license": "https://www.andreaonori.com/"
+                "license": "https://www.andreaonori.com/note-legali"
               }
             },
             {
@@ -240,9 +254,6 @@
               "@id": "https://www.andreaonori.com/#work-greta-boldini",
               "name": "GRETA BOLDINI",
               "creator": {
-                "@id": "https://www.andreaonori.com/#person"
-              },
-              "copyrightHolder": {
                 "@id": "https://www.andreaonori.com/#person"
               },
               "isPartOf": {
@@ -260,11 +271,8 @@
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
-                "copyrightHolder": {
-                  "@id": "https://www.andreaonori.com/#person"
-                },
                 "creditText": "Andrea Onori",
-                "license": "https://www.andreaonori.com/"
+                "license": "https://www.andreaonori.com/note-legali"
               }
             },
             {
@@ -272,9 +280,6 @@
               "@id": "https://www.andreaonori.com/#work-fabiana-filippi",
               "name": "FABIANA FILIPPI",
               "creator": {
-                "@id": "https://www.andreaonori.com/#person"
-              },
-              "copyrightHolder": {
                 "@id": "https://www.andreaonori.com/#person"
               },
               "isPartOf": {
@@ -292,11 +297,8 @@
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
-                "copyrightHolder": {
-                  "@id": "https://www.andreaonori.com/#person"
-                },
                 "creditText": "Andrea Onori",
-                "license": "https://www.andreaonori.com/"
+                "license": "https://www.andreaonori.com/note-legali"
               }
             },
             {
@@ -304,9 +306,6 @@
               "@id": "https://www.andreaonori.com/#work-ok-giorgio-dj-set",
               "name": "OK GIORGIO — DJ SET",
               "creator": {
-                "@id": "https://www.andreaonori.com/#person"
-              },
-              "copyrightHolder": {
                 "@id": "https://www.andreaonori.com/#person"
               },
               "isPartOf": {
@@ -324,11 +323,8 @@
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
-                "copyrightHolder": {
-                  "@id": "https://www.andreaonori.com/#person"
-                },
                 "creditText": "Andrea Onori",
-                "license": "https://www.andreaonori.com/"
+                "license": "https://www.andreaonori.com/note-legali"
               }
             },
             {
@@ -336,9 +332,6 @@
               "@id": "https://www.andreaonori.com/#work-ypsum",
               "name": "YPSUM",
               "creator": {
-                "@id": "https://www.andreaonori.com/#person"
-              },
-              "copyrightHolder": {
                 "@id": "https://www.andreaonori.com/#person"
               },
               "isPartOf": {
@@ -356,11 +349,8 @@
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
-                "copyrightHolder": {
-                  "@id": "https://www.andreaonori.com/#person"
-                },
                 "creditText": "Andrea Onori",
-                "license": "https://www.andreaonori.com/"
+                "license": "https://www.andreaonori.com/note-legali"
               }
             },
             {
@@ -368,9 +358,6 @@
               "@id": "https://www.andreaonori.com/#work-mugshot",
               "name": "MUGSHOT",
               "creator": {
-                "@id": "https://www.andreaonori.com/#person"
-              },
-              "copyrightHolder": {
                 "@id": "https://www.andreaonori.com/#person"
               },
               "isPartOf": {
@@ -388,11 +375,8 @@
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
-                "copyrightHolder": {
-                  "@id": "https://www.andreaonori.com/#person"
-                },
                 "creditText": "Andrea Onori",
-                "license": "https://www.andreaonori.com/"
+                "license": "https://www.andreaonori.com/note-legali"
               }
             },
             {
@@ -400,9 +384,6 @@
               "@id": "https://www.andreaonori.com/#work-ok-giorgio-grotta",
               "name": "OK GIORGIO — GROTTA",
               "creator": {
-                "@id": "https://www.andreaonori.com/#person"
-              },
-              "copyrightHolder": {
                 "@id": "https://www.andreaonori.com/#person"
               },
               "isPartOf": {
@@ -420,11 +401,8 @@
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
-                "copyrightHolder": {
-                  "@id": "https://www.andreaonori.com/#person"
-                },
                 "creditText": "Andrea Onori",
-                "license": "https://www.andreaonori.com/"
+                "license": "https://www.andreaonori.com/note-legali"
               }
             },
             {
@@ -432,9 +410,6 @@
               "@id": "https://www.andreaonori.com/#work-santoni-bto-studio",
               "name": "SANTONI BTO — STUDIO",
               "creator": {
-                "@id": "https://www.andreaonori.com/#person"
-              },
-              "copyrightHolder": {
                 "@id": "https://www.andreaonori.com/#person"
               },
               "isPartOf": {
@@ -451,11 +426,8 @@
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
-                "copyrightHolder": {
-                  "@id": "https://www.andreaonori.com/#person"
-                },
                 "creditText": "Andrea Onori",
-                "license": "https://www.andreaonori.com/"
+                "license": "https://www.andreaonori.com/note-legali"
               }
             },
             {
@@ -463,9 +435,6 @@
               "@id": "https://www.andreaonori.com/#work-ok-giorgio-vulcano",
               "name": "OK GIORGIO — VULCANO",
               "creator": {
-                "@id": "https://www.andreaonori.com/#person"
-              },
-              "copyrightHolder": {
                 "@id": "https://www.andreaonori.com/#person"
               },
               "isPartOf": {
@@ -483,11 +452,8 @@
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
-                "copyrightHolder": {
-                  "@id": "https://www.andreaonori.com/#person"
-                },
                 "creditText": "Andrea Onori",
-                "license": "https://www.andreaonori.com/"
+                "license": "https://www.andreaonori.com/note-legali"
               }
             }
           ]
@@ -496,9 +462,13 @@
         <!-- JSONLD:END -->
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font self-hosted (/fonts). Erano su fonts.googleapis.com: ogni
+         caricamento di pagina inviava a Google l'IP del visitatore prima di
+         qualunque consenso. Serviti dal nostro dominio, quella trasmissione
+         non avviene. I .woff2 sono preload perché il testo è il contenuto. -->
+    <link rel="preload" href="/fonts/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/archivo-black-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="/fonts/fonts.css">
 
     <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
@@ -1199,40 +1169,40 @@
               <h2 id="pf-motion">Motion</h2>
               <div class="pf-grid">
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/story-greta.png" alt="Motion frame 01 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
-              <h3>Motion frame 01</h3>
+              <img src="https://www.andreaonori.com/media/story-greta.png" alt="STORY GRETA — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>STORY GRETA</h3>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/story-santoni-01.png" alt="Motion frame 02 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
-              <h3>Motion frame 02</h3>
+              <img src="https://www.andreaonori.com/media/story-santoni-01.png" alt="STORY SANTONI — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>STORY SANTONI</h3>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/story-ypsum.png" alt="Motion frame 03 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
-              <h3>Motion frame 03</h3>
+              <img src="https://www.andreaonori.com/media/story-ypsum.png" alt="STORY YPSUM — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>STORY YPSUM</h3>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/story-mugshot-01.png" alt="Motion frame 04 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
-              <h3>Motion frame 04</h3>
+              <img src="https://www.andreaonori.com/media/story-mugshot-01.png" alt="STORY MUGSHOT — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>STORY MUGSHOT</h3>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/story-santoni-02.png" alt="Motion frame 05 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
-              <h3>Motion frame 05</h3>
+              <img src="https://www.andreaonori.com/media/story-santoni-02.png" alt="STORY SANTONI — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>STORY SANTONI</h3>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/story-mugshot-02.png" alt="Motion frame 06 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
-              <h3>Motion frame 06</h3>
+              <img src="https://www.andreaonori.com/media/story-mugshot-02.png" alt="STORY MUGSHOT — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>STORY MUGSHOT</h3>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/greta-carousel.png" alt="Motion frame 07 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
-              <h3>Motion frame 07</h3>
+              <img src="https://www.andreaonori.com/media/greta-carousel.png" alt="GRETA CAROUSEL — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>GRETA CAROUSEL</h3>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/santoni-carousel.png" alt="Motion frame 08 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
-              <h3>Motion frame 08</h3>
+              <img src="https://www.andreaonori.com/media/santoni-carousel.png" alt="SANTONI CAROUSEL — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>SANTONI CAROUSEL</h3>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/ypsum-carousel.png" alt="Motion frame 09 — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
-              <h3>Motion frame 09</h3>
+              <img src="https://www.andreaonori.com/media/ypsum-carousel.png" alt="YPSUM CAROUSEL — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <h3>YPSUM CAROUSEL</h3>
             </article>
               </div>
             </section>
@@ -1257,12 +1227,15 @@
 
           <footer class="pf-footer">
             <p>© 2026 Andrea Onori — Studio Milan, Italy</p>
+            <p>P. IVA 02491850448</p>
             <p>
               <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>
               <span aria-hidden="true"> · </span>
               <a href="https://www.instagram.com/andrea__onori" rel="me noopener" target="_blank">@andrea__onori</a>
               <span aria-hidden="true"> · </span>
               <a href="/privacy">Privacy &amp; Cookie Policy</a>
+              <span aria-hidden="true"> · </span>
+              <a href="/note-legali">Note legali</a>
             </p>
           </footer>
         </div>
@@ -1280,15 +1253,8 @@
          il fallback statico se la build non gira.
          ───────────────────────────────────────────────────────────────────── -->
     <!-- SEOBIO:START -->
-    <section class="visually-hidden" id="aon-seo-bio" aria-label="About Andrea Onori">
+    <section class="visually-hidden" id="aon-seo-bio" aria-label="Reference — Andrea Onori">
       <h2>Andrea Onori — Photographer &amp; Filmmaker, Milan, Italy</h2>
-      <p>Andrea Onori is a photographer and filmmaker based in Milan, Italy.</p>
-      <p>He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.</p>
-      <p>He has been working professionally since 2018.</p>
-      <p>His work has been selected by Vogue Italia, Numéro, Domus.</p>
-      <p>Recent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.</p>
-      <p>Shoots have taken place in MILANO, GINOSTRA, STROMBOLI.</p>
-      <p>He is available for commissions and can be reached at video@andreaonori.com.</p>
       <p>Contact: <a href="mailto:video@andreaonori.com">video@andreaonori.com</a> · <a href="https://www.instagram.com/andrea__onori" rel="me noopener">@andrea__onori</a></p>
       <p>Disciplines: Fashion Photography, Editorial Photography, Campaign Photography, Portrait Photography, Motion, Filmmaking.</p>
       <p>Projects: SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT, OK GIORGIO — GROTTA, SANTONI BTO — STUDIO, OK GIORGIO — VULCANO.</p>
@@ -1400,8 +1366,10 @@
                 socialValue: '@andrea__onori',
                 socialUrl: 'https://www.instagram.com/andrea__onori',
                 release: 'ARCHIVE — RELEASE / 25',
+                vat: '02491850448',
                 privacy: 'PRIVACY',
                 cookie: 'COOKIE',
+                legal: 'NOTE LEGALI',
                 edition: 'EDITION 01 / BOLD',
             },
             consent: {
@@ -2067,10 +2035,40 @@
             );
         };
 
+        // About — la bio, VISIBILE.
+        //
+        // Prima viveva solo in <section class="visually-hidden"> in fondo al body:
+        // ~130 parole servite ai crawler e a nessun visitatore, perche' il blocco
+        // prerenderizzato che le mostrava viene distrutto appena React monta.
+        // E' esattamente il pattern che Google classifica come testo nascosto.
+        // Renderla qui, dallo stesso settings.seo.bio, risolve il rischio e da'
+        // alla home il testo lungo che le mancava — che e' anche l'unica cosa
+        // che un motore generativo puo' citare.
+        const About = () => {
+            const bio = String((S().seo && S().seo.bio) || '').trim();
+            if (!bio) return null;
+            const paras = bio.split(/\n+/).map(t => t.trim()).filter(Boolean);
+            if (!paras.length) return null;
+            return (
+                <section id="about" aria-labelledby="about-h" style={{ margin: '72px 0 8px' }}>
+                    <div className="mono uline reveal-on-scroll" style={{ fontSize: '10px', color: 'var(--mute)', marginBottom: '14px' }}>ABOUT</div>
+                    <h2 id="about-h" className="display reveal-on-scroll" style={{ fontSize: 'clamp(22px, 3.2vw, 34px)', lineHeight: 1.15, marginBottom: '18px', textTransform: 'uppercase' }}>
+                        {S().profile.nameFirst} {S().profile.nameLast} — {S().profile.eyebrow}
+                    </h2>
+                    <div className="reveal-on-scroll delay-1" style={{ maxWidth: '68ch' }}>
+                        {paras.map((t, i) => (
+                            <p key={i} style={{ fontSize: '15px', lineHeight: 1.65, color: 'var(--mute)', marginBottom: '10px' }}>{t}</p>
+                        ))}
+                    </div>
+                </section>
+            );
+        };
+
         // Footer
         const Footer = () => (
             <footer>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
+                <About />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10" style={{ marginTop: '56px' }}>
                     <div className="colofone-cell reveal-on-scroll">
                         <div className="colofone-label">© {new Date().getFullYear()}</div>
                         <div className="colofone-value">{S().footer.name}</div>
@@ -2098,18 +2096,21 @@
                         <div className="colofone-value">
                             {S().footer.socialUrl
                                 ? <a href={S().footer.socialUrl} target="_blank" rel="me noopener"
-                                     onClick={() => track('contact_click', { method: 'instagram', location: 'footer' })}
+                                     onClick={() => track('outbound_click', { link_domain: 'instagram.com', location: 'footer' })}
                                      style={{ color: 'inherit' }}>{S().footer.socialValue}</a>
                                 : S().footer.socialValue}
                         </div>
                     </div>
                 </div>
                 <div className="flex justify-between items-center pt-6 mono uline reveal-on-scroll" style={{ fontSize: '10px', color: 'var(--mute)', borderTop: '1px solid var(--line)' }}>
-                    <span>{S().footer.release}</span>
+                    {/* P. IVA in home: art. 7 D.Lgs. 70/2003 la vuole facilmente
+                        accessibile, non sepolta dentro l'informativa privacy. */}
+                    <span>{S().footer.release}{S().footer.vat ? ' · P. IVA ' + S().footer.vat : ''}</span>
                     {/* Il consenso dev'essere revocabile in modo sempre raggiungibile,
                         non solo svuotando i dati del browser. */}
                     <span style={{ display: 'flex', gap: '18px' }}>
                         <a href="/privacy" style={{ color: 'inherit' }}>{S().footer.privacy}</a>
+                        <a href="/note-legali" style={{ color: 'inherit' }}>{S().footer.legal}</a>
                         <a href="#" onClick={(e) => { e.preventDefault(); window.aonCookiePrefs && window.aonCookiePrefs(); }} style={{ color: 'inherit' }}>{S().footer.cookie}</a>
                         <span>{S().footer.edition}</span>
                     </span>
@@ -2279,7 +2280,15 @@
             // misura già l'engagement da sé; qui servono gli eventi, non le
             // pagine. L'unico che conta davvero è contact_click — da marcare
             // come Key Event nel pannello GA4.
-            useEffect(() => { track('tab_switch', { tab_name: active }); }, [active]);
+            // Il tab di default non e' una scelta dell'utente: senza questa
+            // guardia l'effetto sparava un tab_switch a ogni caricamento,
+            // aggiungendo un evento fantasma per sessione e falsando il
+            // confronto fra le tre sezioni.
+            const firstTab = useRef(true);
+            useEffect(() => {
+                if (firstTab.current) { firstTab.current = false; return; }
+                track('tab_switch', { tab_name: active });
+            }, [active]);
 
             useEffect(() => {
                 if (selectedImg === null) return;
@@ -2296,6 +2305,36 @@
             useEffect(() => {
                 if (selectedSeries) track('series_open', { series_label: selectedSeries.label || selectedSeries.id || '' });
             }, [selectedSeries]);
+
+            // Profondita' di scroll. Serve a distinguere un rimbalzo da una
+            // visita che ha davvero guardato il portfolio: senza questo, in un
+            // sito monopagina "sessione" e "sessione utile" sono indistinguibili.
+            // Ogni soglia parte una volta sola per caricamento.
+            const scrollSeen = useRef(new Set());
+            useEffect(() => {
+                const THRESHOLDS = [25, 50, 75, 100];
+                let ticking = false;
+                const measure = () => {
+                    ticking = false;
+                    const doc = document.documentElement;
+                    const scrollable = doc.scrollHeight - window.innerHeight;
+                    if (scrollable <= 0) return;
+                    const pct = ((window.scrollY || 0) / scrollable) * 100;
+                    for (const t of THRESHOLDS) {
+                        if (pct >= t && !scrollSeen.current.has(t)) {
+                            scrollSeen.current.add(t);
+                            track('scroll_depth', { percent_scrolled: t });
+                        }
+                    }
+                };
+                const onScroll = () => {
+                    if (ticking) return;
+                    ticking = true;
+                    requestAnimationFrame(measure);
+                };
+                window.addEventListener('scroll', onScroll, { passive: true });
+                return () => window.removeEventListener('scroll', onScroll);
+            }, []);
 
             useEffect(() => {
                 if (showreelOpen) track('showreel_play', { source: 'avatar' });
@@ -2409,38 +2448,129 @@
             display: none;
         }
         #aon-consent.is-open { display: block; }
-        #aon-consent p { font-size: 11px; line-height: 1.6; color: rgba(255,255,255,0.68); margin-bottom: 14px; }
+        #aon-consent p { font-size: 11px; line-height: 1.6; color: rgba(255,255,255,0.82); margin-bottom: 14px; }
         #aon-consent a { color: #fff; text-decoration: underline; }
-        #aon-consent .aon-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        #aon-consent button {
+        #aon-consent .aon-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        /* Accetta e Rifiuta sono deliberatamente identici. Un "accetta" pieno
+           accanto a un "rifiuta" trasparente è la disparità di prominenza che
+           il Garante contesta: la scelta dev'essere simmetrica. */
+        #aon-consent button.aon-choice {
             font-family: inherit; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
             padding: 9px 16px; cursor: pointer; border: 1px solid #fff; background: transparent; color: #fff;
+            min-width: 108px;
         }
-        #aon-consent button.aon-accept { background: #fff; color: #000; }
+        #aon-consent button.aon-choice:hover { background: #fff; color: #000; }
+        #aon-consent button.aon-more {
+            font-family: inherit; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+            padding: 9px 4px; cursor: pointer; border: 0; background: transparent;
+            color: rgba(255,255,255,0.82); text-decoration: underline; margin-left: auto;
+        }
         #aon-consent button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        #aonPrefs { display: none; margin: 0 0 14px; border-top: 1px solid rgba(255,255,255,0.18); padding-top: 12px; }
+        #aonPrefs.is-open { display: block; }
+        #aonPrefs label { display: flex; gap: 10px; align-items: flex-start; font-size: 11px; line-height: 1.5; margin-bottom: 10px; }
+        #aonPrefs input { margin-top: 2px; accent-color: #fff; }
+        #aonPrefs .aon-locked { color: rgba(255,255,255,0.55); }
     </style>
-    <div id="aon-consent" role="dialog" aria-live="polite" aria-label="Cookie">
+    <!-- lang="it" esplicito: la pagina è lang="en" ma questo testo è italiano,
+         e senza il marcatore gli screen reader lo pronuncerebbero in inglese. -->
+    <div id="aon-consent" role="dialog" aria-modal="true" aria-label="Preferenze cookie" lang="it">
         <p><span id="consentText">Questo sito usa cookie di misurazione per capire come viene usato.
             Nessun cookie viene installato senza il tuo consenso. </span><a href="/privacy" id="consentLink">Informativa</a></p>
+
+        <div id="aonPrefs">
+            <label class="aon-locked">
+                <input type="checkbox" checked disabled>
+                <span><strong>Necessari</strong> — indispensabili al funzionamento del sito e alla memoria di questa scelta. Sempre attivi.</span>
+            </label>
+            <label>
+                <input type="checkbox" id="aonPrefStats">
+                <span><strong>Statistiche</strong> — Google Analytics 4, per sapere quante persone visitano il sito e quali progetti guardano.</span>
+            </label>
+        </div>
+
         <div class="aon-row">
-            <button type="button" class="aon-accept" data-consent="granted" id="consentAccept">Accetta</button>
-            <button type="button" data-consent="denied" id="consentReject">Rifiuta</button>
+            <button type="button" class="aon-choice" data-consent="granted" id="consentAccept">Accetta</button>
+            <button type="button" class="aon-choice" data-consent="denied" id="consentReject">Rifiuta</button>
+            <button type="button" class="aon-more" id="consentMore" aria-expanded="false" aria-controls="aonPrefs">Preferenze</button>
         </div>
     </div>
     <script>
     (function () {
-        var KEY = 'aon-consent-v1';
+        // v2: prima si salvava la stringa nuda 'granted'/'denied', senza data
+        // né versione, quindi valida per sempre. Ora si registra anche QUANDO
+        // è stata fatta la scelta — serve sia come prova di consenso sia per
+        // ri-chiederlo dopo 6 mesi, come previsto dalle linee guida.
+        var KEY = 'aon-consent-v2';
+        var LEGACY_KEY = 'aon-consent-v1';
+        var MAX_AGE_MS = 182 * 24 * 60 * 60 * 1000;   // ~6 mesi
         var el = document.getElementById('aon-consent');
         if (!el) return;
 
+        var prefs = document.getElementById('aonPrefs');
+        var prefStats = document.getElementById('aonPrefStats');
+        var moreBtn = document.getElementById('consentMore');
+        var lastFocus = null;
+
         function apply(state) {
             if (typeof gtag !== 'function') return;
+            // Solo analytics_storage segue la scelta. I tre segnali pubblicitari
+            // restano negati in ogni caso: su questo sito non esiste alcun
+            // servizio di advertising e l'informativa non lo dichiara.
+            // Concedere più di quanto si dichiara è il difetto, non il contrario.
             gtag('consent', 'update', {
                 analytics_storage: state,
-                ad_storage: state,
-                ad_user_data: state,
-                ad_personalization: state
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied'
             });
+            if (state === 'granted' && window.aonLoadGA) window.aonLoadGA();
+        }
+
+        function read() {
+            var raw = null;
+            try { raw = localStorage.getItem(KEY); } catch (e) { return null; }
+            if (!raw) {
+                // Migrazione dal formato v1 (stringa nuda). Senza data non si può
+                // sapere quanto è vecchia: la si tratta come appena espressa e la
+                // si riscrive nel formato nuovo, così il ciclo dei 6 mesi parte.
+                var old = null;
+                try { old = localStorage.getItem(LEGACY_KEY); } catch (e) {}
+                if (old === 'granted' || old === 'denied') {
+                    var migrated = { v: 2, choice: old, ts: new Date().toISOString() };
+                    try {
+                        localStorage.setItem(KEY, JSON.stringify(migrated));
+                        localStorage.removeItem(LEGACY_KEY);
+                    } catch (e) {}
+                    return migrated;
+                }
+                return null;
+            }
+            try {
+                var rec = JSON.parse(raw);
+                if (!rec || (rec.choice !== 'granted' && rec.choice !== 'denied')) return null;
+                if (rec.ts && (Date.now() - Date.parse(rec.ts)) > MAX_AGE_MS) return null;  // scaduto
+                return rec;
+            } catch (e) { return null; }
+        }
+
+        function write(choice) {
+            try {
+                localStorage.setItem(KEY, JSON.stringify({ v: 2, choice: choice, ts: new Date().toISOString() }));
+                localStorage.removeItem(LEGACY_KEY);
+            } catch (e) {}
+        }
+
+        function open() {
+            lastFocus = document.activeElement;
+            el.classList.add('is-open');
+            var first = el.querySelector('button');
+            if (first) first.focus();
+        }
+
+        function close() {
+            el.classList.remove('is-open');
+            if (lastFocus && lastFocus.focus) lastFocus.focus();
         }
 
         // Riapre il banner su richiesta. Serve perché il consenso dev'essere
@@ -2449,32 +2579,56 @@
         // Esposto globalmente così ci si può agganciare dal footer, dalla pagina
         // privacy e da qualsiasi punto del sito.
         window.aonCookiePrefs = function () {
-            try { localStorage.removeItem(KEY); } catch (e) {}
+            try { localStorage.removeItem(KEY); localStorage.removeItem(LEGACY_KEY); } catch (e) {}
             apply('denied');              // si riparte da negato finché non si sceglie
-            el.classList.add('is-open');
+            if (prefStats) prefStats.checked = false;
+            open();
         };
 
-        var saved = null;
-        try { saved = localStorage.getItem(KEY); } catch (e) {}
-
-        if (saved === 'granted' || saved === 'denied') {
-            apply(saved);
-            return;                       // scelta già fatta: niente banner
+        var saved = read();
+        if (saved) {
+            apply(saved.choice);
+            return;                       // scelta già fatta e ancora valida
         }
 
         // Nessuna misurazione da configurare → nessun cookie → nessun banner.
         // Mostrarlo comunque sarebbe solo attrito inutile per l'utente.
         if (!window.AON_GA4_ID) return;
 
-        el.classList.add('is-open');
+        open();
+
+        if (moreBtn) {
+            moreBtn.addEventListener('click', function () {
+                var isOpen = prefs.classList.toggle('is-open');
+                moreBtn.setAttribute('aria-expanded', String(isOpen));
+                moreBtn.textContent = isOpen ? 'Salva preferenze' : 'Preferenze';
+                if (!isOpen) {
+                    // Secondo click = conferma della scelta granulare.
+                    choose(prefStats && prefStats.checked ? 'granted' : 'denied');
+                }
+            });
+        }
+
+        // Escape equivale a rifiutare: chiudere senza scegliere non può valere
+        // come consenso, e lasciare il banner inchiodato sarebbe una trappola.
+        el.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') { e.preventDefault(); choose('denied'); }
+        });
+
+        function choose(state) {
+            write(state);
+            apply(state);
+            close();
+            // L'evento parte solo su consenso: mandarlo dopo un rifiuto
+            // significherebbe inviare un hit a Google proprio a chi ha appena
+            // detto di no.
+            if (state === 'granted' && window.aonTrack) window.aonTrack('banner_consent', { choice: state });
+        }
+
         el.addEventListener('click', function (e) {
             var btn = e.target.closest('[data-consent]');
             if (!btn) return;
-            var state = btn.getAttribute('data-consent');
-            try { localStorage.setItem(KEY, state); } catch (err) {}
-            apply(state);
-            el.classList.remove('is-open');
-            if (window.aonTrack) window.aonTrack('banner_consent', { choice: state });
+            choose(btn.getAttribute('data-consent'));
         });
     })();
     </script>

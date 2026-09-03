@@ -37,27 +37,45 @@ Disallow: /POST/
 # ── Crawler di addestramento ─────────────────────────────────────────────────
 # Questi ingeriscono i contenuti nei pesi del modello, senza citazione e senza
 # traffico di ritorno. Per un fotografo è una scelta sui diritti delle proprie
-# immagini, non una scelta SEO: qui sono consentiti, ma è la riga da cambiare
-# in "Disallow: /" se Andrea preferisce escluderli.
+# immagini, non una scelta SEO — e qui il portfolio contiene lavoro su
+# commissione per Santoni, Fabiana Filippi, Greta Boldini e altri, i cui
+# contratti non autorizzano l'uso per l'addestramento di modelli.
 #
-# Google-Extended riguarda solo Gemini e l'addestramento: non ha alcun effetto
-# sull'indicizzazione in Google Search. Applebot-Extended vale lo stesso per
-# Apple Intelligence, ed è distinto da Applebot qui sopra (che è la ricerca).
+# Sono quindi esclusi. La riserva corrispondente è espressa in forma leggibile
+# a macchina dai meta tdm-reservation delle pagine e per esteso in
+# /note-legali (art. 4 Dir. UE 2019/790, art. 70-quater L. 633/1941).
+#
+# Attenzione a non confondere i due gruppi: qui sopra i crawler di ricerca e
+# citazione restano CONSENTITI, quindi il sito continua a essere trovato e
+# citato da ChatGPT, Claude e Perplexity. È il blocco qui sotto che impedisce
+# solo di finire nei dataset di addestramento.
+#
+# Google-Extended riguarda solo Gemini e l'addestramento: escluderlo non ha
+# alcun effetto sull'indicizzazione in Google Search. Applebot-Extended vale lo
+# stesso per Apple Intelligence, ed è distinto da Applebot qui sopra (ricerca).
 User-agent: GPTBot
 User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: Claude-Web
 User-agent: Google-Extended
 User-agent: Applebot-Extended
 User-agent: Amazonbot
 User-agent: meta-externalagent
+User-agent: Meta-ExternalFetcher
 User-agent: cohere-ai
 User-agent: CCBot
 User-agent: Bytespider
 User-agent: Diffbot
 User-agent: Timpibot
-Allow: /
-Disallow: /admin-edits
-Disallow: /admin-edits.html
-Disallow: /api/
-Disallow: /POST/
+User-agent: ImagesiftBot
+User-agent: AI2Bot
+User-agent: Omgilibot
+User-agent: PetalBot
+User-agent: Webzio-Extended
+Disallow: /
+
+# Indice in linguaggio naturale pensato per i motori generativi.
+# Non è una direttiva standard: i crawler che non la conoscono la ignorano.
+Llms: https://www.andreaonori.com/llms.txt
 
 Sitemap: https://www.andreaonori.com/sitemap.xml

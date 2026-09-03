@@ -7,10 +7,13 @@
     <meta name="description" content="Informativa privacy e cookie del sito andreaonori.com, ai sensi del GDPR (Reg. UE 2016/679).">
     <link rel="canonical" href="https://www.andreaonori.com/privacy">
     <meta name="theme-color" content="#000000">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
     <meta name="robots" content="index, follow">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font self-hosted: l'informativa non deve essere la prima pagina a
+         chiamare Google. Vedi /fonts/fonts.css. -->
+    <link rel="stylesheet" href="/fonts/fonts.css">
     <style>
         :root { --bg:#000; --fg:#fff; --mute:#8a8a8a; --line:rgba(255,255,255,0.14); }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -43,7 +46,7 @@
 
     <a class="back mono" href="/">← Andrea Onori</a>
     <h1>Privacy &amp;<br>Cookie Policy</h1>
-    <p class="mono" style="font-size:10px; color:var(--mute);">Ultimo aggiornamento: 11 agosto 2026</p>
+    <p class="mono" style="font-size:10px; color:var(--mute);">Ultimo aggiornamento: 2 settembre 2026</p>
 
     <h2>1. Titolare del trattamento</h2>
     <p>
@@ -64,7 +67,21 @@
     <p>L'invio facoltativo di email agli indirizzi indicati su questo sito comporta l'acquisizione dell'indirizzo del mittente e degli eventuali altri dati personali contenuti nel messaggio, necessari a rispondere alla richiesta.</p>
 
     <h3>Dati di misurazione</h3>
-    <p>Se presti il consenso, il sito utilizza Google Analytics 4 per raccogliere dati statistici aggregati sull'utilizzo delle pagine. Senza consenso, nessun cookie di misurazione viene installato.</p>
+    <p>Se presti il consenso, il sito utilizza <strong>Google Analytics 4</strong> (identificativo di misurazione <code>G-EG1T5HLFSX</code>) per capire come viene usato. <strong>Senza consenso lo script di Google non viene nemmeno scaricato</strong>: nessuna richiesta parte verso i server di Google e nessun cookie di misurazione viene installato.</p>
+    <p>Oltre alle visualizzazioni di pagina, con il tuo consenso vengono registrate alcune interazioni con il sito. Non contengono dati identificativi, ma è giusto sapere quali sono:</p>
+    <table>
+        <thead><tr><th>Interazione</th><th>Cosa viene registrato</th></tr></thead>
+        <tbody>
+            <tr><td>Apertura di un progetto</td><td>Titolo, luogo, anno e formato del progetto, e da quale sezione è stato aperto</td></tr>
+            <tr><td>Click su un contatto</td><td>Se si tratta di email o Instagram, il punto della pagina, e l'eventuale progetto di partenza</td></tr>
+            <tr><td>Riproduzione di un reel</td><td>Etichetta e posizione del reel</td></tr>
+            <tr><td>Apertura di una serie</td><td>Etichetta della serie</td></tr>
+            <tr><td>Avvio dello showreel</td><td>Il punto da cui è stato avviato</td></tr>
+            <tr><td>Cambio di sezione</td><td>Nome della sezione scelta</td></tr>
+            <tr><td>Scelta sui cookie</td><td>Registrata solo in caso di consenso</td></tr>
+        </tbody>
+    </table>
+    <p>Google Analytics 4 tronca automaticamente l'indirizzo IP prima di memorizzarlo. Su questo sito i segnali pubblicitari di Google (<code>ad_storage</code>, <code>ad_user_data</code>, <code>ad_personalization</code>) restano <em>disattivati in ogni caso</em>, anche se accetti: non esiste alcun servizio di advertising e i tuoi dati non vengono usati per profilazione pubblicitaria.</p>
 
     <h2>3. Finalità e basi giuridiche</h2>
     <table>
@@ -84,7 +101,7 @@
     <table>
         <thead><tr><th>Nome</th><th>Finalità</th><th>Durata</th></tr></thead>
         <tbody>
-            <tr><td><code>aon-consent-v1</code></td><td>Memorizza la tua scelta sui cookie, per non richiederla a ogni visita. È salvato in localStorage, non è un cookie trasmesso al server.</td><td>Permanente fino a cancellazione</td></tr>
+            <tr><td><code>aon-consent-v2</code></td><td>Memorizza la tua scelta sui cookie e la data in cui l'hai espressa, per non richiederla a ogni visita. È salvato in localStorage, non è un cookie trasmesso al server.</td><td>6 mesi, poi il consenso viene richiesto di nuovo</td></tr>
         </tbody>
     </table>
 
@@ -97,10 +114,10 @@
             <tr><td><code>_ga_&lt;ID&gt;</code></td><td>Google Ireland Ltd.</td><td>Mantiene lo stato della sessione</td><td>24 mesi</td></tr>
         </tbody>
     </table>
-    <p>Il sito adotta <strong>Google Consent Mode v2</strong>: prima del tuo consenso gli strumenti di misurazione sono impostati su <em>denied</em> e non scrivono cookie né identificatori.</p>
+    <p>Il sito adotta il <strong>blocco preventivo</strong>: finché non scegli, lo script di Google Analytics non viene caricato affatto. In più è attivo <strong>Google Consent Mode v2</strong>, che tiene gli strumenti di misurazione su <em>denied</em> come seconda difesa. Dal banner puoi anche aprire <strong>Preferenze</strong> e decidere separatamente sui cookie statistici.</p>
 
     <h3>Come revocare il consenso</h3>
-    <p>Puoi cambiare idea in qualsiasi momento. Premi il pulsante qui sotto: la tua scelta verrà cancellata e il banner ricomparirà alla prossima visita, con la misurazione di nuovo disattivata nel frattempo.</p>
+    <p>Puoi cambiare idea in qualsiasi momento. Premi il pulsante qui sotto: la tua scelta viene cancellata e il banner ricompare alla prossima visita. Da quel momento la misurazione riparte da <em>disattivata</em> e lo script di Google non viene più caricato finché non accetti di nuovo.</p>
     <p><button type="button" id="revoke" class="mono">Revoca il consenso</button> <span id="revoke-ok" class="mono" hidden>✓ Consenso revocato</span></p>
     <p>In alternativa puoi cancellare i dati del sito dal browser (Impostazioni → Privacy → Dati dei siti), oppure bloccare i cookie dalle impostazioni del browser. Lo stesso comando è raggiungibile in ogni momento dal link <strong>Cookie</strong> in fondo alla home.</p>
     <script>
@@ -108,7 +125,14 @@
       // sito allo stato "consenso non ancora espresso": alla visita successiva
       // il banner ricompare e Consent Mode resta su denied.
       document.getElementById('revoke').addEventListener('click', function () {
-        try { localStorage.removeItem('aon-consent-v1'); } catch (e) {}
+        // Entrambe le chiavi: la v2 in uso e la v1 dei visitatori storici.
+        // Lasciarne una indietro significherebbe una revoca solo apparente.
+        try {
+          localStorage.removeItem('aon-consent-v2');
+          localStorage.removeItem('aon-consent-v1');
+        } catch (e) {}
+        // Questa pagina non carica gtag.js, quindi non c'e' nulla da mettere su
+        // "denied" qui: il consenso e' gia' revocato per ogni pagina successiva.
         document.getElementById('revoke-ok').hidden = false;
       });
     </script>

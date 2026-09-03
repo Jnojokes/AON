@@ -10,6 +10,13 @@
   "scripts": {
     "build": "node scripts/prerender.mjs",
     "dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "serve": "node scripts/guide/serve-mock.mjs --port 4000",
+    "serve:demo": "node scripts/guide/serve-mock.mjs --port 4000 --fixtures",
+    "guide:shots": "node scripts/guide/capture.mjs",
+    "guide:pdf": "node scripts/guide/build-pdf.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1"
   }
 }
