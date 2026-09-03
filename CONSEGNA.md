@@ -202,15 +202,34 @@ Per ognuna delle 12 righe qui sotto:
 
 ### 2.2 Marcare `contact_click` come evento chiave
 
-**Amministrazione** → **Visualizzazione dei dati** → **Eventi chiave** →
-**Crea evento chiave** → scrivi `contact_click` → salva.
+**Amministrazione** → **Visualizzazione dei dati** → **Eventi** → tab
+**«Eventi recenti»** → trova `contact_click` → **clicca la stella** alla sua
+sinistra.
 
-Se l'evento è già nell'elenco degli eventi rilevati, basta attivare
-l'interruttore **Contrassegna come evento chiave** sulla sua riga.
+> ⚠️ **Non usare il pulsante «Crea evento».** Quello serve a creare un evento
+> *nuovo e derivato* da un trigger; `contact_click` esiste già e crearlo di
+> nuovo produrrebbe un doppione. La stella è il meccanismo giusto, e lo dice il
+> banner nella pagina stessa.
+
+**Se `contact_click` non compare nell'elenco** è normale: la tab mostra solo gli
+eventi realmente ricevuti negli ultimi 28 giorni, e l'evento parte solo dopo che
+un visitatore ha accettato i cookie *e* ha cliccato un contatto. Con il traffico
+attuale non è ancora successo.
+
+Per farlo comparire, farlo scattare a mano: apri il sito in incognito → premi
+**Accetta** sul banner → clicca il pulsante email o **INQUIRE** dentro un
+progetto → aspetta 20-30 minuti. Per la verifica immediata c'è
+**Visualizzazione dei dati → DebugView**, dove gli eventi appaiono in tempo
+reale mentre si naviga.
 
 È l'unica conversione reale del sito: qualcuno che scrive ad Andrea. Senza
 questo, nessun report può dire quanti contatti ha generato il sito — restano
 solo visite senza esito misurabile.
+
+**Nota sugli eventi chiave già presenti.** `close_convert_lead`, `purchase` e
+`qualify_lead` sono segnaposto creati da GA4 e riportano «Nessun dato di stream
+rilevato»: non misurano nulla su questo sito. Si può togliere la stella ai primi
+due per tenere pulito il report; `purchase` è di sistema e conviene lasciarlo.
 
 ### 2.3 Impostare la conservazione dei dati a 14 mesi
 
