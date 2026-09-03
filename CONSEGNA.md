@@ -48,25 +48,20 @@ si rompe, ma non invia.
 
 | Nome | Valore | Obbligatoria |
 |---|---|---|
-| `SMTP_USER` | `sito@andreaonori.com` — **casella dedicata, da creare** | ✅ sì |
+| `SMTP_USER` | `video@andreaonori.com` | ✅ sì |
 | `SMTP_PASS` | la password di quella casella | ✅ sì |
-| `CONTACT_TO` | `video@andreaonori.com` — dove arrivano i messaggi | ✅ sì (se diversa da SMTP_USER) |
 | `SMTP_HOST` | `smtps.aruba.it` | no (è il default) |
 | `SMTP_PORT` | `465` | no (è il default) |
+| `CONTACT_TO` | — | non serve: senza, il destinatario è `SMTP_USER` |
 
-**Usare una casella dedicata, non `video@andreaonori.com`.** La password di
-quella casella dà accesso in **lettura a tutta la posta di Andrea**, mentre al
-modulo serve solo *spedire*. E quella password vivrebbe in una variabile
-d'ambiente su Vercel, visibile a chiunque abbia accesso al progetto: se
-trapelasse, con la casella dedicata il danno è «si possono mandare email dal
-dominio», con `video@` è «si legge tutta la corrispondenza con i clienti».
+`video@andreaonori.com` è la casella che Andrea ha creato proprio per essere
+contattato dal sito, quindi è la stessa che invia e riceve: bastano due
+variabili. Il messaggio arriva con mittente la casella stessa e `Reply-To`
+l'indirizzo del visitatore, così premendo «Rispondi» si scrive a lui.
 
-La casella si crea dall'Area Clienti Aruba → *Email*. Chi la crea imposta la
-password e la inserisce direttamente su Vercel, così non transita da nessuna
-parte — lo stesso ragionamento applicato al token GitHub in `BRIEF.md` §2.
-
-Effetto collaterale utile: i messaggi arrivano da un mittente riconoscibile, e
-Andrea può filtrare le richieste dal sito in una cartella.
+Chi conosce la password la inserisce direttamente su Vercel, senza farla
+transitare da chat o email — lo stesso criterio applicato al token GitHub in
+`BRIEF.md` §2.
 
 Parametri Aruba per caselle su dominio: `smtps.aruba.it`, porta **465**, SSL,
 autenticazione richiesta, TLS 1.2 minimo. L'utente è l'indirizzo email completo.
