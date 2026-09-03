@@ -57,13 +57,34 @@ potrebbe non essere ancora attivo. Il capitolo 05 della guida lo spiega ad
 Andrea, ma se il servizio non è attivo lui non può procedere. `media.json` oggi
 non contiene alcun link video, quindi la funzione non è mai stata usata.
 
-### 1.4 Completare l'indirizzo nella privacy policy
+### 1.4 🟢 Indirizzo completo — opportuno, non obbligatorio
 
-`privacy.html` riporta solo «Milano, Italia». L'art. 13 GDPR chiede l'indirizzo
-del titolare. Serve via e CAP da inserire in `privacy.html` (§1) e in
-`note-legali.html` (§1).
+*Rettifica di una valutazione precedente, che era troppo netta.*
 
-### 1.5 🔴 Search Console e Bing — il sito oggi è INVISIBILE
+`privacy.html` riporta «Milano, Italia» più la P. IVA e l'email. **Non è una
+violazione.** L'art. 13 GDPR chiede «l'identità e i **dati di contatto** del
+titolare»: non nomina l'indirizzo postale, e un'email di contatto reale e
+funzionante li soddisfa. La P. IVA, che c'è, è l'elemento identificativo forte.
+
+L'argomento a favore dell'indirizzo viene semmai dall'**art. 7 del
+D.Lgs. 70/2003**, che per i prestatori di servizi della società
+dell'informazione chiede «il domicilio o la sede legale». Se un sito portfolio
+senza transazioni rientri in quella definizione è discutibile: è un servizio
+promozionale, non un servizio prestato dietro remunerazione online.
+
+C'è anche un argomento **contro**: Andrea è un professionista individuale. Se
+lavora da casa, pubblicare l'indirizzo significa esporre il proprio domicilio
+privato — un problema di privacy reale, non teorico.
+
+**Raccomandazione:** se ha un indirizzo di studio, metterlo (rafforza anche il
+segnale locale per «fotografo a Milano»). Se lavora da casa, **P. IVA + email +
+città è una posizione difendibile** e allineata a quello che fa la quasi
+totalità dei professionisti italiani. Da rivedere se un domani il sito iniziasse
+a vendere qualcosa direttamente.
+
+Se si decide di aggiungerlo, va in `privacy.html` (§1) e in `note-legali.html` (§1).
+
+### 1.5 ✅ Search Console e Bing — configurati il 3 settembre 2026
 
 **Verificato il 3 settembre 2026.** Non è un'ipotesi: le ricerche danno zero.
 
@@ -103,10 +124,9 @@ un dettaglio teorico.
      che di solito porta la home nell'indice in pochi giorni invece che in
      settimane.
 
-2. **Bing Webmaster Tools** — `bing.com/webmasters`
-   - Si può **importare direttamente da Search Console** (un clic, nessuna
-     verifica separata). Altrimenti c'è il meta `msvalidate.01`, già predisposto.
-   - Bing conta doppio: alimenta anche **ChatGPT Search** e **Copilot**.
+2. ✅ **Bing Webmaster Tools** — **fatto il 3 settembre 2026.**
+   Bing conta doppio, perché alimenta anche **ChatGPT Search** e **Copilot**:
+   è da lì che passerà buona parte della visibilità sugli assistenti IA.
 
 3. **Primi link in entrata.** Anche solo tre o quattro, ma reali: il profilo
    Instagram (link in bio), una scheda su Behance o Vimeo, il sito delle agenzie
@@ -129,49 +149,85 @@ Il tag è installato e i dati arrivano.
 Il problema **non è il codice**: gli eventi ci sono e sono ben fatti. È che nella
 console GA4 sono quasi tutti invisibili.
 
-### 2.1 Registrare le dimensioni personalizzate — il passo indispensabile
+### 2.1 Registrare le 12 dimensioni personalizzate — procedura esatta
 
-In GA4, **un parametro evento non registrato non compare in nessun report**.
-Oggi `project_title` viene raccolto ma non è interrogabile: un report «progetti
-più visti» è letteralmente impossibile da costruire.
+In GA4 **un parametro evento non registrato non compare in nessun report**.
+`project_title` viene raccolto da settimane ma oggi non è interrogabile: un
+report «progetti più visti» è letteralmente impossibile da costruire senza
+questo passaggio.
 
-Admin → *Definizioni personalizzate* → *Crea dimensione personalizzata*, ambito
-**Evento**, per ognuna:
+**Percorso:** `analytics.google.com` → property **Andrea Onori** (`549740168`)
+→ ingranaggio **Amministrazione** in basso a sinistra → colonna
+**Visualizzazione dei dati** → **Definizioni personalizzate** → scheda
+**Dimensioni personalizzate** → pulsante blu **Crea dimensioni personalizzate**.
 
-| Nome da mostrare | Parametro evento |
-|---|---|
-| Titolo progetto | `project_title` |
-| Luogo progetto | `project_location` |
-| Anno progetto | `project_year` |
-| Formato progetto | `project_format` |
-| Sezione di partenza | `source_tab` |
-| Metodo di contatto | `method` |
-| Posizione nel sito | `location` |
-| Etichetta reel | `reel_label` |
-| Etichetta serie | `series_label` |
-| Nome sezione | `tab_name` |
-| Dominio esterno | `link_domain` |
-| Percentuale scroll | `percent_scrolled` |
+Per ognuna delle 12 righe qui sotto:
 
-I dati si popolano **dal momento della registrazione in avanti**: non è
-retroattivo. È il motivo per cui conviene farlo subito.
+1. **Nome dimensione** → copia dalla colonna *Nome da mostrare*
+2. **Ambito** → **Evento** (è il valore predefinito, non cambiarlo)
+3. **Descrizione** → copia dalla colonna *Descrizione* (facoltativo ma aiuta chi
+   guarderà i report fra sei mesi)
+4. **Parametro evento** → copia dalla colonna *Parametro*, **esattamente così
+   com'è scritto**: tutto minuscolo, con i trattini bassi. Se il nome non
+   corrisponde al carattere, la dimensione resta vuota per sempre e non c'è
+   alcun avviso.
+5. **Salva** → e ripeti
+
+| # | Nome da mostrare | Parametro | Descrizione |
+|---|---|---|---|
+| 1 | Titolo progetto | `project_title` | Nome del progetto aperto o da cui parte un contatto |
+| 2 | Luogo progetto | `project_location` | Città o location dello shooting |
+| 3 | Anno progetto | `project_year` | Anno del progetto |
+| 4 | Formato progetto | `project_format` | Pellicola o formato, es. EDITORIAL — CAMPAIGN |
+| 5 | Sezione di partenza | `source_tab` | Da quale sezione è stato aperto il progetto |
+| 6 | Metodo di contatto | `method` | email, inquire oppure instagram |
+| 7 | Posizione nel sito | `location` | Punto della pagina: header, modal, footer |
+| 8 | Etichetta reel | `reel_label` | Nome del reel riprodotto |
+| 9 | Etichetta serie | `series_label` | Nome della serie aperta |
+| 10 | Nome sezione | `tab_name` | Sezione scelta: feed, motion, index |
+| 11 | Dominio esterno | `link_domain` | Dominio del link esterno cliccato |
+| 12 | Percentuale scroll | `percent_scrolled` | 25, 50, 75 o 100 |
+
+**Tre cose da sapere prima di iniziare:**
+
+- **Non è retroattivo.** Le dimensioni si popolano solo con i dati raccolti
+  *dopo* la creazione. Tutto ciò che è stato registrato finora resta
+  inaccessibile. È il motivo per cui conviene farlo subito, anche prima che il
+  report sia pronto.
+- **Servono 24-48 ore** perché i valori compaiano nei report. Se subito dopo la
+  creazione vedi solo `(not set)`, è normale: aspetta un giorno.
+- **Il limite è 50** dimensioni con ambito evento per property; ne usiamo 12,
+  quindi non è un vincolo. La quota si controlla dal link *Informazioni sulla
+  quota* in alto a destra nella stessa schermata.
 
 ### 2.2 Marcare `contact_click` come evento chiave
 
-Admin → *Eventi chiave* → contrassegna **`contact_click`**. È l'unica conversione
-reale del sito: qualcuno che scrive ad Andrea. Senza questo, nessun report può
-dire quanti contatti ha generato il sito.
+**Amministrazione** → **Visualizzazione dei dati** → **Eventi chiave** →
+**Crea evento chiave** → scrivi `contact_click` → salva.
+
+Se l'evento è già nell'elenco degli eventi rilevati, basta attivare
+l'interruttore **Contrassegna come evento chiave** sulla sua riga.
+
+È l'unica conversione reale del sito: qualcuno che scrive ad Andrea. Senza
+questo, nessun report può dire quanti contatti ha generato il sito — restano
+solo visite senza esito misurabile.
 
 ### 2.3 Impostare la conservazione dei dati a 14 mesi
 
-Admin → *Impostazioni dei dati* → *Conservazione dei dati* → **14 mesi**.
-La privacy policy dichiara 14 mesi: se in console ne sono impostati 2 (il
-default), l'informativa afferma il falso.
+**Amministrazione** → colonna **Raccolta e modifica dei dati** →
+**Conservazione dei dati** → *Conservazione dei dati sugli eventi* →
+**14 mesi** → salva.
+
+Il valore predefinito è 2 mesi. La privacy policy del sito **dichiara 14 mesi**:
+se in console ne restano 2, l'informativa afferma il falso. È l'unico punto di
+questa sezione che ha un risvolto legale, non solo analitico.
 
 ### 2.4 Eliminare la property di test
 
-Nello stesso account c'è una property **`552553524` («dddd»)**, apparentemente di
-prova. Va rimossa, così il cliente trova un account pulito.
+Nello stesso account c'è una seconda property, **`552553524` («dddd»)**,
+apparentemente di prova e già barrata. **Amministrazione** → *Impostazioni della
+property* → *Elimina property*. Serve a consegnare ad Andrea un account pulito
+con una property sola.
 
 ### 2.5 Eventi già raccolti
 
