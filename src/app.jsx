@@ -306,9 +306,79 @@ import * as ReactDOM from 'react-dom/client';
             </div>
         );
 
+        // Copia l'indirizzo negli appunti e mostra una conferma.
+        //
+        // I pulsanti di contatto sono link mailto:. Funzionano per chi ha un
+        // client di posta configurato, ma per chi usa la webmail dal browser un
+        // click su mailto: NON FA NULLA: nessuna finestra, nessun errore. Su un
+        // sito il cui unico obiettivo e' farsi contattare, e' il difetto
+        // peggiore possibile — e non e' rilevabile da codice, perche' il
+        // browser non dice se ha aperto qualcosa.
+        //
+        // La soluzione e' non dipendere dall'esito: il mailto parte comunque
+        // per chi puo' usarlo, e in parallelo l'indirizzo finisce negli appunti
+        // con un avviso visibile. Cosi' il click produce sempre un risultato.
+        const useCopiaEmail = () => {
+            const [esito, setEsito] = useState(null);   // null | 'copiata' | 'mostra'
+            const timer = useRef(null);
+            useEffect(() => () => clearTimeout(timer.current), []);
+
+            // Ultima risorsa quando l'API appunti non e' disponibile o viene
+            // negata: una textarea fuori schermo e il vecchio execCommand.
+            const conTextarea = (testo) => {
+                try {
+                    const t = document.createElement('textarea');
+                    t.value = testo;
+                    t.setAttribute('readonly', '');
+                    t.style.cssText = 'position:absolute;left:-9999px;top:0';
+                    document.body.appendChild(t);
+                    t.select();
+                    const ok = document.execCommand('copy');
+                    document.body.removeChild(t);
+                    return ok;
+                } catch (e) { return false; }
+            };
+
+            const annuncia = (ok) => {
+                // Se la copia non e' riuscita si mostra comunque l'indirizzo:
+                // l'utente puo' selezionarlo a mano. Quello che NON si fa e'
+                // dire "copiata" quando non lo e' — sarebbe peggio del silenzio,
+                // perche' l'utente incollerebbe il nulla senza accorgersene.
+                setEsito(ok ? 'copiata' : 'mostra');
+                clearTimeout(timer.current);
+                timer.current = setTimeout(() => setEsito(null), ok ? 2600 : 6000);
+            };
+
+            const copia = (indirizzo) => {
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(indirizzo).then(
+                        () => annuncia(true),
+                        () => annuncia(conTextarea(indirizzo)),   // permesso negato → ripiego
+                    );
+                } else {
+                    annuncia(conTextarea(indirizzo));
+                }
+            };
+            return [esito, copia];
+        };
+
+        // Avviso che compare accanto al pulsante dopo il click.
+        const EmailCopiata = ({ mostra, indirizzo }) => (
+            <span className="mono uline" role="status" aria-live="polite" style={{
+                fontSize: '10px', color: mostra === 'copiata' ? 'var(--fg)' : 'var(--mute)',
+                alignSelf: 'center', opacity: mostra ? 1 : 0, transition: 'opacity .2s',
+                whiteSpace: 'nowrap',
+            }}>
+                {mostra === 'copiata' ? indirizzo + ' — copiata'
+                 : mostra === 'mostra' ? 'Scrivi a ' + indirizzo
+                 : '\u00A0'}
+            </span>
+        );
+
         const ProfileHeader = ({ onAvatarClick }) => {
             const p = S().profile;
             const mailto = 'mailto:' + p.ctaEmail + (p.ctaSubject ? '?subject=' + encodeURIComponent(p.ctaSubject) : '');
+            const [copiata, copia] = useCopiaEmail();
             return (
             <div>
                 <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-start mb-14 md:mb-10">
@@ -346,7 +416,7 @@ import * as ReactDOM from 'react-dom/client';
 
                         <div className="flex gap-3 md:gap-2 flex-wrap mt-7 md:mt-5">
                             {p.ctaPrimary && p.ctaEmail && <a href={mailto}
-                               onClick={() => track('contact_click', { method: 'email', location: 'header' })}
+                               onClick={() => { track('contact_click', { method: 'email', location: 'header' }); copia(p.ctaEmail); }}
                                className="btn-primary" style={{ display: 'inline-flex' }}>
                                 <span>{p.ctaPrimary}</span> <span className="arrow">→</span>
                             </a>}
@@ -354,6 +424,7 @@ import * as ReactDOM from 'react-dom/client';
                                 <span className="pulse-dot"></span>
                                 {p.ctaSecondary}
                             </button>}
+                            <EmailCopiata mostra={copiata} indirizzo={p.ctaEmail} />
                         </div>
                     </div>
                 </div>
@@ -701,6 +772,7 @@ import * as ReactDOM from 'react-dom/client';
 
         // Modal post — carosello di foto E video all'interno di un singolo post
         const PostModal = ({ idx, images, onClose, onNext, onPrev }) => {
+            const [mailCopiata, copiaMail] = useCopiaEmail();
             const post = images[idx] || {};
             const photos = slidesOf(post);
             const [photo, setPhoto] = useState(0);
@@ -778,8 +850,11 @@ import * as ReactDOM from 'react-dom/client';
                             </div>
                             {S().profile.ctaEmail && (
                                 <a href={`mailto:${S().profile.ctaEmail}?subject=${encodeURIComponent(String(S().post.inquireSubject || '').replace('{TITLE}', post.title || 'project'))}`}
-                                   onClick={() => track('contact_click', { method: 'inquire', location: 'modal', project_title: post.title || '' })}
+                                   onClick={() => { track('contact_click', { method: 'inquire', location: 'modal', project_title: post.title || '' }); copiaMail(S().profile.ctaEmail); }}
                                    className="btn-primary mt-4" style={{ display: 'inline-flex' }}><span>{S().post.inquire}</span> <span className="arrow">→</span></a>
+                            )}
+                            {S().profile.ctaEmail && (
+                                <div className="mt-3"><EmailCopiata mostra={mailCopiata} indirizzo={S().profile.ctaEmail} /></div>
                             )}
                         </div>
                     </div>
