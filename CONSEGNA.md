@@ -37,7 +37,27 @@ L'attuale è una stringa casuale di 28 caratteri. Quando si cambia, ricordare ch
 va impostata su Vercel → Environment Variables e che serve un **redeploy**: le
 env var vengono lette solo al deploy.
 
-### 1.3 🔴 Variabili SMTP per il modulo di contatto
+### 1.3 🔴 Modulo di contatto — creare il modulo Tally
+
+Il sito ha un modulo di contatto che usa **Tally**. Manca solo l'ID del modulo,
+da incollare nel pannello admin: nessun deploy.
+
+**Procedura completa in [`SETUP-TALLY.md`](SETUP-TALLY.md)** — creazione
+account, campi, tema, notifiche, ID. Circa 15 minuti.
+
+Due punti che vanno decisi, non subiti:
+- **Chi possiede l'account.** Meglio Andrea (`video@andreaonori.com`): è lui il
+  Titolare del trattamento nell'informativa, e i dati dei suoi clienti stanno
+  nel suo account. Se lo crea l'agenzia, va impostato l'inoltro a lui e
+  concordato il passaggio di proprietà.
+- **Il campo nascosto si deve chiamare `progetto`**, minuscolo. Tally è
+  sensibile alle maiuscole e un nome diverso non produce errori: il campo resta
+  semplicemente vuoto, e Andrea non sa da quale progetto arriva la richiesta.
+
+Finché l'ID non è impostato, i pulsanti di contatto aprono il **modulo interno**,
+che invia per email e richiede le variabili SMTP del paragrafo seguente.
+
+### 1.3-bis 🟡 Variabili SMTP — solo se non si usa Tally
 
 Il sito ha un **modulo di contatto** che invia email dalla casella Aruba del
 dominio. Finché queste variabili non sono impostate su Vercel, il modulo
