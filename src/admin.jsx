@@ -299,6 +299,14 @@ const SETTINGS_SCHEMA = [
     ],
   },
   {
+    key: "contact",
+    title: "Modulo di contatto",
+    hint: "Con un ID Tally il pulsante apre quel modulo e le richieste finiscono anche nel cruscotto Tally. Lasciando il campo vuoto si usa il modulo interno, che invia per email.",
+    fields: [
+      ["tallyId", "ID del modulo Tally (es. wA1bC2)"],
+    ],
+  },
+  {
     key: "topbar",
     title: "Barra sotto il marquee",
     hint: "La riga sottile con handle a sinistra e volume a destra.",

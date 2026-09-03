@@ -109,6 +109,12 @@ import * as ReactDOM from 'react-dom/client';
                 frame: 'FRAME',
                 autoplay: 'AUTOPLAY',
             },
+            contact: {
+                // Vuoto = si usa il modulo interno (richiede SMTP su Vercel).
+                // Con un ID Tally si usa quello: nessuna credenziale, e le
+                // richieste finiscono anche nel cruscotto Tally.
+                tallyId: '',
+            },
             footer: {
                 name: 'ANDREA ONORI',
                 studioLabel: 'STUDIO',
@@ -330,7 +336,107 @@ import * as ReactDOM from 'react-dom/client';
         // Ora c'e' un modulo che invia davvero, via /api/contact, dalla casella
         // Aruba del dominio. L'indirizzo resta visibile e copiabile per chi
         // preferisce scrivere dal proprio programma di posta.
+        // ── Modulo Tally ────────────────────────────────────────────────────
+        //
+        // Alternativa al modulo interno: non richiede credenziali SMTP e da' ad
+        // Andrea uno storico delle richieste con un cruscotto suo.
+        //
+        // Due scelte deliberate:
+        //
+        // 1. IFRAME NUDO, senza il loro embed.js. Caricare lo script di Tally
+        //    imporrebbe di riaprire script-src nella CSP, che oggi non ammette
+        //    nessuna origine esterna. Con il solo iframe basta frame-src, e
+        //    l'unico servizio di embed.js che serviva davvero — l'altezza
+        //    dinamica — si ottiene ascoltando da noi il suo postMessage.
+        //
+        // 2. MONTATO SOLO ALL'APERTURA. L'iframe esiste da quando questo
+        //    componente e' in pagina, cioe' solo dopo un click sul pulsante di
+        //    contatto. Chi naviga senza mai chiedere di scrivere non contatta
+        //    Tally: nessuna richiesta a terzi prima di un'azione esplicita.
+        const TallyForm = ({ formId, progetto, email }) => {
+            const [altezza, setAltezza] = useState(520);
+            const [caricato, setCaricato] = useState(false);
+            const [fallito, setFallito] = useState(false);
+
+            // Rete di sicurezza: se il modulo non si annuncia entro qualche
+            // secondo — ID sbagliato, modulo cancellato, Tally non
+            // raggiungibile — il visitatore vedrebbe un riquadro vuoto senza
+            // capire perche'. Meglio mostrargli l'indirizzo email: la richiesta
+            // di contatto non deve andare persa per un servizio che non
+            // risponde.
+            useEffect(() => {
+                const t = setTimeout(() => setCaricato((c) => { if (!c) setFallito(true); return c; }), 7000);
+                return () => clearTimeout(t);
+            }, []);
+
+            useEffect(() => {
+                // Tally comunica l'altezza del contenuto via postMessage. Si
+                // accetta solo da tally.so: un listener aperto a qualunque
+                // origine sarebbe una porta per messaggi arbitrari.
+                const onMsg = (e) => {
+                    if (!/^https:\/\/tally\.so$/.test(e.origin)) return;
+                    try {
+                        const d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+                        if (d && d.event === 'Tally.FormLoaded') setCaricato(true);
+                        const h = Number(d && (d.height || (d.payload && d.payload.height)));
+                        if (Number.isFinite(h) && h > 200) setAltezza(Math.min(h, 1400));
+                    } catch (err) { /* messaggio non nostro: si ignora */ }
+                };
+                window.addEventListener('message', onMsg);
+                return () => window.removeEventListener('message', onMsg);
+            }, []);
+
+            // I parametri passati in query diventano campi nascosti nella
+            // risposta: cosi' Andrea vede da quale progetto arriva la richiesta
+            // senza doverlo chiedere.
+            const qs = new URLSearchParams({
+                alignLeft: '1', hideTitle: '1', transparentBackground: '1', dynamicHeight: '1',
+                ...(progetto ? { progetto } : {}),
+            });
+
+            if (fallito) {
+                return (
+                    <div>
+                        <p style={{ fontSize: '13px', marginBottom: '10px' }}>
+                            Il modulo non si è caricato.
+                        </p>
+                        <p className="mono uline" style={{ fontSize: '10px', color: 'var(--mute)', lineHeight: 1.7 }}>
+                            Scrivi direttamente a <a href={'mailto:' + email} style={{ color: 'var(--fg)' }}>{email}</a>:
+                            la tua richiesta arriva comunque.
+                        </p>
+                    </div>
+                );
+            }
+
+            return (
+                <div style={{ position: 'relative', minHeight: '200px' }}>
+                    {!caricato && <div className="mono uline" style={{
+                        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', fontSize: '10px', color: 'var(--mute)' }}>
+                        Carico il modulo…
+                    </div>}
+                    <iframe
+                        src={`https://tally.so/embed/${encodeURIComponent(formId)}?${qs}`}
+                        title="Modulo di contatto"
+                        loading="lazy"
+                        // Il minimo necessario: inviare il modulo e aprire link.
+                        // Senza allow-same-origin l'iframe resta in un'origine
+                        // opaca e non puo' leggere nulla di questo sito.
+                        sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        style={{ width: '100%', height: altezza + 'px', border: 0,
+                                 opacity: caricato ? 1 : 0, transition: 'opacity .25s' }}
+                    />
+                </div>
+            );
+        };
+
         const ContactModal = ({ email, oggetto, progetto, origine, onClose }) => {
+            // Se l'ID Tally e' impostato nel pannello si usa quello, altrimenti
+            // resta il modulo interno che invia via SMTP. Cambiare canale e'
+            // quindi una modifica di un campo, non un deploy — utile se un
+            // domani il piano gratuito di Tally cambia.
+            const tallyId = String((S().contact && S().contact.tallyId) || '').trim();
             const [dati, setDati] = useState({ name: '', email: '', message: '', privacy: false, website: '' });
             const [stato, setStato] = useState('compila');   // compila | invio | inviato | errore
             const [errore, setErrore] = useState('');
@@ -419,7 +525,9 @@ import * as ReactDOM from 'react-dom/client';
                                              fontSize: '18px', cursor: 'pointer', lineHeight: 1, padding: '0 0 0 12px' }}>✕</button>
                         </div>
 
-                        {stato === 'inviato' ? (
+                        {tallyId ? (
+                            <TallyForm formId={tallyId} progetto={progetto} email={email} />
+                        ) : stato === 'inviato' ? (
                             <div>
                                 <p style={{ fontSize: '14px', marginBottom: '10px' }}>Messaggio inviato.</p>
                                 <p className="mono uline" style={{ fontSize: '10px', color: 'var(--mute)', lineHeight: 1.7 }}>
