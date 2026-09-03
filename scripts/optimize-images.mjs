@@ -107,3 +107,34 @@ for (const [vecchio, nuovo] of mappa) {
 JSON.parse(mj);   // se la riscrittura avesse rotto il JSON, meglio saperlo qui
 writeFileSync(mjPath, mj, 'utf8');
 console.log(`  media.json: ${sostituzioni} percorsi aggiornati ai .webp`);
+
+// ── .vercelignore: elenco esplicito degli originali ──────────────────────────
+// Una regola "media/*.jpg" sarebbe piu' corta ma romperebbe il pannello: le
+// foto caricate dal CMS arrivano in media/ proprio come .jpg, e verrebbero
+// escluse dal deploy pur essendo referenziate da media.json. Chi carica una
+// foto la vedrebbe sparire dal sito.
+// Elencando solo i file che hanno gia' un .webp accanto, un caricamento nuovo
+// viene pubblicato normalmente finche' non viene convertito.
+const VI = join(ROOT, '.vercelignore');
+const INIZIO = '# --- INIZIO ELENCO GENERATO ---';
+const FINE = '# --- FINE ELENCO GENERATO ---';
+let vi = readFileSync(VI, 'utf8');
+const originali = [...mappa.keys()]
+  .filter((k) => existsSync(join(ROOT, mappa.get(k))))   // solo se il .webp esiste davvero
+  .sort();
+const elenco = [
+  INIZIO,
+  ...originali,
+  '# Eccezione: immagine per le anteprime social. Diverse piattaforme non',
+  '# renderizzano il WebP nelle card, quindi questa resta JPEG e va pubblicata.',
+  '!media/og-cover.jpg',
+  FINE,
+].join('\n');
+
+if (vi.includes(INIZIO) && vi.includes(FINE)) {
+  vi = vi.slice(0, vi.indexOf(INIZIO)) + elenco + vi.slice(vi.indexOf(FINE) + FINE.length);
+} else {
+  vi = vi.replace(/\s*$/, '\n') + elenco + '\n';
+}
+writeFileSync(VI, vi, 'utf8');
+console.log(`  .vercelignore: ${originali.length} originali esclusi dal deploy (elencati uno per uno)`);

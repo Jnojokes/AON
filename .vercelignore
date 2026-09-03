@@ -19,13 +19,87 @@ asset/
 
 .claude/
 
-# Originali ad alta risoluzione: restano nel repository come archivio, ma non
-# vengono pubblicati. Il sito serve i .webp generati da
-# scripts/optimize-images.mjs — 101 MB di foto diventano 8 MB per chi naviga.
-# Nessun file viene cancellato: qui si decide solo cosa sale sul CDN.
-media/*.jpg
-media/*.jpeg
-media/*.png
-# Eccezione: l'immagine per le anteprime social. Diverse piattaforme non
-# renderizzano il WebP nelle card, quindi questa deve restare JPEG.
+# --- ORIGINALI AD ALTA RISOLUZIONE (blocco generato) --------------------------
+# Restano nel repository come archivio ma non vengono pubblicati: il sito serve
+# i .webp generati da scripts/optimize-images.mjs.
+#
+# ATTENZIONE: qui i file sono elencati UNO PER UNO, non con media/*.jpg.
+# Il motivo e' che il pannello admin carica le foto nuove come .jpg dentro
+# media/: una regola con il carattere jolly le escluderebbe dal deploy, e chi
+# carica una foto la vedrebbe sparire dal sito. Elencando solo gli originali che
+# hanno gia' una versione .webp, un caricamento nuovo viene pubblicato
+# normalmente finche' non lo si converte.
+#
+# Rigenerato da: npm run images
+# --- INIZIO ELENCO GENERATO ---
+# --- INIZIO ELENCO GENERATO ---
+media/fabiana-01.jpg
+media/fabiana-02.jpg
+media/fabiana-03.jpg
+media/greta-01.jpg
+media/greta-02.jpg
+media/greta-03.jpg
+media/greta-04.jpg
+media/greta-05.jpg
+media/greta-06.jpg
+media/greta-07.jpg
+media/greta-08.jpg
+media/greta-carousel.png
+media/greta-storyboard-story-final-mqunvu96.png
+media/greta-storyboard-story-final-mqunwp71.jpeg
+media/mugshot-backstage.jpg
+media/mugshot-carousel.png
+media/mugshot-storyboard-story1-mqunvpvi.png
+media/mugshot-storyboard-story1-mqunwvx6.jpeg
+media/mugshot-storyboard-story2-mqunvo67.png
+media/mugshot-storyboard-story2-mqunwuc9.jpeg
+media/og-cover.jpg
+media/okgiorgio-01.jpg
+media/okgiorgio-02.jpg
+media/okgiorgio-03.jpg
+media/okgiorgio-04.jpg
+media/okgiorgio-05.jpg
+media/okgiorgio-06.jpg
+media/okgiorgio-07.jpg
+media/santoni-01.jpg
+media/santoni-02.jpg
+media/santoni-03.jpg
+media/santoni-04.jpg
+media/santoni-05.jpg
+media/santoni-06.jpg
+media/santoni-07.jpg
+media/santoni-08.jpg
+media/santoni-09.jpg
+media/santoni-10.jpg
+media/santoni-11.jpg
+media/santoni-12.jpg
+media/santoni-13.jpg
+media/santoni-14.jpg
+media/santoni-15.jpg
+media/santoni-16.jpg
+media/santoni-17.jpg
+media/santoni-bto-4-1-1-mqunjfp4.jpg
+media/santoni-carousel.png
+media/santoni-storyboard-story1-mqunvssr.png
+media/santoni-storyboard-story1-mqunwt2t.jpeg
+media/santoni-storyboard-story1-mqunxs15.jpeg
+media/santoni-storyboard-story2-mqunvras.png
+media/santoni-storyboard-story2-mqunwrkt.jpeg
+media/story-greta.png
+media/story-mugshot-01.png
+media/story-mugshot-02.png
+media/story-santoni-01.png
+media/story-santoni-02.png
+media/story-ypsum.png
+media/ypsum-01.jpg
+media/ypsum-02.jpg
+media/ypsum-03.jpg
+media/ypsum-04.jpg
+media/ypsum-05.jpg
+media/ypsum-carousel.png
+media/ypsum-storyboard-story-mqunvmrj.png
+media/ypsum-storyboard-story-mqunwqfo.jpeg
+# Eccezione: immagine per le anteprime social. Diverse piattaforme non
+# renderizzano il WebP nelle card, quindi questa resta JPEG e va pubblicata.
 !media/og-cover.jpg
+# --- FINE ELENCO GENERATO ---

@@ -38,3 +38,8 @@ Guida-Pannello-Admin-AON.pdf
 # la produzione resta sull'ultima versione buona: meglio che committare artefatti
 # che si riempiono di diff a ogni rigenerazione.
 assets/
+
+# Cartella di consegna al cliente: contiene PDF generati, uno dei quali con
+# la password del pannello. Non deve finire nel repository.
+Consegna-Andrea-Onori/
+Stato-SEO-GEO-AON.pdf
