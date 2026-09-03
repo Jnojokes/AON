@@ -318,67 +318,186 @@ import * as ReactDOM from 'react-dom/client';
         // La soluzione e' non dipendere dall'esito: il mailto parte comunque
         // per chi puo' usarlo, e in parallelo l'indirizzo finisce negli appunti
         // con un avviso visibile. Cosi' il click produce sempre un risultato.
-        const useCopiaEmail = () => {
-            const [esito, setEsito] = useState(null);   // null | 'copiata' | 'mostra'
-            const timer = useRef(null);
-            useEffect(() => () => clearTimeout(timer.current), []);
+        // ── Modulo di contatto ──────────────────────────────────────────────
+        //
+        // I pulsanti di contatto erano link mailto:. Funzionano solo per chi ha
+        // un client di posta configurato: chi usa Gmail o Outlook dal browser —
+        // la maggioranza — clicca e NON SUCCEDE NULLA. Nessuna finestra, nessun
+        // errore, e nessun modo di accorgersene da codice, perche' il browser
+        // non riporta l'esito di un mailto:. Su un sito il cui unico obiettivo
+        // e' farsi contattare, era il difetto piu' costoso possibile.
+        //
+        // Ora c'e' un modulo che invia davvero, via /api/contact, dalla casella
+        // Aruba del dominio. L'indirizzo resta visibile e copiabile per chi
+        // preferisce scrivere dal proprio programma di posta.
+        const ContactModal = ({ email, oggetto, progetto, origine, onClose }) => {
+            const [dati, setDati] = useState({ name: '', email: '', message: '', privacy: false, website: '' });
+            const [stato, setStato] = useState('compila');   // compila | invio | inviato | errore
+            const [errore, setErrore] = useState('');
+            const [copiata, setCopiata] = useState(false);
+            const apertoIl = useRef(Date.now());
+            const box = useRef(null);
+            const primoCampo = useRef(null);
 
-            // Ultima risorsa quando l'API appunti non e' disponibile o viene
-            // negata: una textarea fuori schermo e il vecchio execCommand.
-            const conTextarea = (testo) => {
+            useEffect(() => {
+                const esc = (e) => { if (e.key === 'Escape') onClose(); };
+                document.addEventListener('keydown', esc);
+                const overflow = document.body.style.overflow;
+                document.body.style.overflow = 'hidden';
+                if (primoCampo.current) primoCampo.current.focus();
+                return () => {
+                    document.removeEventListener('keydown', esc);
+                    document.body.style.overflow = overflow;
+                };
+            }, []);
+
+            const set = (k) => (e) => setDati((d) => ({
+                ...d, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value,
+            }));
+
+            const copiaEmail = () => {
+                const fatto = () => { setCopiata(true); setTimeout(() => setCopiata(false), 2400); };
                 try {
-                    const t = document.createElement('textarea');
-                    t.value = testo;
-                    t.setAttribute('readonly', '');
-                    t.style.cssText = 'position:absolute;left:-9999px;top:0';
-                    document.body.appendChild(t);
-                    t.select();
-                    const ok = document.execCommand('copy');
-                    document.body.removeChild(t);
-                    return ok;
-                } catch (e) { return false; }
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(email).then(fatto, fatto);
+                    } else fatto();
+                } catch (e) { fatto(); }
             };
 
-            const annuncia = (ok) => {
-                // Se la copia non e' riuscita si mostra comunque l'indirizzo:
-                // l'utente puo' selezionarlo a mano. Quello che NON si fa e'
-                // dire "copiata" quando non lo e' — sarebbe peggio del silenzio,
-                // perche' l'utente incollerebbe il nulla senza accorgersene.
-                setEsito(ok ? 'copiata' : 'mostra');
-                clearTimeout(timer.current);
-                timer.current = setTimeout(() => setEsito(null), ok ? 2600 : 6000);
-            };
+            const invia = async (e) => {
+                e.preventDefault();
+                setErrore('');
+                if (!dati.name.trim()) return setErrore('Scrivi il tuo nome.');
+                if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(dati.email)) return setErrore('Controlla l’indirizzo email.');
+                if (dati.message.trim().length < 10) return setErrore('Scrivi qualche parola in piu’ nel messaggio.');
+                if (!dati.privacy) return setErrore('Serve la spunta sul trattamento dei dati.');
 
-            const copia = (indirizzo) => {
-                if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(indirizzo).then(
-                        () => annuncia(true),
-                        () => annuncia(conTextarea(indirizzo)),   // permesso negato → ripiego
-                    );
-                } else {
-                    annuncia(conTextarea(indirizzo));
+                setStato('invio');
+                try {
+                    const r = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            ...dati,
+                            subject: oggetto || 'Richiesta dal sito',
+                            elapsed: Date.now() - apertoIl.current,
+                        }),
+                    });
+                    const j = await r.json().catch(() => ({}));
+                    if (!r.ok) { setStato('errore'); setErrore(j.error || 'Invio non riuscito.'); return; }
+                    setStato('inviato');
+                    track('contact_submit', { location: origine, ...(progetto ? { project_title: progetto } : {}) });
+                } catch (err) {
+                    setStato('errore');
+                    setErrore('Sembra che manchi la connessione. Riprova, oppure scrivi direttamente all’indirizzo qui sotto.');
                 }
             };
-            return [esito, copia];
-        };
 
-        // Avviso che compare accanto al pulsante dopo il click.
-        const EmailCopiata = ({ mostra, indirizzo }) => (
-            <span className="mono uline" role="status" aria-live="polite" style={{
-                fontSize: '10px', color: mostra === 'copiata' ? 'var(--fg)' : 'var(--mute)',
-                alignSelf: 'center', opacity: mostra ? 1 : 0, transition: 'opacity .2s',
-                whiteSpace: 'nowrap',
-            }}>
-                {mostra === 'copiata' ? indirizzo + ' — copiata'
-                 : mostra === 'mostra' ? 'Scrivi a ' + indirizzo
-                 : '\u00A0'}
-            </span>
-        );
+            const campo = { width: '100%', background: '#0d0d0d', border: '1px solid var(--line)',
+                            color: 'var(--fg)', padding: '11px 12px', fontSize: '13px',
+                            fontFamily: 'inherit', outline: 'none' };
+            const etichetta = { fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase',
+                                color: 'var(--mute)', display: 'block', marginBottom: '5px' };
+
+            return (
+                <div onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+                     style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(0,0,0,0.86)',
+                              display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+                              padding: '24px', overflowY: 'auto' }}>
+                    <div ref={box} role="dialog" aria-modal="true" aria-label="Contatta Andrea Onori" className="fade"
+                         style={{ background: '#0a0a0a', border: '1px solid var(--line)', padding: '26px',
+                                  width: '100%', maxWidth: '480px', marginTop: '4vh', marginBottom: '4vh' }}>
+                        <div className="flex justify-between items-start" style={{ marginBottom: '18px' }}>
+                            <div>
+                                <div className="mono uline" style={{ fontSize: '9px', color: 'var(--accent)', marginBottom: '6px' }}>Contatto</div>
+                                <div className="display" style={{ fontSize: '22px', lineHeight: 1.1, textTransform: 'uppercase' }}>
+                                    {progetto || 'Scrivimi'}
+                                </div>
+                            </div>
+                            <button onClick={onClose} aria-label="Chiudi" className="mono"
+                                    style={{ background: 'none', border: 'none', color: 'var(--mute)',
+                                             fontSize: '18px', cursor: 'pointer', lineHeight: 1, padding: '0 0 0 12px' }}>✕</button>
+                        </div>
+
+                        {stato === 'inviato' ? (
+                            <div>
+                                <p style={{ fontSize: '14px', marginBottom: '10px' }}>Messaggio inviato.</p>
+                                <p className="mono uline" style={{ fontSize: '10px', color: 'var(--mute)', lineHeight: 1.7 }}>
+                                    Ti risponderò appena possibile, all&rsquo;indirizzo che hai indicato.
+                                </p>
+                                <button onClick={onClose} className="btn-secondary" style={{ marginTop: '20px', cursor: 'pointer' }}>Chiudi</button>
+                            </div>
+                        ) : (
+                            <form onSubmit={invia} noValidate>
+                                <div style={{ marginBottom: '14px' }}>
+                                    <label className="mono" style={etichetta} htmlFor="c-nome">Nome</label>
+                                    <input id="c-nome" ref={primoCampo} style={campo} value={dati.name}
+                                           onChange={set('name')} maxLength={100} autoComplete="name" required />
+                                </div>
+                                <div style={{ marginBottom: '14px' }}>
+                                    <label className="mono" style={etichetta} htmlFor="c-mail">Email</label>
+                                    <input id="c-mail" type="email" style={campo} value={dati.email}
+                                           onChange={set('email')} maxLength={254} autoComplete="email" required />
+                                </div>
+                                <div style={{ marginBottom: '14px' }}>
+                                    <label className="mono" style={etichetta} htmlFor="c-msg">Messaggio</label>
+                                    <textarea id="c-msg" style={{ ...campo, minHeight: '120px', resize: 'vertical', lineHeight: 1.5 }}
+                                              value={dati.message} onChange={set('message')} maxLength={4000} required />
+                                </div>
+
+                                {/* Honeypot: invisibile a una persona, compilato dai bot.
+                                    aria-hidden e tabIndex lo tengono fuori anche da
+                                    screen reader e navigazione da tastiera. */}
+                                <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
+                                    <label htmlFor="c-website">Sito web</label>
+                                    <input id="c-website" tabIndex={-1} autoComplete="off"
+                                           value={dati.website} onChange={set('website')} />
+                                </div>
+
+                                <label style={{ display: 'flex', gap: '9px', alignItems: 'flex-start',
+                                                fontSize: '11px', color: 'var(--mute)', lineHeight: 1.5,
+                                                marginBottom: '16px', cursor: 'pointer' }}>
+                                    <input type="checkbox" checked={dati.privacy} onChange={set('privacy')}
+                                           style={{ marginTop: '2px', accentColor: 'var(--accent)' }} required />
+                                    <span>Ho letto l&rsquo;<a href="/privacy" target="_blank" rel="noopener"
+                                          style={{ color: 'var(--fg)' }}>informativa privacy</a> e acconsento al
+                                          trattamento dei miei dati per ricevere una risposta.</span>
+                                </label>
+
+                                {errore && <p className="mono" role="alert" style={{ fontSize: '10px', color: 'var(--accent)',
+                                              marginBottom: '12px', lineHeight: 1.6 }}>{errore}</p>}
+
+                                <button type="submit" disabled={stato === 'invio'} className="btn-primary"
+                                        style={{ display: 'inline-flex', cursor: stato === 'invio' ? 'default' : 'pointer',
+                                                 opacity: stato === 'invio' ? 0.6 : 1 }}>
+                                    <span>{stato === 'invio' ? 'Invio…' : 'Invia messaggio'}</span>
+                                    {stato !== 'invio' && <span className="arrow">→</span>}
+                                </button>
+                            </form>
+                        )}
+
+                        {/* L'indirizzo resta comunque disponibile: chi preferisce il
+                            proprio programma di posta non deve passare dal modulo. */}
+                        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--line)' }}>
+                            <div className="mono uline" style={{ fontSize: '9px', color: 'var(--mute)', marginBottom: '6px' }}>Oppure scrivi a</div>
+                            <button onClick={copiaEmail} className="mono" title="Copia l'indirizzo"
+                                    style={{ background: 'none', border: 'none', padding: 0, color: 'var(--fg)',
+                                             fontSize: '12px', cursor: 'pointer', wordBreak: 'break-all' }}>
+                                {email}
+                            </button>
+                            <span className="mono" role="status" aria-live="polite"
+                                  style={{ fontSize: '9px', color: 'var(--accent)', marginLeft: '8px' }}>
+                                {copiata ? 'copiata' : ' '}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
         const ProfileHeader = ({ onAvatarClick }) => {
             const p = S().profile;
-            const mailto = 'mailto:' + p.ctaEmail + (p.ctaSubject ? '?subject=' + encodeURIComponent(p.ctaSubject) : '');
-            const [copiata, copia] = useCopiaEmail();
+            const [formAperto, setFormAperto] = useState(false);
             return (
             <div>
                 <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-start mb-14 md:mb-10">
@@ -415,19 +534,23 @@ import * as ReactDOM from 'react-dom/client';
                             : <span className="mono uline mb-7 md:mb-5 inline-block" style={{ fontSize: '11px' }}>{p.siteLabel}</span>)}
 
                         <div className="flex gap-3 md:gap-2 flex-wrap mt-7 md:mt-5">
-                            {p.ctaPrimary && p.ctaEmail && <a href={mailto}
-                               onClick={() => { track('contact_click', { method: 'email', location: 'header' }); copia(p.ctaEmail); }}
-                               className="btn-primary" style={{ display: 'inline-flex' }}>
+                            {/* Apre il modulo, non un link mailto: — vedi il
+                                commento su ContactModal. */}
+                            {p.ctaPrimary && p.ctaEmail && <button type="button"
+                               onClick={() => { track('contact_click', { method: 'form', location: 'header' }); setFormAperto(true); }}
+                               className="btn-primary" style={{ display: 'inline-flex', cursor: 'pointer' }}>
                                 <span>{p.ctaPrimary}</span> <span className="arrow">→</span>
-                            </a>}
+                            </button>}
                             {p.ctaSecondary && <button className="btn-secondary">
                                 <span className="pulse-dot"></span>
                                 {p.ctaSecondary}
                             </button>}
-                            <EmailCopiata mostra={copiata} indirizzo={p.ctaEmail} />
                         </div>
                     </div>
                 </div>
+                {formAperto && <ContactModal
+                    email={p.ctaEmail} oggetto={p.ctaSubject} origine="header"
+                    onClose={() => setFormAperto(false)} />}
             </div>
             );
         };
@@ -772,7 +895,7 @@ import * as ReactDOM from 'react-dom/client';
 
         // Modal post — carosello di foto E video all'interno di un singolo post
         const PostModal = ({ idx, images, onClose, onNext, onPrev }) => {
-            const [mailCopiata, copiaMail] = useCopiaEmail();
+            const [formAperto, setFormAperto] = useState(false);
             const post = images[idx] || {};
             const photos = slidesOf(post);
             const [photo, setPhoto] = useState(0);
@@ -849,13 +972,17 @@ import * as ReactDOM from 'react-dom/client';
                                 <button onClick={onNext} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>{S().post.next}</button>
                             </div>
                             {S().profile.ctaEmail && (
-                                <a href={`mailto:${S().profile.ctaEmail}?subject=${encodeURIComponent(String(S().post.inquireSubject || '').replace('{TITLE}', post.title || 'project'))}`}
-                                   onClick={() => { track('contact_click', { method: 'inquire', location: 'modal', project_title: post.title || '' }); copiaMail(S().profile.ctaEmail); }}
-                                   className="btn-primary mt-4" style={{ display: 'inline-flex' }}><span>{S().post.inquire}</span> <span className="arrow">→</span></a>
+                                <button type="button"
+                                   onClick={() => { track('contact_click', { method: 'form', location: 'modal', project_title: post.title || '' }); setFormAperto(true); }}
+                                   className="btn-primary mt-4" style={{ display: 'inline-flex', cursor: 'pointer' }}>
+                                    <span>{S().post.inquire}</span> <span className="arrow">→</span>
+                                </button>
                             )}
-                            {S().profile.ctaEmail && (
-                                <div className="mt-3"><EmailCopiata mostra={mailCopiata} indirizzo={S().profile.ctaEmail} /></div>
-                            )}
+                            {formAperto && <ContactModal
+                                email={S().profile.ctaEmail}
+                                oggetto={String(S().post.inquireSubject || '').replace('{TITLE}', post.title || 'project')}
+                                progetto={post.title || ''} origine="modal"
+                                onClose={() => setFormAperto(false)} />}
                         </div>
                     </div>
                 </div>

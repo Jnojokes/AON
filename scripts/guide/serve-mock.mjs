@@ -78,6 +78,24 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   let pathname = decodeURIComponent(url.pathname);
 
+  // Simula /api/contact senza inviare nulla: replica i controlli anti-spam e i
+  // codici di stato, cosi' il modulo si puo' provare senza credenziali SMTP.
+  if (pathname === "/api/contact") {
+    if (req.method !== "POST") { res.writeHead(405).end(JSON.stringify({ error: "Method not allowed" })); return; }
+    const b = await readBody(req);
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    if (String(b.website || "").trim() !== "") { res.writeHead(200).end(JSON.stringify({ ok: true })); return; }
+    if (!Number.isFinite(Number(b.elapsed)) || Number(b.elapsed) < 3000) {
+      console.log("  [contact mock] scartato: troppo veloce", b.elapsed + "ms");
+      res.writeHead(200).end(JSON.stringify({ ok: true })); return;
+    }
+    if (!b.name || !b.email || !b.message || b.privacy !== true) {
+      res.writeHead(400).end(JSON.stringify({ error: "Dati incompleti." })); return;
+    }
+    console.log(`  [contact mock] ricevuto da ${b.name} <${b.email}>: "${String(b.message).slice(0, 60)}"`);
+    res.writeHead(200).end(JSON.stringify({ ok: true })); return;
+  }
+
   if (pathname === "/api/save") {
     if (req.method !== "POST") { res.writeHead(405).end(JSON.stringify({ error: "Method not allowed" })); return; }
     const body = await readBody(req);

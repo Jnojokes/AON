@@ -37,7 +37,36 @@ L'attuale è una stringa casuale di 28 caratteri. Quando si cambia, ricordare ch
 va impostata su Vercel → Environment Variables e che serve un **redeploy**: le
 env var vengono lette solo al deploy.
 
-### 1.3 🟡 Credenziali Aruba da consegnare ad Andrea
+### 1.3 🔴 Variabili SMTP per il modulo di contatto
+
+Il sito ha un **modulo di contatto** che invia email dalla casella Aruba del
+dominio. Finché queste variabili non sono impostate su Vercel, il modulo
+risponde con un messaggio che invita a scrivere direttamente all'indirizzo — non
+si rompe, ma non invia.
+
+**Vercel → Settings → Environment Variables**, poi **Redeploy**:
+
+| Nome | Valore | Obbligatoria |
+|---|---|---|
+| `SMTP_USER` | `video@andreaonori.com` | ✅ sì |
+| `SMTP_PASS` | la password di quella casella | ✅ sì |
+| `SMTP_HOST` | `smtps.aruba.it` | no (è il default) |
+| `SMTP_PORT` | `465` | no (è il default) |
+| `CONTACT_TO` | destinatario, se diverso da `SMTP_USER` | no |
+
+Parametri Aruba per caselle su dominio: `smtps.aruba.it`, porta **465**, SSL,
+autenticazione richiesta, TLS 1.2 minimo. L'utente è l'indirizzo email completo.
+
+**Come funziona l'invio.** Il mittente è la casella autenticata, non l'indirizzo
+di chi scrive: metterlo nel campo `From` farebbe fallire il controllo SPF e il
+messaggio finirebbe nello spam. L'indirizzo del visitatore va invece in
+`Reply-To`, così premendo «Rispondi» si scrive direttamente a lui.
+
+**Dopo il deploy, prova reale:** apri il sito, premi **GET IN TOUCH**, compila e
+invia. Il messaggio deve arrivare nella casella entro qualche secondo. Se
+compare un errore, i log sono su Vercel → *Logs*, filtro `[contact]`.
+
+### 1.4 🟡 Credenziali Aruba da consegnare ad Andrea
 
 Le credenziali dell'Area Clienti Aruba (`managehosting.aruba.it`, account
 `15926774@aruba.it`) gestiscono **dominio, DNS e caselle email**. Vanno
@@ -57,7 +86,7 @@ potrebbe non essere ancora attivo. Il capitolo 05 della guida lo spiega ad
 Andrea, ma se il servizio non è attivo lui non può procedere. `media.json` oggi
 non contiene alcun link video, quindi la funzione non è mai stata usata.
 
-### 1.4 🟢 Indirizzo completo — opportuno, non obbligatorio
+### 1.5 🟢 Indirizzo completo — opportuno, non obbligatorio
 
 *Rettifica di una valutazione precedente, che era troppo netta.*
 
@@ -84,7 +113,7 @@ a vendere qualcosa direttamente.
 
 Se si decide di aggiungerlo, va in `privacy.html` (§1) e in `note-legali.html` (§1).
 
-### 1.5 ✅ Search Console e Bing — configurati il 3 settembre 2026
+### 1.6 ✅ Search Console e Bing — configurati il 3 settembre 2026
 
 **Verificato il 3 settembre 2026.** Non è un'ipotesi: le ricerche danno zero.
 
