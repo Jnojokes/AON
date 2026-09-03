@@ -17,9 +17,16 @@ Va deciso adesso, perché cambiarlo dopo significa rifare il modulo.
 | **Account intestato ad Andrea** (`video@andreaonori.com`) | È lui il titolare dei dati raccolti, coerente con l'informativa privacy che lo indica come Titolare del trattamento. Vede le richieste nel suo cruscotto e non dipende da nessuno. **Raccomandato.** |
 | Account intestato all'agenzia | Più comodo nell'immediato, ma i dati personali dei clienti di Andrea stanno in un account di terzi. Va formalizzato come rapporto di responsabile del trattamento, e alla fine del rapporto il modulo va migrato. |
 
-> Se l'account lo crea l'agenzia per comodità operativa, va comunque impostato
-> l'inoltro delle notifiche a `video@andreaonori.com` (punto 4) e concordato il
-> passaggio di proprietà alla consegna.
+> **Stato al 3 settembre 2026:** l'account è stato creato dall'agenzia
+> (workspace «Niccolò»). Due conseguenze da non perdere di vista:
+>
+> 1. Il punto 4 — inoltro delle notifiche a `video@andreaonori.com` — diventa
+>    **obbligatorio**, non opzionale: il destinatario predefinito è l'email
+>    dell'account, quindi senza modificarlo Andrea non riceve nulla.
+> 2. Va concordato il **passaggio di proprietà** alla consegna, oppure Andrea va
+>    invitato come membro del workspace. Finché l'account è dell'agenzia, i dati
+>    personali di chi scrive ad Andrea stanno in un account di terzi, mentre
+>    l'informativa indica Andrea come Titolare del trattamento.
 
 ---
 
