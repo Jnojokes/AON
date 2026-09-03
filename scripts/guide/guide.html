@@ -93,7 +93,7 @@
     <li><span class="n">02</span><span class="t">Entrare</span><span class="d">Indirizzo, utente, password e i messaggi d'errore</span></li>
     <li><span class="n">03</span><span class="t">Le cinque sezioni</span><span class="d">FEED, MOTION, SERIES, INDEX, IMPOSTAZIONI</span></li>
     <li><span class="n">04</span><span class="t">Le operazioni di tutti i giorni</span><span class="d">Aggiungere, caricare, riordinare, eliminare, salvare</span></li>
-    <li><span class="n">05</span><span class="t">I video</span><span class="d">Perché non si caricano qui e come si collegano</span></li>
+    <li><span class="n">05</span><span class="t">I video</span><span class="d">Caricarli su Aruba e collegarli al sito, passo per passo</span></li>
     <li><span class="n">06</span><span class="t">Le regole d'oro</span><span class="d">Proporzioni, pesi, campi da non toccare</span></li>
     <li><span class="n">07</span><span class="t">Quando qualcosa non va</span><span class="d">Ogni messaggio d'errore e cosa fare</span></li>
     <li><span class="n">08</span><span class="t">Rimediare a un errore</span><span class="d">Non c'è annulla: ecco come si torna indietro</span></li>
@@ -303,29 +303,100 @@
   <h2>05 · I video</h2>
   <div class="box warn">
     <span class="lbl">La regola</span>
-    <p><strong>I video non si caricano mai nel pannello.</strong> Restano sullo storage Aruba; qui si incolla solo il loro indirizzo. Se provi a trascinare un <code>.mp4</code>, il pannello lo rifiuta e te lo ricorda.</p>
+    <p><strong>I video non si caricano mai nel pannello.</strong> Restano sul tuo spazio Aruba; nel sito si incolla solo il loro indirizzo. Se provi a trascinare un <code>.mp4</code>, il pannello lo rifiuta e te lo ricorda.</p>
   </div>
-  <p>Il motivo è pratico: un video pesa quanto centinaia di foto. Tenendolo fuori, il sito resta leggero e il video parte solo quando qualcuno lo clicca.</p>
+  <p>Il motivo è pratico: un video pesa quanto centinaia di foto. Tenendolo fuori, il sito resta leggero e il video si scarica solo quando qualcuno lo clicca.</p>
 
-  <ol class="steps">
-    <li><strong>Esporta e carica.</strong> MP4 (H.264 + AAC), 1080p, e caricalo sul tuo spazio Aruba. Un reel da 30 secondi dovrebbe stare in 5–15 MB: più è leggero, più parte subito.</li>
-    <li><strong>Prendi il link giusto.</strong> Sullo storage imposta il file come <strong>pubblico</strong> e copia il link diretto: deve finire in <code>.mp4</code> e, aperto in una scheda nuova, deve far partire il video. Se apre una pagina di anteprima o chiede il login, non è quello giusto.</li>
-    <li><strong>Incollalo</strong> nel campo <strong>Link video esterno</strong> e premi <strong>Verifica link</strong>. Se compare ✓ con durata e risoluzione, il sito lo riprodurrà.</li>
-    <li><strong>Metti una copertina.</strong> Trascina una foto nel riquadro (consigliato) oppure premi <strong>Copertina auto</strong>, che prova a estrarre un fotogramma dal video. Poi <strong>Salva tutto</strong>.</li>
-  </ol>
-
-  <h3>Se «Verifica link» dà errore</h3>
+  <h3>Quale pannello Aruba</h3>
+  <p>Questo è il punto in cui è facile perdere tempo, perché Aruba ha <strong>due pannelli diversi</strong> e servono a cose diverse.</p>
   <table>
-    <thead><tr><th style="width:46%">Cosa dice</th><th>Cosa fare</th></tr></thead>
+    <thead><tr><th style="width:38%">Pannello</th><th>A cosa serve</th></tr></thead>
     <tbody>
-      <tr><td>File non raggiungibile</td><td>Sullo storage il file non è pubblico. Cambia il permesso.</td></tr>
-      <tr><td>Il link non apre un file video diretto</td><td>Hai copiato il link della pagina di condivisione, non del file. Serve un indirizzo che finisca in <code>.mp4</code>.</td></tr>
-      <tr><td>Il browser non riesce a decodificare</td><td>Il formato non va bene: riesporta in MP4, H.264 + AAC.</td></tr>
-      <tr><td>usa https://</td><td>Il link è in <code>http://</code>. Su un sito sicuro i video in http vengono bloccati: serve <code>https://</code>.</td></tr>
-      <tr><td>Timeout</td><td>Lo storage non ha risposto in 20 secondi. File molto grande o server lento: riprova, e valuta di comprimere il video.</td></tr>
+      <tr><td><strong>arubacloud.com</strong><br><span class="mono" style="font-size:8pt;color:var(--mute)">Cloud → Storage</span></td><td><strong>È questo che serve per i video.</strong> Aruba Cloud Object Storage: uno spazio dove appoggiare file e renderli raggiungibili da un link.</td></tr>
+      <tr><td><span style="color:var(--mute)">managehosting.aruba.it</span><br><span class="mono" style="font-size:8pt;color:var(--mute)">Area Clienti</span></td><td><span style="color:var(--mute)">Gestisce il dominio e le caselle email. Il suo spazio web <strong>non</strong> è utilizzabile per i video, perché quel dominio serve già il sito.</span></td></tr>
     </tbody>
   </table>
-  <p>Se <strong>Copertina auto</strong> non funziona non è un tuo errore: alcuni storage non permettono al browser di leggere il fotogramma. In quel caso trascina tu una foto come copertina.</p>
+  <div class="box">
+    <span class="lbl">Se non lo trovi</span>
+    <p>Se dentro Aruba Cloud non vedi la voce <strong>Storage</strong>, il servizio non è ancora attivo e va attivato una volta sola. È a consumo: si paga lo spazio occupato e il traffico, nell'ordine di pochi euro al mese per una manciata di reel. Chiedilo a chi ti gestisce il sito.</p>
+  </div>
+</section>
+
+<section class="page">
+  <h2>05 · I video — la procedura</h2>
+
+  <ol class="steps">
+    <li>
+      <strong>Esporta il video.</strong> MP4, codec <strong>H.264 + audio AAC</strong>, 1080p — oppure 1080×1920 per i verticali.<br>
+      Peso indicativo per un reel di 20–40 secondi: <strong>5–15 MB</strong>. Più è leggero, più parte subito su un telefono.<br>
+      <span style="color:var(--mute)">Da Premiere: preset <em>H.264 → Match Source, Adaptive Medium Bitrate</em>. Da DaVinci: <em>MP4, H.264, 6–8 Mbps</em>.</span>
+    </li>
+    <li>
+      <strong>Carica il file su Aruba Cloud Object Storage.</strong><br>
+      Entra su <code>arubacloud.com</code> → <strong>Storage</strong> → apri il tuo bucket → trascina dentro il file.<br>
+      <span style="color:var(--mute)">Dal client web i file devono stare sotto i 2 GB: con un reel esportato come al punto 1 non è un problema.</span>
+    </li>
+    <li>
+      <strong>Rendi il file pubblico.</strong> È il passaggio che si dimentica più spesso, e senza il quale il video esiste ma il sito non riesce a mostrarlo.<br>
+      Tasto destro sul file → <strong>Modifica permessi</strong> → spunta <strong>«Download file»</strong> per <strong>«Tutti gli utenti»</strong> → salva.
+    </li>
+    <li>
+      <strong>Copia il link diretto</strong> del file. Deve avere tutte e tre queste caratteristiche:
+      <ul style="margin-top:4pt">
+        <li>inizia con <code>https://</code> — non <code>http://</code>;</li>
+        <li>finisce con <code>.mp4</code>;</li>
+        <li><strong>aperto in una scheda nuova fa partire il video</strong>, non apre una pagina di anteprima e non chiede di accedere.</li>
+      </ul>
+      <span style="color:var(--mute)">La terza è la prova decisiva: se incolli il link in una scheda e parte il video, è quello giusto.</span>
+    </li>
+    <li>
+      <strong>Incollalo nel pannello.</strong> Dove dipende da dove vuoi il video:
+      <ul style="margin-top:4pt">
+        <li><strong>MOTION</strong> — campo <em>«Link video esterno · Aruba (.mp4)»</em> nel riquadro del reel;</li>
+        <li><strong>FEED</strong> — pulsante <em>«+ Link video»</em> dentro il post: il video diventa una slide;</li>
+        <li><strong>SERIES</strong> — stesso pulsante, il video diventa una slide della storia.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Premi «Verifica link».</strong><br>
+      <strong>✓ verde</strong> con durata e risoluzione → il sito lo riprodurrà.<br>
+      <strong>✕ rosso</strong> → il messaggio dice esattamente cosa non va (vedi la tabella sotto).
+    </li>
+    <li>
+      <strong>Metti la copertina.</strong> È l'immagine che si vede prima del click ed è ciò che tiene il sito leggero.<br>
+      Trascina una foto nel riquadro — è la scelta migliore — oppure premi <strong>«Copertina auto»</strong> e il pannello prova a estrarre un fotogramma dal video.
+    </li>
+    <li><strong>Premi «Salva tutto».</strong> Dopo una ventina di secondi il video è sul sito.</li>
+  </ol>
+</section>
+
+<section class="page">
+  <h2>05 · I video — se qualcosa non va</h2>
+  <table>
+    <thead><tr><th style="width:42%">Cosa dice il pannello</th><th>Cosa fare</th></tr></thead>
+    <tbody>
+      <tr><td><strong>File non raggiungibile</strong></td><td>Il file non è pubblico. Rifai il passo 3: permessi → «Download file» per «Tutti gli utenti».</td></tr>
+      <tr><td><strong>Il link non apre un file video diretto</strong></td><td>Hai copiato il link della pagina di condivisione, non del file. Apri il link in una scheda: se non parte il video, non è quello giusto.</td></tr>
+      <tr><td><strong>Il browser non riesce a decodificare il file</strong></td><td>Il formato non va bene. Riesporta in MP4, H.264 + AAC.</td></tr>
+      <tr><td><strong>usa https://</strong></td><td>Il link è in <code>http://</code>. Su un sito sicuro i video in http vengono bloccati dal browser.</td></tr>
+      <tr><td><strong>Timeout: lo storage non ha risposto entro 20 secondi</strong></td><td>File molto grande o server lento. Riprova, e valuta di riesportare il video più leggero.</td></tr>
+      <tr><td><strong>Link HLS (.m3u8)</strong></td><td>Si vede su iPhone ma non su Chrome. Serve un file <code>.mp4</code> diretto.</td></tr>
+      <tr><td><strong>«Copertina auto» dà errore</strong></td><td>Non è colpa tua: alcuni storage non permettono al browser di leggere il fotogramma. Trascina tu una foto, il risultato è identico.</td></tr>
+      <tr><td><strong>Il video parte ma va a scatti</strong></td><td>File troppo pesante. Riesporta seguendo il punto 1.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cosa non serve fare</h3>
+  <ul>
+    <li>Non serve comprimere i video sotto i 100 MB «per farli stare nel sito»: nel sito non entrano comunque, e non è più un problema.</li>
+    <li>Non serve cancellare i video vecchi da Aruba quando li sostituisci: basta cambiare il link nel pannello.</li>
+    <li>Non serve toccare nessun file di codice: tutto passa dal pannello.</li>
+  </ul>
+
+  <div class="box">
+    <span class="lbl">Una volta sola</span>
+    <p>I passi 1–4 riguardano Aruba e si imparano la prima volta. Dalla seconda in poi il lavoro è: esporta, carica, copia il link, incolla, salva. Cinque minuti.</p>
+  </div>
 </section>
 
 <!-- ══════════════════ 06 REGOLE ══════════════════ -->

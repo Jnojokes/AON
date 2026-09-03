@@ -37,13 +37,33 @@ L'attuale è una stringa casuale di 28 caratteri. Quando si cambia, ricordare ch
 va impostata su Vercel → Environment Variables e che serve un **redeploy**: le
 env var vengono lette solo al deploy.
 
-### 1.3 Completare l'indirizzo nella privacy policy
+### 1.3 🟡 Credenziali Aruba da consegnare ad Andrea
+
+Le credenziali dell'Area Clienti Aruba (`managehosting.aruba.it`, account
+`15926774@aruba.it`) gestiscono **dominio, DNS e caselle email**. Vanno
+consegnate ad Andrea, che è il titolare del dominio — ma **per un canale
+separato**, non dentro la guida.
+
+Il motivo: la guida spiega come cambiare foto e testi, e verrà inoltrata e
+salvata. Con l'accesso al pannello admin al massimo si sbaglia una didascalia;
+con l'accesso Aruba si spegne il sito e l'email. Concentrare le due cose nello
+stesso documento è l'errore da evitare.
+
+Nella guida resta solo la password del pannello admin.
+
+**Da verificare inoltre:** per i video serve **Aruba Cloud Object Storage**
+(`arubacloud.com` → Storage), che è un servizio **diverso** dall'Area Clienti e
+potrebbe non essere ancora attivo. Il capitolo 05 della guida lo spiega ad
+Andrea, ma se il servizio non è attivo lui non può procedere. `media.json` oggi
+non contiene alcun link video, quindi la funzione non è mai stata usata.
+
+### 1.4 Completare l'indirizzo nella privacy policy
 
 `privacy.html` riporta solo «Milano, Italia». L'art. 13 GDPR chiede l'indirizzo
 del titolare. Serve via e CAP da inserire in `privacy.html` (§1) e in
 `note-legali.html` (§1).
 
-### 1.4 🔴 Search Console e Bing — il sito oggi è INVISIBILE
+### 1.5 🔴 Search Console e Bing — il sito oggi è INVISIBILE
 
 **Verificato il 3 settembre 2026.** Non è un'ipotesi: le ricerche danno zero.
 
