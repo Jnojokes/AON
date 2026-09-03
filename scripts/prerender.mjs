@@ -31,7 +31,7 @@
  * Uso: node scripts/prerender.mjs
  */
 
-import { readFileSync, writeFileSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, statSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -99,6 +99,16 @@ const altOf = (p) =>
   [p.title, p.film, p.location || p.loc, p.year].filter(Boolean).join(' — ');
 
 const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
+
+/** Slug di un progetto. Usato per l'@id nel JSON-LD, per l'URL della pagina
+ *  dedicata e per la voce in sitemap: deve essere calcolato in un posto solo,
+ *  altrimenti le tre cose divergono e i riferimenti si rompono. */
+const slugify = (t) =>
+  String(t || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 
 /** Ricava un titolo leggibile dal nome del file. Serve dove il pannello non
  *  fornisce un titolo: meglio "GRETA STORYBOARD" che "Motion frame 03".
@@ -226,9 +236,17 @@ const projectArticle = (p, aspect) => {
   const cover = coverOf(p);
   const alt = altOf(p);
   const meta = [p.location || p.loc, p.year, p.film].filter(Boolean);
+  // Il titolo e' un link alla pagina del progetto. Senza questo le pagine in
+  // work/ sarebbero orfane: raggiungibili solo dalla sitemap, che i crawler
+  // usano come suggerimento, non come percorso. Un link vero dalla home e'
+  // il modo in cui vengono davvero scoperte e a cui viene passata autorita'.
+  const slug = slugify(p.title);
+  const titleHtml = slug
+    ? `<a href="/work/${slug}">${esc(p.title || 'Untitled')}</a>`
+    : esc(p.title || 'Untitled');
   return `            <article class="pf-item">
               ${cover ? `<img src="${esc(abs(cover))}" alt="${esc(alt)}" style="aspect-ratio:${aspect}" loading="lazy" decoding="async">` : ''}
-              <h3>${esc(p.title || 'Untitled')}</h3>
+              <h3>${titleHtml}</h3>
               ${meta.length ? `<p class="pf-meta">${esc(meta.join(' · '))}</p>` : ''}
             </article>`;
 };
@@ -449,7 +467,7 @@ for (const title of projectTitles) {
   const cover = coverOf(first);
   const work = {
     '@type': 'Photograph',
-    '@id': `${SITE.origin}/#work-${encodeURIComponent(title.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, ''))}`,
+    '@id': `${SITE.origin}/work/${slugify(title)}#work`,
     name: title,
     // Solo creator, non copyrightHolder: la paternita' dello scatto e' sempre di
     // Andrea, la titolarita' dei diritti economici sul lavoro commissionato e'
@@ -544,6 +562,186 @@ ${projectTitles.length ? `      <p>Projects: ${esc(projectTitles.join(', '))}.</
 ${locations.length ? `      <p>Locations: ${esc(locations.join(', '))}.</p>` : ''}
     </section>`;
 
+// ── 2-bis. Pagine per progetto ───────────────────────────────────────────────
+//
+// Il sito era una pagina sola: due URL in tutto e circa 400 parole. Per un
+// motore di ricerca e' poca superficie; per un motore generativo e' quasi
+// nulla, perche' non c'e' un solo testo lungo che possa essere citato per
+// esteso. Una pagina per progetto risolve entrambe le cose con lo stesso
+// contenuto che il portfolio ha gia'.
+//
+// Sono pagine statiche pure, senza React: non hanno bisogno di interattivita',
+// e cosi' sono leggibili da chiunque, anche dai crawler che non eseguono JS.
+
+const projectPages = projectTitles
+  .map((title) => {
+    const entries = [...feed, ...indexList].filter((p) => p.title === title);
+    const first = entries[0];
+    if (!first) return null;
+    const slug = slugify(title);
+    if (!slug) return null;
+
+    // Tutte le immagini del progetto, senza duplicati e senza i video.
+    const images = [...new Set(
+      entries.flatMap((e) => [coverOf(e), ...((e.images || []).map(coverOf))]).filter(Boolean)
+    )];
+
+    const year = entries.map((e) => e.year).find(Boolean) || '';
+    const loc = entries.map((e) => e.location || e.loc).find(Boolean) || '';
+    const film = entries.map((e) => e.film).find(Boolean) || '';
+    const desc = entries.map((e) => e.description).find((d) => typeof d === 'string' && d.trim());
+    const ai = entries.some((e) => e.ai);
+
+    // Senza descrizione dal pannello si genera una frase fattuale dai dati che
+    // ci sono. E' poco, e il pannello lo dice a chi scrive — ma e' meglio di
+    // una pagina muta, ed e' comunque vero.
+    // Senza descrizione dal pannello si compone un testo con i soli fatti
+    // disponibili. Non e' riempitivo: ogni frase e' verificabile dai dati del
+    // sito. Resta comunque una pagina piu' povera, e il pannello lo dice a chi
+    // scrive — ma e' meglio di una pagina muta.
+    const paragraphs = desc
+      ? desc.split(/\n+/).map((t) => t.trim()).filter(Boolean)
+      : [
+          [
+            `${title} is a ${film ? film.toLowerCase().replace(/\s*—\s*/g, ' ') + ' ' : ''}project`,
+            ` by ${SITE.name}, ${SITE.role.toLowerCase()} based in ${SITE.city}, Italy`,
+            loc ? `, photographed in ${loc}` : '',
+            year ? ` in ${year}` : '',
+            '.',
+          ].join(''),
+          `${SITE.name} works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines. He has been working professionally since ${SITE.since}.`,
+          images.length
+            ? `This project page collects ${images.length} image${images.length === 1 ? '' : 's'} from the shoot.`
+            : '',
+          `For licensing, full production credits or commissions, contact ${SITE.email}.`,
+        ].filter(Boolean);
+
+    return { title, slug, images, year, loc, film, ai, paragraphs, hasDesc: Boolean(desc) };
+  })
+  .filter(Boolean);
+
+const projectPageHtml = (pg, others = []) => {
+  const url = `${SITE.origin}/work/${pg.slug}`;
+  const cover = pg.images[0] || SITE.ogImage;
+  const testo = pg.paragraphs.join(' ');
+  const metaDesc = (testo.length > 155 ? testo.slice(0, 152).replace(/\s+\S*$/, '') + '…' : testo);
+
+  // Un grafo per pagina: l'opera, il suo autore, la briciola di navigazione.
+  // BreadcrumbList qui e' legittimo — prima non lo era, perche' non esisteva
+  // una gerarchia di pagine.
+  const graph = [
+    {
+      '@type': 'CreativeWork',
+      '@id': `${url}#work`,
+      name: pg.title,
+      url,
+      description: testo,
+      creator: { '@id': `${SITE.origin}/#person` },
+      isPartOf: { '@id': `${SITE.origin}/#website` },
+      ...(pg.year ? { dateCreated: String(pg.year) } : {}),
+      ...(pg.loc ? { contentLocation: { '@type': 'Place', name: pg.loc } } : {}),
+      ...(pg.film ? { genre: pg.film } : {}),
+      ...(pg.images.length ? {
+        image: pg.images.slice(0, 12).map((src) => ({
+          '@type': 'ImageObject',
+          contentUrl: abs(src),
+          creditText: SITE.name,
+          license: `${SITE.origin}/note-legali`,
+        })),
+      } : {}),
+      ...(pg.ai ? { additionalProperty: AI_PROPERTY } : {}),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${url}#breadcrumb`,
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: SITE.name, item: `${SITE.origin}/` },
+        { '@type': 'ListItem', position: 2, name: 'Work', item: `${SITE.origin}/#work` },
+        { '@type': 'ListItem', position: 3, name: pg.title },
+      ],
+    },
+  ];
+
+  const meta = [pg.loc, pg.year, pg.film].filter(Boolean);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(pg.title)} — ${esc(SITE.name)}</title>
+<meta name="description" content="${esc(metaDesc)}">
+<link rel="canonical" href="${url}">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="theme-color" content="#000000">
+<meta name="tdm-reservation" content="1">
+<meta name="tdm-policy" content="${SITE.origin}/note-legali">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="${esc(SITE.name)}">
+<meta property="og:title" content="${esc(pg.title)} — ${esc(SITE.name)}">
+<meta property="og:description" content="${esc(metaDesc)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${esc(abs(cover))}">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<style>
+  :root{--bg:#000;--fg:#fff;--mute:#8a8a8a;--line:rgba(255,255,255,0.14);--accent:#ff4a1c}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--fg)}
+  body{font-family:'Bricolage Grotesque',sans-serif;line-height:1.6}
+  .wrap{max-width:1100px;margin:0 auto;padding:40px 24px 96px}
+  .mono{font-family:'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+  a{color:var(--fg)}
+  .back{font-size:10px;color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
+  h1{font-family:'Archivo Black',sans-serif;font-size:clamp(34px,7vw,74px);line-height:.95;text-transform:uppercase;margin:22px 0 10px}
+  .meta{font-size:10px;color:var(--mute);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:26px}
+  .meta span:not(:last-child)::after{content:" ·";color:var(--line)}
+  .lede{max-width:68ch;margin-bottom:34px}
+  .lede p{font-size:15px;color:var(--mute);margin-bottom:10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .grid img{width:100%;height:auto;display:block;background:#0a0a0a}
+  .ai{display:inline-block;font-size:9px;border:1px solid var(--accent);color:var(--accent);padding:2px 6px;margin-bottom:14px}
+  .altri{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+  .altri a{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-decoration:none;border:1px solid var(--line);padding:7px 11px}
+  .altri a:hover{color:var(--fg);border-color:var(--fg)}
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:10px;color:var(--mute);display:flex;gap:16px;flex-wrap:wrap}
+  footer a{color:var(--mute);text-decoration:none}
+</style>
+<script type="application/ld+json">
+${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }, null, 2)}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <a class="back mono" href="/">← ${esc(SITE.name)}</a>
+  <h1>${esc(pg.title)}</h1>
+  <div class="meta mono">${meta.map((m) => `<span>${esc(m)}</span>`).join('')}</div>
+  ${pg.ai ? '<div class="ai mono">◇ AI-enhanced</div>' : ''}
+  <div class="lede">
+${pg.paragraphs.map((t) => `    <p>${esc(t)}</p>`).join('\n')}
+  </div>
+  <div class="grid">
+${pg.images.map((src, i) => `    <img src="${esc(abs(src))}" alt="${esc(pg.title)}${pg.film ? ' — ' + esc(pg.film) : ''}${pg.loc ? ' — ' + esc(pg.loc) : ''}${pg.year ? ' — ' + esc(pg.year) : ''}" loading="${i < 2 ? 'eager' : 'lazy'}" decoding="async">`).join('\n')}
+  </div>
+  ${others.length ? `<nav class="altri">
+    <div class="mono" style="font-size:10px;color:var(--mute);margin-bottom:10px">Altri progetti</div>
+    ${others.map((o) => `<a href="/work/${o.slug}">${esc(o.title)}</a>`).join('\n    ')}
+  </nav>` : ''}
+  <footer>
+    <a href="/">← Tutti i progetti</a>
+    <a href="mailto:${esc(SITE.email)}?subject=${encodeURIComponent('Inquiry — ' + pg.title)}">${esc(SITE.email)}</a>
+    <a href="${esc(SITE.instagram)}" rel="me noopener">${esc(SITE.instagramHandle)}</a>
+    <a href="/note-legali">Note legali</a>
+    <span>© ${new Date().getFullYear()} ${esc(SITE.name)} — P. IVA ${esc(SITE.vat)}</span>
+  </footer>
+</div>
+</body>
+</html>
+`;
+};
+
 // ── 3. sitemap.xml ───────────────────────────────────────────────────────────
 // Con image sitemap: per un portfolio fotografico Google Images è un canale
 // reale, e le immagini non sono raggiungibili senza eseguire il JS.
@@ -617,6 +815,14 @@ ${sitemapImages
     <loc>${SITE.origin}/note-legali</loc>
     <lastmod>${lastmod}</lastmod>
   </url>
+${projectPages.map((pg) => `  <url>
+    <loc>${SITE.origin}/work/${pg.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+${pg.images.slice(0, 12).map((src, i) => `    <image:image>
+      <image:loc>${esc(abs(src))}</image:loc>
+      <image:title>${esc(titleForImage(src))}${pg.images.length > 1 ? ` — frame ${String(i + 1).padStart(2, '0')}` : ''}</image:title>
+    </image:image>`).join('\n')}
+  </url>`).join('\n')}
 </urlset>
 `;
 
@@ -642,8 +848,16 @@ ${aboutSentences.join('\n\n')}
 
 ${SITE.disciplines.map((d) => `- ${d}`).join('\n')}
 
-## Selected projects
+## Project pages
 ${yearRange ? `\nAll projects listed below: ${yearRange}.\n` : ''}
+${projectPages
+  .map(
+    (pg) =>
+      `- [${pg.title}](${SITE.origin}/work/${pg.slug}): ${[pg.loc, pg.year, pg.film].filter(Boolean).join(', ')}${pg.hasDesc ? '' : ' (no written description yet)'}`
+  )
+  .join('\n')}
+
+## Selected projects
 ${indexList
   .map(
     (p) =>
@@ -700,6 +914,14 @@ writeFileSync(indexPath, html, 'utf8');
 writeFileSync(join(ROOT, 'sitemap.xml'), sitemap, 'utf8');
 writeFileSync(join(ROOT, 'llms.txt'), llms, 'utf8');
 
+// Le pagine progetto: una cartella work/ con un file per progetto.
+// cleanUrls di Vercel le serve come /work/<slug>, senza estensione.
+mkdirSync(join(ROOT, 'work'), { recursive: true });
+for (const pg of projectPages) {
+  const others = projectPages.filter((o) => o.slug !== pg.slug).slice(0, 6);
+  writeFileSync(join(ROOT, 'work', `${pg.slug}.html`), projectPageHtml(pg, others), 'utf8');
+}
+
 const words = staticBlock.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
 console.log(`✓ prerender — ${feed.length} progetti, ${series.length} serie, ${motion.length} motion`);
 console.log(`✓ index.html — blocco statico di ~${words} parole leggibili senza JS`);
@@ -707,6 +929,13 @@ console.log(`✓ JSON-LD   — ${graph.length} nodi nel @graph`);
 console.log(`✓ about     — ${aboutSentences.length} frasi ${customBio.length ? '(dal pannello)' : '(generate dai progetti)'}`);
 console.log(`✓ sitemap   — ${sitemapImages.length} immagini, lastmod ${lastmod}`);
 console.log(`✓ llms.txt  — ${llms.split('\n').length} righe`);
+const conDesc = projectPages.filter((p) => p.hasDesc).length;
+console.log(
+  `✓ work/     — ${projectPages.length} pagine progetto` +
+  (conDesc < projectPages.length
+    ? ` (${conDesc} con descrizione, ${projectPages.length - conDesc} da scrivere dal pannello)`
+    : ' (tutte con descrizione)')
+);
 
 } // fine build()
 

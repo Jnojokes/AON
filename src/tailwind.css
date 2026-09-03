@@ -1,0 +1,7 @@
+/* Sorgente per la build di Tailwind. Il preflight (il reset di base) va
+   mantenuto: il CSS inline del sito e' stato scritto assumendolo attivo, ed era
+   incluso anche nel Play CDN. Toglierlo cambierebbe margini e dimensioni
+   ovunque. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

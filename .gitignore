@@ -33,3 +33,8 @@ POST/
 # solo crescere a ogni rigenerazione.
 scripts/guide/shots/
 Guida-Pannello-Admin-AON.pdf
+
+# Bundle generati da `npm run build`. Se la build fallisce il deploy fallisce e
+# la produzione resta sull'ultima versione buona: meglio che committare artefatti
+# che si riempiono di diff a ogni rigenerazione.
+assets/

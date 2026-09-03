@@ -27,14 +27,15 @@ funzionare identico: il token ha `Contents: Read+Write`, che opera su repo priva
 `POST/` è già stato tolto dal tracking git e aggiunto a `.gitignore` (i file
 restano sul disco). Resta nella cronologia finché il repo non diventa privato.
 
-### 1.2 🔴 Ruotare `ADMIN_PASSWORD` su Vercel
+### 1.2 ✅ `ADMIN_PASSWORD` — rotazione già fatta
 
-La produzione risponde 401 a una password sbagliata, quindi *una* password è
-impostata — ma questo non prova che sia diversa da `on2026`, che è leggibile
-nella cronologia pubblica.
+**Verificato il 3 settembre 2026:** la vecchia password `on2026`, leggibile nella
+cronologia pubblica del repo, **non funziona più in produzione** (`/api/save`
+risponde 401). La rotazione era già stata fatta. Punto chiuso.
 
-**Cosa fare:** Vercel → Settings → Environment Variables → nuova `ADMIN_PASSWORD`
-→ **Redeploy** (le env var si leggono solo al deploy).
+L'attuale è una stringa casuale di 28 caratteri. Quando si cambia, ricordare che
+va impostata su Vercel → Environment Variables e che serve un **redeploy**: le
+env var vengono lette solo al deploy.
 
 ### 1.3 Completare l'indirizzo nella privacy policy
 
@@ -42,15 +43,61 @@ nella cronologia pubblica.
 del titolare. Serve via e CAP da inserire in `privacy.html` (§1) e in
 `note-legali.html` (§1).
 
-### 1.4 Verificare la proprietà del sito
+### 1.4 🔴 Search Console e Bing — il sito oggi è INVISIBILE
 
-`index.html` ha i tag di verifica ancora commentati (righe ~24-25).
+**Verificato il 3 settembre 2026.** Non è un'ipotesi: le ricerche danno zero.
 
-- **Google Search Console** → aggiungere `www.andreaonori.com`, verificare via DNS
-  o scommentando il meta, poi inviare `https://www.andreaonori.com/sitemap.xml`.
-- **Bing Webmaster Tools** → stessa cosa.
+| Query | Risultato |
+|---|---|
+| `site:andreaonori.com` | **nessuna pagina indicizzata** |
+| `"Andrea Onori" fotografo filmmaker Milano` | escono un omonimo attore/regista (andreaonori**.it**, MYmovies, RBCasting, filmmakers.eu) e altri fotografi. Il sito non compare |
+| `andreaonori.com portfolio fotografo` | il sito non compare |
+| progetti (`Santoni BTO`, `Greta Boldini`) | il sito non compare |
 
-Senza questo non si sa se Google indicizza il sito né quali query lo intercettano.
+Non è un problema tecnico: il sito risponde **200 a Googlebot e a Bingbot**, il
+`robots.txt` li consente, non c'è alcun `noindex`, la sitemap è valida e il
+dominio esiste dal **gennaio 2022**. Il controllo `npm run seo:check` passa con
+0 problemi.
+
+È un problema di **scoperta**: nessuno ha mai dichiarato il sito ai motori, e non
+esiste un solo link esterno che ci porti. Senza un segnale, un crawler può
+ignorare un dominio per mesi.
+
+C'è anche un **omonimo ingombrante**: un altro Andrea Onori, attore e regista, ha
+`andreaonori.it` e schede su MYmovies, RBCasting e filmmakers.eu. Sul nome
+proprio si compete contro di lui, ed è il motivo per cui il `sameAs` con un solo
+profilo Instagram (segnalato da `seo:check`) è una debolezza concreta e non
+un dettaglio teorico.
+
+**Cosa fare, in quest'ordine:**
+
+1. **Google Search Console** — `search.google.com/search-console`
+   - Aggiungi una proprietà di tipo **Dominio** (`andreaonori.com`): copre www,
+     apex e tutti i sottodomini in un colpo solo.
+   - Verifica con il record **TXT nel DNS** (dove è gestito il dominio). È
+     preferibile al meta tag perché non dipende dal codice del sito.
+   - In alternativa: scommenta la riga `google-site-verification` in
+     `index.html` (~riga 25) e incolla il token.
+   - Poi **Sitemap → invia** `https://www.andreaonori.com/sitemap.xml`.
+   - E **Controllo URL** sulla home → *Richiedi indicizzazione*. È la scorciatoia
+     che di solito porta la home nell'indice in pochi giorni invece che in
+     settimane.
+
+2. **Bing Webmaster Tools** — `bing.com/webmasters`
+   - Si può **importare direttamente da Search Console** (un clic, nessuna
+     verifica separata). Altrimenti c'è il meta `msvalidate.01`, già predisposto.
+   - Bing conta doppio: alimenta anche **ChatGPT Search** e **Copilot**.
+
+3. **Primi link in entrata.** Anche solo tre o quattro, ma reali: il profilo
+   Instagram (link in bio), una scheda su Behance o Vimeo, il sito delle agenzie
+   o dei brand con cui ha lavorato. Servono a due cose insieme — dare a Google un
+   percorso per arrivare al sito, e popolare il `sameAs` che oggi ha un solo
+   profilo.
+
+> Ordine di grandezza: dopo l'invio della sitemap e la richiesta di
+> indicizzazione, la home compare di solito in **3-10 giorni**. Le citazioni da
+> parte degli assistenti IA arrivano più tardi, perché molti si appoggiano
+> all'indice di Bing o a crawl periodici: da qualche settimana a un paio di mesi.
 
 ---
 
@@ -140,14 +187,27 @@ nessuna manutenzione, e Andrea riceve un PDF senza mai entrare in GA4.
 
 1. `lookerstudio.google.com` → *Crea* → *Report* → sorgente **Google Analytics** →
    property `549740168`.
-2. Costruire le pagine:
-   - **Traffico** — utenti, sessioni, andamento mese su mese
-   - **Provenienza** — canali e sorgenti, quanto pesa davvero Instagram
-   - **Progetti** — `project_view` per *Titolo progetto* ← richiede il punto 2.1
-   - **Contatti** — `contact_click` per *Metodo* e *Posizione*
-   - **Pubblico** — paese, città, dispositivo
-3. *Condividi* → **Pianifica consegna email** → frequenza **mensile**, giorno 1,
+2. Aggiungere **una seconda sorgente**: *Google Search Console* → proprietà
+   `andreaonori.com` (richiede il punto 1.4). GA4 dice cosa fanno le persone una
+   volta arrivate; Search Console dice **come ci arrivano** e per quali ricerche.
+   Per un portfolio che deve farsi trovare, la seconda metà è quella che conta.
+3. Costruire le pagine:
+
+   | Pagina | Sorgente | Metriche | Dimensioni |
+   |---|---|---|---|
+   | **Traffico** | GA4 | Utenti attivi, Sessioni, Durata media | Mese, Primo canale |
+   | **Come ci trovano** | Search Console | Impressioni, Clic, CTR, Posizione media | Query, Pagina |
+   | **Provenienza** | GA4 | Sessioni | Sorgente/mezzo, Canale |
+   | **Progetti più visti** | GA4 | Conteggio eventi (`project_view`) | **Titolo progetto** ← serve il punto 2.1 |
+   | **Contatti generati** | GA4 | Eventi chiave (`contact_click`) | **Metodo**, **Posizione** ← serve il punto 2.1 |
+   | **Coinvolgimento** | GA4 | Conteggio eventi (`scroll_depth`) | **Percentuale scroll** |
+   | **Pubblico** | GA4 | Utenti attivi | Paese, Città, Categoria dispositivo |
+4. *Condividi* → **Pianifica consegna email** → frequenza **mensile**, giorno 1,
    destinatario Andrea.
+
+**Le tre domande a cui il report deve rispondere**, per non essere solo grafici:
+quante persone sono arrivate e da dove · quali progetti hanno guardato ·
+quanti hanno scritto. Tutto il resto è contorno.
 
 > Le dimensioni personalizzate del punto 2.1 sono il prerequisito: senza,
 > il report mostra numeri anonimi invece dei nomi dei progetti.
@@ -236,17 +296,37 @@ Per modificare i testi della guida: `scripts/guide/guide.html`, poi `guide:pdf`.
 
 In ordine di ritorno.
 
-### 6.1 Eliminare Babel e Tailwind dal browser
-Oggi ogni visita scarica ed esegue **3,1 MB di `@babel/standalone`** per
-compilare la JSX nel browser, più Tailwind Play CDN e React da unpkg — tutto
-bloccante in `<head>`. È la causa principale di LCP e INP scadenti, e il motivo
-per cui `unpkg.com` e `cdn.tailwindcss.com` sono ancora nel grafo delle
-richieste. Se unpkg è irraggiungibile, il sito è una pagina bianca.
+### 6.1 ✅ Babel e Tailwind tolti dal browser — fatto
 
-Serve un build step reale (esbuild o Vite, ~30 righe): JSX precompilata,
-Tailwind compilato, React nel bundle. `vercel.json` esegue già un `buildCommand`:
-basta incatenarlo prima di `prerender.mjs`. A quel punto si può togliere
-`'unsafe-eval'` dalla CSP.
+Prima ogni visita scaricava ed eseguiva **3,1 MB di `@babel/standalone`** per
+compilare la JSX nel browser, più il compilatore Tailwind (407 KB) e React da
+unpkg: tutto bloccante in `<head>`. Se uno di quei CDN non rispondeva, il sito
+era una pagina bianca.
+
+Ora c'è una build vera (`scripts/build.mjs`, che è il `buildCommand` di Vercel):
+
+| | prima | dopo |
+|---|---|---|
+| Sito | 3,65 MB | **251 KB** (−93%) |
+| Pannello admin | 3,34 MB | **189 KB** (−94%) |
+| `index.html` | 138 KB | 72 KB |
+| Origini esterne | 4 CDN | **nessuna** |
+
+- `src/app.jsx` e `src/admin.jsx` sono i sorgenti; esbuild produce
+  `assets/app.js` e `assets/admin.js` con React incluso.
+- Tailwind è compilato in `assets/tailwind.css` (9 KB) e la build **fallisce**
+  se una classe usata nel sorgente non ha una regola generata.
+- I riferimenti agli asset portano un `?v=<hash del contenuto>`, così la cache
+  può essere `immutable` senza rischiare di servire codice vecchio dopo un deploy.
+- Dalla CSP sono spariti `'unsafe-eval'`, `unpkg.com` e `cdn.tailwindcss.com`.
+
+**Verificato**: confronto pixel prima/dopo su desktop, tablet e mobile alle
+stesse condizioni — altezza pagina identica (3441 / 3020 / 2886 px), stesse
+parole, stesso layout. Le uniche differenze residue sono l'orologio in pagina e
+il fatto che la versione nuova, essendo più veloce, carica *più* immagini nello
+stesso tempo. Test funzionale superato su sito e pannello: React monta, i modali
+si aprono e si chiudono, il login e le cinque sezioni funzionano, zero errori JS
+e zero violazioni CSP.
 
 ### 6.2 Pagine per progetto
 Il sito ha **3 URL**. Non esiste alcun testo lungo che un motore generativo possa

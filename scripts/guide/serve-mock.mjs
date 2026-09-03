@@ -25,6 +25,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 const args = process.argv.slice(2);
 const PORT = Number(args[args.indexOf("--port") + 1]) || 4000;
 const USE_FIXTURES = args.includes("--fixtures");
+// --no-csp: serve per catturare la baseline visiva della versione PRE-migrazione,
+// che caricava React e Tailwind da CDN esterni ora giustamente vietati dalla CSP.
+// Senza questo flag il confronto prima/dopo misurerebbe la CSP, non il rendering.
+const NO_CSP = args.includes("--no-csp");
 export const DEMO_PASSWORD = "demo1234";
 
 const TYPES = {
@@ -61,6 +65,14 @@ const server = http.createServer(async (req, res) => {
   for (const h of globalHeaders) {
     // HSTS su http://localhost bloccherebbe il browser su https: inutile qui.
     if (h.key === "Strict-Transport-Security") continue;
+    if (h.key === "Content-Security-Policy" && NO_CSP) continue;
+    if (h.key === "Content-Security-Policy") {
+      // upgrade-insecure-requests trasformerebbe ogni sottorisorsa in https://
+      // su un server che parla http: le richieste non risolvono e la pagina non
+      // finisce mai di caricare. In produzione la direttiva e' giusta e resta.
+      res.setHeader(h.key, h.value.replace(/;\s*upgrade-insecure-requests/, ""));
+      continue;
+    }
     res.setHeader(h.key, h.value);
   }
   const url = new URL(req.url, `http://localhost:${PORT}`);

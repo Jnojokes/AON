@@ -10,8 +10,17 @@
 //    node scripts/guide/capture.mjs                             (una volta)
 //  Uso:
 //    node scripts/guide/build-pdf.mjs
+//    AON_ADMIN_PASSWORD='...' node scripts/guide/build-pdf.mjs
 //  Output:
 //    Guida-Pannello-Admin-AON.pdf  (nella radice del progetto)
+//
+//  LA PASSWORD NON STA IN NESSUN FILE VERSIONATO.
+//  guide.html contiene solo un segnaposto; il valore reale arriva da
+//  AON_ADMIN_PASSWORD e viene scritto nel DOM subito prima della stampa.
+//  Il PDF e' in .gitignore, quindi la credenziale non entra mai nel repository
+//  — che e' esattamente l'errore costato la fuga di "on2026" (vedi SETUP-SEO.md).
+//  Senza la variabile il riquadro resta con i puntini e la guida si stampa
+//  ugualmente: utile per rigenerarla senza avere la password sottomano.
 // =============================================================================
 import puppeteer from "puppeteer-core";
 import fs from "node:fs";
@@ -52,6 +61,20 @@ const broken = await page.evaluate(() =>
 );
 if (broken.length) { console.warn("⚠︎ immagini non caricate:"); broken.forEach((s) => console.warn("   " + s)); }
 if (missing.length) { console.warn("⚠︎ risorse mancanti:"); missing.forEach((s) => console.warn("   " + s)); }
+
+// Iniezione della password: dopo il caricamento, prima della stampa.
+const ADMIN_PW = process.env.AON_ADMIN_PASSWORD || "";
+const injected = await page.evaluate((pw) => {
+  const el = document.querySelector("[data-admin-password]");
+  if (!el) return "assente";
+  if (!pw) { el.textContent = "· · · · · · · · · · · ·"; return "segnaposto"; }
+  el.textContent = pw;
+  return "inserita";
+}, ADMIN_PW);
+console.log(`  credenziale nel PDF: ${injected}`);
+if (injected === "segnaposto") {
+  console.log("  (imposta AON_ADMIN_PASSWORD per includerla)");
+}
 
 await page.pdf({
   path: OUT,

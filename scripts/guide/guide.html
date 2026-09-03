@@ -46,6 +46,11 @@
   th{font-family:'JetBrains Mono',monospace;font-size:7.5pt;letter-spacing:.1em;text-transform:uppercase;color:#000;border-bottom:1.5px solid var(--ink)}
   .box{background:var(--panel);border-left:3px solid var(--ink);padding:9pt 12pt;margin:10pt 0;break-inside:avoid}
   .box.warn{border-left-color:var(--accent);background:#fdf1ee}
+  .box.creds{border-left-color:var(--accent);background:#fff;border:1px solid var(--ink);border-left-width:3px}
+  .creds-t{margin:4pt 0 0}
+  .creds-t td{border:0;padding:3pt 0;font-size:10pt}
+  .creds-t td:first-child{width:32mm;color:var(--mute);font-family:'JetBrains Mono',monospace;font-size:8pt;letter-spacing:.08em;text-transform:uppercase}
+  .creds-t code{font-size:11pt;background:none;padding:0;font-weight:600;letter-spacing:.02em}
   .box p:last-child{margin-bottom:0}
   .box .lbl{font-family:'JetBrains Mono',monospace;font-size:7.5pt;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:4pt;display:block}
   .box.plain .lbl{color:var(--ink)}
@@ -139,9 +144,21 @@
 
   <ol class="steps">
     <li>Nel campo <strong>Utente</strong> scrivi <code>admin</code>. È sempre questo e non si può cambiare.</li>
-    <li>Nel campo <strong>Password</strong> scrivi la tua password.</li>
+    <li>Nel campo <strong>Password</strong> scrivi la password qui sotto.</li>
     <li>Premi <strong>Entra</strong>.</li>
   </ol>
+
+  <!-- La password NON sta in questo file: viene iniettata da build-pdf.mjs al
+       momento della stampa. guide.html finisce nel repository, il PDF no. -->
+  <div class="box creds" data-credentials>
+    <span class="lbl">Le tue credenziali</span>
+    <table class="creds-t">
+      <tr><td>Indirizzo</td><td><code>andreaonori.com/admin-edits</code></td></tr>
+      <tr><td>Utente</td><td><code>admin</code></td></tr>
+      <tr><td>Password</td><td><code data-admin-password>—</code></td></tr>
+    </table>
+    <p style="margin-top:6pt">Conserva questo documento in un posto tuo: contiene la password del pannello. Se un giorno ti serve cambiarla, si fa dalle impostazioni del sito su Vercel — chiedi a chi lo gestisce.</p>
+  </div>
 
   <figure>
     <img src="/scripts/guide/shots/02-login-errore.jpg" alt="Messaggio di password errata">
