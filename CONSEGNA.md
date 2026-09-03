@@ -335,10 +335,35 @@ per generare `/work/<slug>` da `media.json` — con 150-250 parole di descrizion
 per progetto, editabili dal pannello — si passa a ~15 URL e oltre 3.000 parole.
 È l'intervento a maggior ritorno GEO del piano.
 
-### 6.3 Immagini
-`media/` pesa **97 MB**: nessun WebP/AVIF, JPEG fino a 3840×2160 e 4,5 MB,
-nessun `srcset`. Ci sono anche tre coppie di PNG identici byte per byte
-(~5,5 MB sprecati).
+### 6.3 ✅ Immagini convertite in WebP — fatto
+
+`media/` pesava **101,5 MB**: JPEG fino a 4 MB e 4032×3024 px, serviti a un sito
+che li mostra a circa 700 px. Era il singolo costo più grosso per chi visita il
+sito, più del JavaScript.
+
+    101,49 MB  →  7,77 MB     −92%     (66 immagini)
+
+`scripts/optimize-images.mjs` (`npm run images`) genera un `.webp` accanto a
+ogni originale, a lato lungo 2000 px e qualità 82, e riscrive i percorsi in
+`media.json`.
+
+**Nessun originale è stato cancellato.** I file a piena risoluzione restano in
+`media/` e nel repository come archivio: a cambiare è solo *cosa viene
+pubblicato*. `.vercelignore` esclude dal deploy `media/*.jpg|jpeg|png`, con
+un'eccezione per `og-cover.jpg` — diverse piattaforme social non renderizzano
+il WebP nelle anteprime, quindi quella deve restare JPEG.
+
+Verificato in browser: home 17/17 immagini caricate, pagina progetto 10/10,
+tutti i riferimenti in HTML e sitemap risolvono su disco.
+
+> Nota sul peso del *repository*: sostituire le immagini non lo riduce. Il pack
+> di git è 93 MB e conserva i blob originali nella cronologia; chi clona li
+> scarica comunque. Solo una riscrittura della cronologia lo cambierebbe, e non
+> ne vale la pena. Il guadagno qui è per **chi visita il sito**, che è ciò che
+> conta.
+
+Resta da fare, se si vuole spingere oltre: `srcset` per servire misure diverse a
+telefono e desktop, e la deduplica di tre coppie di PNG identici byte per byte.
 
 ### 6.4 Profili collegati
 `sameAs` nel JSON-LD contiene **solo Instagram**. È il segnale di entità più

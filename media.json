@@ -1,9 +1,9 @@
 {
   "feed": [
     {
-      "url": "media/santoni-bto-4-1-1-mqunjfp4.jpg",
+      "url": "media/santoni-bto-4-1-1-mqunjfp4.webp",
       "images": [
-        "media/santoni-bto-4-1-1-mqunjfp4.jpg"
+        "media/santoni-bto-4-1-1-mqunjfp4.webp"
       ],
       "title": "SANTONI BTO",
       "year": "2025",
@@ -11,12 +11,12 @@
       "film": "DIGITAL — BACKSTAGE"
     },
     {
-      "url": "media/greta-01.jpg",
+      "url": "media/greta-01.webp",
       "images": [
-        "media/greta-01.jpg",
-        "media/greta-02.jpg",
-        "media/greta-03.jpg",
-        "media/greta-04.jpg"
+        "media/greta-01.webp",
+        "media/greta-02.webp",
+        "media/greta-03.webp",
+        "media/greta-04.webp"
       ],
       "title": "GRETA BOLDINI",
       "year": "2025",
@@ -24,11 +24,11 @@
       "film": "EDITORIAL — CAMPAIGN"
     },
     {
-      "url": "media/fabiana-01.jpg",
+      "url": "media/fabiana-01.webp",
       "images": [
-        "media/fabiana-01.jpg",
-        "media/fabiana-02.jpg",
-        "media/fabiana-03.jpg"
+        "media/fabiana-01.webp",
+        "media/fabiana-02.webp",
+        "media/fabiana-03.webp"
       ],
       "title": "FABIANA FILIPPI",
       "year": "2025",
@@ -36,11 +36,11 @@
       "film": "VETRINA — DW"
     },
     {
-      "url": "media/okgiorgio-01.jpg",
+      "url": "media/okgiorgio-01.webp",
       "images": [
-        "media/okgiorgio-01.jpg",
-        "media/okgiorgio-02.jpg",
-        "media/okgiorgio-03.jpg"
+        "media/okgiorgio-01.webp",
+        "media/okgiorgio-02.webp",
+        "media/okgiorgio-03.webp"
       ],
       "title": "OK GIORGIO — DJ SET",
       "year": "2025",
@@ -48,11 +48,11 @@
       "film": "DOC — LIVE"
     },
     {
-      "url": "media/ypsum-01.jpg",
+      "url": "media/ypsum-01.webp",
       "images": [
-        "media/ypsum-01.jpg",
-        "media/ypsum-02.jpg",
-        "media/ypsum-03.jpg"
+        "media/ypsum-01.webp",
+        "media/ypsum-02.webp",
+        "media/ypsum-03.webp"
       ],
       "title": "YPSUM",
       "year": "2025",
@@ -60,19 +60,19 @@
       "film": "CAMPAIGN — SCREEN"
     },
     {
-      "url": "media/mugshot-backstage.jpg",
+      "url": "media/mugshot-backstage.webp",
       "title": "MUGSHOT",
       "year": "2025",
       "loc": "MILANO",
       "film": "BACKSTAGE — 35MM"
     },
     {
-      "url": "media/santoni-09.jpg",
+      "url": "media/santoni-09.webp",
       "images": [
-        "media/santoni-09.jpg",
-        "media/santoni-10.jpg",
-        "media/santoni-11.jpg",
-        "media/santoni-12.jpg"
+        "media/santoni-09.webp",
+        "media/santoni-10.webp",
+        "media/santoni-11.webp",
+        "media/santoni-12.webp"
       ],
       "title": "SANTONI BTO",
       "year": "2025",
@@ -80,12 +80,12 @@
       "film": "DIGITAL — STUDIO"
     },
     {
-      "url": "media/greta-05.jpg",
+      "url": "media/greta-05.webp",
       "images": [
-        "media/greta-05.jpg",
-        "media/greta-06.jpg",
-        "media/greta-07.jpg",
-        "media/greta-08.jpg"
+        "media/greta-05.webp",
+        "media/greta-06.webp",
+        "media/greta-07.webp",
+        "media/greta-08.webp"
       ],
       "title": "GRETA BOLDINI",
       "year": "2025",
@@ -93,10 +93,10 @@
       "film": "EDITORIAL — PORTRAIT"
     },
     {
-      "url": "media/okgiorgio-06.jpg",
+      "url": "media/okgiorgio-06.webp",
       "images": [
-        "media/okgiorgio-06.jpg",
-        "media/okgiorgio-07.jpg"
+        "media/okgiorgio-06.webp",
+        "media/okgiorgio-07.webp"
       ],
       "title": "OK GIORGIO — GROTTA",
       "year": "2025",
@@ -104,19 +104,19 @@
       "film": "DOC — LIVE"
     },
     {
-      "url": "media/fabiana-03.jpg",
+      "url": "media/fabiana-03.webp",
       "title": "FABIANA FILIPPI",
       "year": "2025",
       "loc": "MILANO",
       "film": "VETRINA — DW"
     },
     {
-      "url": "media/santoni-14.jpg",
+      "url": "media/santoni-14.webp",
       "images": [
-        "media/santoni-14.jpg",
-        "media/santoni-15.jpg",
-        "media/santoni-16.jpg",
-        "media/santoni-17.jpg"
+        "media/santoni-14.webp",
+        "media/santoni-15.webp",
+        "media/santoni-16.webp",
+        "media/santoni-17.webp"
       ],
       "title": "SANTONI BTO",
       "year": "2025",
@@ -124,7 +124,7 @@
       "film": "DIGITAL — DETAIL"
     },
     {
-      "url": "media/okgiorgio-07.jpg",
+      "url": "media/okgiorgio-07.webp",
       "title": "OK GIORGIO — VULCANO",
       "year": "2025",
       "loc": "STROMBOLI",
@@ -132,52 +132,52 @@
     }
   ],
   "motion": [
-    "media/story-greta.png",
-    "media/story-santoni-01.png",
-    "media/story-ypsum.png",
-    "media/story-mugshot-01.png",
-    "media/story-santoni-02.png",
-    "media/story-mugshot-02.png",
-    "media/greta-carousel.png",
-    "media/santoni-carousel.png",
-    "media/ypsum-carousel.png"
+    "media/story-greta.webp",
+    "media/story-santoni-01.webp",
+    "media/story-ypsum.webp",
+    "media/story-mugshot-01.webp",
+    "media/story-santoni-02.webp",
+    "media/story-mugshot-02.webp",
+    "media/greta-carousel.webp",
+    "media/santoni-carousel.webp",
+    "media/ypsum-carousel.webp"
   ],
   "series": [
     {
       "id": "aboutme",
       "label": "ABOUT ME",
-      "image": "media/santoni-01.jpg",
+      "image": "media/santoni-01.webp",
       "images": []
     },
     {
       "id": "super8",
       "label": "SUPER8",
-      "image": "media/greta-01.jpg",
+      "image": "media/greta-01.webp",
       "images": []
     },
     {
       "id": "storyboard",
       "label": "STORYBOARD",
-      "image": "media/santoni-storyboard-story1-mqunxs15.jpeg",
+      "image": "media/santoni-storyboard-story1-mqunxs15.webp",
       "images": [
-        "media/greta-storyboard-story-final-mqunwp71.jpeg",
-        "media/ypsum-storyboard-story-mqunwqfo.jpeg",
-        "media/santoni-storyboard-story2-mqunwrkt.jpeg",
-        "media/santoni-storyboard-story1-mqunwt2t.jpeg",
-        "media/mugshot-storyboard-story2-mqunwuc9.jpeg",
-        "media/mugshot-storyboard-story1-mqunwvx6.jpeg"
+        "media/greta-storyboard-story-final-mqunwp71.webp",
+        "media/ypsum-storyboard-story-mqunwqfo.webp",
+        "media/santoni-storyboard-story2-mqunwrkt.webp",
+        "media/santoni-storyboard-story1-mqunwt2t.webp",
+        "media/mugshot-storyboard-story2-mqunwuc9.webp",
+        "media/mugshot-storyboard-story1-mqunwvx6.webp"
       ]
     },
     {
       "id": "frames",
       "label": "FRAMES",
-      "image": "media/ypsum-01.jpg",
+      "image": "media/ypsum-01.webp",
       "images": [
-        "media/ypsum-01.jpg",
-        "media/ypsum-02.jpg",
-        "media/ypsum-03.jpg",
-        "media/ypsum-04.jpg",
-        "media/ypsum-05.jpg"
+        "media/ypsum-01.webp",
+        "media/ypsum-02.webp",
+        "media/ypsum-03.webp",
+        "media/ypsum-04.webp",
+        "media/ypsum-05.webp"
       ]
     }
   ],
@@ -187,56 +187,56 @@
       "title": "SANTONI BTO",
       "location": "MILANO",
       "year": "2025",
-      "image": "media/santoni-01.jpg"
+      "image": "media/santoni-01.webp"
     },
     {
       "num": "02",
       "title": "GRETA BOLDINI",
       "location": "MILANO",
       "year": "2025",
-      "image": "media/greta-01.jpg"
+      "image": "media/greta-01.webp"
     },
     {
       "num": "03",
       "title": "FABIANA FILIPPI",
       "location": "MILANO",
       "year": "2025",
-      "image": "media/fabiana-01.jpg"
+      "image": "media/fabiana-01.webp"
     },
     {
       "num": "04",
       "title": "OK GIORGIO — DJ SET",
       "location": "GINOSTRA",
       "year": "2025",
-      "image": "media/okgiorgio-01.jpg"
+      "image": "media/okgiorgio-01.webp"
     },
     {
       "num": "05",
       "title": "YPSUM",
       "location": "MILANO",
       "year": "2025",
-      "image": "media/ypsum-01.jpg"
+      "image": "media/ypsum-01.webp"
     },
     {
       "num": "06",
       "title": "MUGSHOT",
       "location": "MILANO",
       "year": "2025",
-      "image": "media/mugshot-backstage.jpg"
+      "image": "media/mugshot-backstage.webp"
     },
     {
       "num": "07",
       "title": "OK GIORGIO — GROTTA",
       "location": "STROMBOLI",
       "year": "2025",
-      "image": "media/okgiorgio-06.jpg"
+      "image": "media/okgiorgio-06.webp"
     },
     {
       "num": "08",
       "title": "SANTONI BTO — STUDIO",
       "location": "MILANO",
       "year": "2025",
-      "image": "media/santoni-09.jpg"
+      "image": "media/santoni-09.webp"
     }
   ],
   "settings": {

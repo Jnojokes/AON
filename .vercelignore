@@ -18,3 +18,14 @@ asset/
 # nel repo GitHub, quindi non c'era nulla da guadagnare a nasconderlo.
 
 .claude/
+
+# Originali ad alta risoluzione: restano nel repository come archivio, ma non
+# vengono pubblicati. Il sito serve i .webp generati da
+# scripts/optimize-images.mjs — 101 MB di foto diventano 8 MB per chi naviga.
+# Nessun file viene cancellato: qui si decide solo cosa sale sul CDN.
+media/*.jpg
+media/*.jpeg
+media/*.png
+# Eccezione: l'immagine per le anteprime social. Diverse piattaforme non
+# renderizzano il WebP nelle card, quindi questa deve restare JPEG.
+!media/og-cover.jpg

@@ -1,11 +1,11 @@
 {
   "feed": [
     {
-      "url": "media/santoni-01.jpg",
+      "url": "media/santoni-01.webp",
       "images": [
-        "media/santoni-01.jpg",
-        "media/santoni-02.jpg",
-        "media/santoni-03.jpg"
+        "media/santoni-01.webp",
+        "media/santoni-02.webp",
+        "media/santoni-03.webp"
       ],
       "title": "PROGETTO ESEMPIO",
       "year": "2026",
@@ -13,10 +13,10 @@
       "film": "DIGITAL — BACKSTAGE"
     },
     {
-      "url": "media/greta-01.jpg",
+      "url": "media/greta-01.webp",
       "images": [
-        "media/greta-01.jpg",
-        "media/greta-02.jpg"
+        "media/greta-01.webp",
+        "media/greta-02.webp"
       ],
       "title": "CAMPAGNA DEMO",
       "year": "2026",
@@ -24,9 +24,9 @@
       "film": "EDITORIAL — CAMPAIGN"
     },
     {
-      "url": "media/okgiorgio-01.jpg",
+      "url": "media/okgiorgio-01.webp",
       "images": [
-        "media/okgiorgio-01.jpg"
+        "media/okgiorgio-01.webp"
       ],
       "title": "SERVIZIO DI PROVA",
       "year": "2025",
@@ -35,24 +35,24 @@
     }
   ],
   "motion": [
-    "media/story-greta.png",
-    "media/story-ypsum.png",
-    "media/story-mugshot-01.png"
+    "media/story-greta.webp",
+    "media/story-ypsum.webp",
+    "media/story-mugshot-01.webp"
   ],
   "series": [
     {
       "id": "esempio-uno",
       "label": "SERIE ESEMPIO",
-      "image": "media/santoni-carousel.png",
+      "image": "media/santoni-carousel.webp",
       "images": [
-        "media/story-santoni-01.png",
-        "media/story-santoni-02.png"
+        "media/story-santoni-01.webp",
+        "media/story-santoni-02.webp"
       ]
     },
     {
       "id": "esempio-due",
       "label": "SECONDA SERIE",
-      "image": "media/greta-carousel.png",
+      "image": "media/greta-carousel.webp",
       "images": []
     }
   ],
@@ -62,21 +62,21 @@
       "title": "PROGETTO ESEMPIO",
       "location": "MILANO",
       "year": "2026",
-      "image": "media/santoni-01.jpg"
+      "image": "media/santoni-01.webp"
     },
     {
       "num": "02",
       "title": "CAMPAGNA DEMO",
       "location": "MILANO",
       "year": "2026",
-      "image": "media/greta-01.jpg"
+      "image": "media/greta-01.webp"
     },
     {
       "num": "03",
       "title": "SERVIZIO DI PROVA",
       "location": "STROMBOLI",
       "year": "2025",
-      "image": "media/okgiorgio-01.jpg"
+      "image": "media/okgiorgio-01.webp"
     }
   ],
   "settings": {

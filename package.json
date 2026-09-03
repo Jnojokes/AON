@@ -15,7 +15,8 @@
     "serve:demo": "node scripts/guide/serve-mock.mjs --port 4000 --fixtures",
     "guide:shots": "node scripts/guide/capture.mjs",
     "guide:pdf": "node scripts/guide/build-pdf.mjs",
-    "seo:check": "node scripts/seo-check.mjs"
+    "seo:check": "node scripts/seo-check.mjs",
+    "images": "node scripts/optimize-images.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.24.2",
