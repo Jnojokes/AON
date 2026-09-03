@@ -374,10 +374,17 @@ import * as ReactDOM from 'react-dom/client';
                 // accetta solo da tally.so: un listener aperto a qualunque
                 // origine sarebbe una porta per messaggi arbitrari.
                 const onMsg = (e) => {
-                    if (!/^https:\/\/tally\.so$/.test(e.origin)) return;
+                    // L'iframe e' in sandbox, quindi vive in un'origine opaca e i
+                    // suoi messaggi arrivano con origin "null", non
+                    // "https://tally.so". Vanno accettati entrambi: con il solo
+                    // controllo stretto nessun messaggio passava, e l'altezza
+                    // restava bloccata al valore iniziale.
+                    // Il rischio e' contenuto: si legge solo un numero, limitato
+                    // a un intervallo, e la visibilita' del modulo NON dipende
+                    // da questo messaggio ma dall'evento load dell'iframe.
+                    if (e.origin !== 'https://tally.so' && e.origin !== 'null') return;
                     try {
                         const d = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-                        if (d && d.event === 'Tally.FormLoaded') setCaricato(true);
                         const h = Number(d && (d.height || (d.payload && d.payload.height)));
                         if (Number.isFinite(h) && h > 200) setAltezza(Math.min(h, 1400));
                     } catch (err) { /* messaggio non nostro: si ignora */ }
@@ -418,11 +425,20 @@ import * as ReactDOM from 'react-dom/client';
                     <iframe
                         src={`https://tally.so/embed/${encodeURIComponent(formId)}?${qs}`}
                         title="Modulo di contatto"
+                        // La visibilita' dipende dall'evento load nativo, non da
+                        // un messaggio di Tally: un contratto di terzi che
+                        // cambia non deve poter lasciare il modulo invisibile.
+                        onLoad={() => setCaricato(true)}
                         loading="lazy"
                         // Il minimo necessario: inviare il modulo e aprire link.
                         // Senza allow-same-origin l'iframe resta in un'origine
                         // opaca e non puo' leggere nulla di questo sito.
-                        sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                        // allow-same-origin fa mantenere all'iframe la SUA
+                        // origine (tally.so). Non gli da' accesso a questo sito:
+                        // resta comunque cross-origin e non puo' leggerne il DOM.
+                        // Serve perche' senza di esso l'origine e' opaca e Tally
+                        // non riesce a far funzionare i propri script interni.
+                        sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin"
                         referrerPolicy="strict-origin-when-cross-origin"
                         style={{ width: '100%', height: altezza + 'px', border: 0,
                                  opacity: caricato ? 1 : 0, transition: 'opacity .25s' }}
