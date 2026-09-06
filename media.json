@@ -240,36 +240,7 @@
     }
   ],
   "settings": {
-    "marquee": [
-      {
-        "label": "ARCHIVE",
-        "value": "2025"
-      },
-      {
-        "label": "INDEX",
-        "value": "247 FRAMES ON FILE"
-      },
-      {
-        "label": "STATUS",
-        "value": "AVAILABLE FOR COMMISSIONS"
-      },
-      {
-        "label": "STUDIO",
-        "value": "MILAN — ITALY"
-      },
-      {
-        "label": "NOW BOOKING",
-        "value": "Q3 — Q4 / 2025"
-      },
-      {
-        "label": "EDITION",
-        "value": "BOLD / 01"
-      },
-      {
-        "label": "SHIPPING",
-        "value": "WORLDWIDE"
-      }
-    ],
+    "marquee": [],
     "hud": {
       "coords": "45.4642° N · 9.1900° E",
       "tz": "CET"
@@ -354,8 +325,8 @@
     "seo": {
       "author": "Andrea Onori",
       "avatarAlt": "Andrea Onori, fashion photographer and filmmaker based in Milan",
-      "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2018.\nHis work has been selected by Vogue Italia, Numéro, Domus.\nRecent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.\nShoots have taken place in MILANO, GINOSTRA, STROMBOLI.\nHe is available for commissions and can be reached at video@andreaonori.com."
+      "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2018.\nRecent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.\nShoots have taken place in MILANO, GINOSTRA, STROMBOLI.\nHe is available for commissions and can be reached at video@andreaonori.com."
     }
   },
-  "updatedAt": "2026-08-29T14:32:45.800Z"
+  "updatedAt": "2026-09-06T21:01:24.053Z"
 }
