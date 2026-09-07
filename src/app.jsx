@@ -179,10 +179,71 @@ import * as ReactDOM from 'react-dom/client';
         //   { video:"https://…/clip.mp4",
         //     poster:"media/cover.jpg", title:"…" }   → video esterno + copertina
         // `src` resta accettato come alias (video se ha estensione video, altrimenti poster).
-        // I video NON stanno nel repo: sono link a uno storage esterno (Aruba) e
+        // I video NON stanno nel repo: sono link a uno storage esterno (Jumpshare) e
         // vengono scaricati solo quando l'utente clicca → la griglia resta leggera.
         const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
-        const isVideoUrl = (u) => typeof u === 'string' && VIDEO_RE.test(u);
+        // I link Jumpshare non finiscono in .mp4: senza questo un video ospitato
+        // lì verrebbe classificato come immagine. Copre tutte le forme che il
+        // servizio produce — /share/, /embed/, /v/ e il dominio breve jmp.sh.
+        const JUMPSHARE_RE = /^https?:\/\/(?:www\.)?(?:jumpshare\.com\/(?:share|embed|v)\/[A-Za-z0-9_-]{4,}|jmp\.sh\/[A-Za-z0-9_-]{4,})[+-]?\/?/i;
+        const isVideoUrl = (u) => typeof u === 'string' && (VIDEO_RE.test(u) || JUMPSHARE_RE.test(u));
+
+        /** Vero se l'indirizzo va riprodotto in un iframe invece che con <video>.
+         *  NESSUN indirizzo Jumpshare e' riproducibile in un tag <video>: il
+         *  servizio non espone il file, solo pagine. Vale anche per qualunque
+         *  altro indirizzo che contenga /embed/, così un cambio di fornitore
+         *  non richiede di toccare questa riga. */
+        const isEmbedUrl = (u) => {
+            const t = String(u || '');
+            return JUMPSHARE_RE.test(t) || /\/embed\//i.test(t);
+        };
+
+        // ── Riproduzione ────────────────────────────────────────────────────
+        //
+        // Due modi, scelti in base all'indirizzo:
+        //
+        //   <video>  per i file diretti (.mp4 e simili). E' il modo migliore:
+        //            player del sito, nessun marchio di terzi, e la copertina
+        //            si puo' estrarre dal filmato.
+        //
+        //   <iframe> per Jumpshare, che non espone il file ma una pagina da
+        //            incorporare. Comporta il player di Jumpshare con i suoi
+        //            controlli, e rende impossibile leggere un fotogramma per
+        //            la copertina — va sempre caricata a mano.
+        //
+        // In entrambi i casi la riproduzione parte solo quando questo
+        // componente viene montato, cioe' dopo un click: la griglia resta
+        // leggera e nulla viene richiesto a terzi durante la navigazione.
+        const Player = ({ src, poster, titolo, style, className, onEnded, onTimeUpdate, autoPlay = true }) => {
+            if (isEmbedUrl(src)) {
+                return (
+                    <iframe
+                        src={src}
+                        title={titolo || 'Video'}
+                        loading="lazy"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowFullScreen
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        className={className}
+                        style={{ border: 0, background: '#000', display: 'block', ...(style || {}) }}
+                    />
+                );
+            }
+            return (
+                <video
+                    src={src}
+                    poster={poster || undefined}
+                    controls
+                    autoPlay={autoPlay}
+                    playsInline
+                    preload="auto"
+                    onEnded={onEnded}
+                    onTimeUpdate={onTimeUpdate}
+                    className={className}
+                    style={style}
+                />
+            );
+        };
 
         const normMedia = (v) => {
             if (!v) return { image: '', video: '', title: '' };
@@ -789,7 +850,7 @@ import * as ReactDOM from 'react-dom/client';
             }, [show]);
             return (
                 <div ref={ref} style={{ width: '100%', height: '100%', background: '#0d0d0d' }}>
-                    {show && <video src={video} muted playsInline preload="metadata" tabIndex={-1}
+                    {show && !isEmbedUrl(video) && <video src={video} muted playsInline preload="metadata" tabIndex={-1}
                         aria-label={alt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                 </div>
             );
@@ -890,8 +951,9 @@ import * as ReactDOM from 'react-dom/client';
                 <div className="modal-overlay" onClick={onClose}>
                     <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '440px', maxHeight: '88vh', display: 'flex' }}>
                         {m.video
-                            ? <video src={m.video} poster={m.image || undefined} controls autoPlay playsInline loop preload="auto"
-                                     style={{ width: '100%', maxHeight: '88vh', objectFit: 'contain', background: '#000' }} />
+                            ? <Player src={m.video} poster={m.image} titolo={m.title}
+                                      style={{ width: '100%', height: isEmbedUrl(m.video) ? '88vh' : undefined,
+                                               maxHeight: '88vh', objectFit: 'contain', background: '#000' }} />
                             : <img src={m.image} alt={m.title || ''} style={{ width: '100%', maxHeight: '88vh', objectFit: 'contain' }} />}
                     </div>
                 </div>
@@ -997,11 +1059,11 @@ import * as ReactDOM from 'react-dom/client';
                             <>
                                 <button className="carousel-arrow" style={{ left: '12px' }} onClick={goPrev} disabled={current === 0} aria-label="Precedente">‹</button>
                                 <button className="carousel-arrow" style={{ right: '12px' }} onClick={goNext} aria-label="Successiva">›</button>
-                                <video key={cur.video} src={cur.video} poster={cur.image || undefined}
-                                    controls autoPlay playsInline preload="auto"
+                                <Player key={cur.video} src={cur.video} poster={cur.image}
                                     onTimeUpdate={(e) => { const v = e.target; if (v.duration) setProgress(Math.min(100, (v.currentTime / v.duration) * 100)); }}
                                     onEnded={goNext}
-                                    style={{ maxWidth: '100%', maxHeight: '82vh', background: '#000' }} />
+                                    style={{ maxWidth: '100%', height: isEmbedUrl(cur.video) ? '82vh' : undefined,
+                                             maxHeight: '82vh', background: '#000' }} />
                             </>
                         ) : (
                             <>
@@ -1055,9 +1117,9 @@ import * as ReactDOM from 'react-dom/client';
                     <div className="max-w-6xl w-full flex flex-col md:flex-row gap-10 items-start" onClick={e => e.stopPropagation()}>
                         <div className="flex-1 max-w-3xl" style={{ position: 'relative', width: '100%' }}>
                             {slide.video
-                                ? <video key={slide.video} src={slide.video} poster={slide.image || undefined}
-                                         controls autoPlay playsInline preload="auto" className="w-full"
-                                         style={{ display: 'block', maxHeight: '80vh', background: '#000' }} />
+                                ? <Player key={slide.video} src={slide.video} poster={slide.image} className="w-full"
+                                          style={{ display: 'block', height: isEmbedUrl(slide.video) ? '80vh' : undefined,
+                                                   maxHeight: '80vh', background: '#000' }} />
                                 : <img src={slide.image} alt={altOf(post)} className="w-full" style={{ display: 'block' }} loading="lazy" decoding="async" />}
                             {multi && (
                                 <>

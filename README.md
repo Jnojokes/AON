@@ -81,7 +81,7 @@ Cosa cambiare nel **Gestione DNS di Aruba** (non spostare i nameserver):
 
 ⚠️ **Non** spostare i nameserver su Vercel e **non** toccare i record **MX**: le caselle email del dominio (webmail Aruba, `hello@andreaonori.com`) restano su Aruba e si romperebbero. Cambiando solo A e CNAME, mail e DNS restano dove sono.
 
-Conseguenza sui video: una volta repuntato il dominio, lo **spazio web Aruba non è più raggiungibile da nessun hostname** (Aruba non consente di puntare un terzo livello a un hosting condiviso), quindi i video vanno su **Aruba Cloud Object Storage** — vedi `VIDEO-ARUBA.md`.
+Conseguenza sui video: una volta repuntato il dominio, lo **spazio web Jumpshare non è più raggiungibile da nessun hostname** (Jumpshare non consente di puntare un terzo livello a un hosting condiviso), quindi i video vanno su **Aruba Cloud Object Storage** — vedi `VIDEO-JUMPSHARE.md`.
 
 ---
 
@@ -89,9 +89,9 @@ Conseguenza sui video: una volta repuntato il dominio, lo **spazio web Aruba non
 
 Le **51 immagini** (foto + storyboard) sono in `media/` con nomi puliti, e `media.json` punta a loro. La cartella `asset/` originale (~1.6 GB) **non va su GitHub**: tienila in locale come archivio.
 
-I **video** non stanno nel repo (GitHub ha un limite di 100 MB per file): vivono su uno **storage esterno** — nel nostro caso lo spazio **Aruba** del cliente — e in `media.json` finisce solo il loro **URL**. Il sito mostra la copertina e scarica il video **solo al click**, quindi la griglia resta leggera.
+I **video** non stanno nel repo (GitHub ha un limite di 100 MB per file): vivono su uno **storage esterno** — nel nostro caso lo spazio **Jumpshare** del cliente — e in `media.json` finisce solo il loro **URL**. Il sito mostra la copertina e scarica il video **solo al click**, quindi la griglia resta leggera.
 
-Guida operativa per il cliente: **`VIDEO-ARUBA.md`**.
+Guida operativa per il cliente: **`VIDEO-JUMPSHARE.md`**.
 
 ### Modello dati di un media
 

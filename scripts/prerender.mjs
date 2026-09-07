@@ -99,6 +99,10 @@ const altOf = (p) =>
   [p.title, p.film, p.location || p.loc, p.year].filter(Boolean).join(' — ');
 
 const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
+// Come in src/app.jsx: i link Jumpshare non finiscono in .mp4, e senza questo
+// coverOf() li tratterebbe come immagini finendo per metterli in sitemap.
+const JUMPSHARE_RE = /^https?:\/\/(?:www\.)?(?:jumpshare\.com\/(?:share|embed|v)\/[A-Za-z0-9_-]{4,}|jmp\.sh\/[A-Za-z0-9_-]{4,})[+-]?\/?/i;
+const isVideo = (u) => VIDEO_RE.test(u) || JUMPSHARE_RE.test(u);
 
 /** Slug di un progetto. Usato per l'@id nel JSON-LD, per l'URL della pagina
  *  dedicata e per la voce in sitemap: deve essere calcolato in un posto solo,
@@ -128,12 +132,12 @@ const titleFromFilename = (src) => {
 /** media.json ammette stringhe o oggetti; qui serve solo l'immagine di copertina. */
 const coverOf = (item) => {
   if (!item) return '';
-  if (typeof item === 'string') return VIDEO_RE.test(item) ? '' : item;
+  if (typeof item === 'string') return isVideo(item) ? '' : item;
   if (item.poster) return item.poster;
   if (item.image) return item.image;
-  if (item.url && !VIDEO_RE.test(item.url)) return item.url;
+  if (item.url && !isVideo(item.url)) return item.url;
   if (Array.isArray(item.images) && item.images.length) return coverOf(item.images[0]);
-  if (item.src && !VIDEO_RE.test(item.src)) return item.src;
+  if (item.src && !isVideo(item.src)) return item.src;
   return '';
 };
 
@@ -355,7 +359,7 @@ ${indexList
 //  · FAQPage / AggregateRating — non ci sono FAQ né recensioni reali
 //  · BreadcrumbList — è un sito monopagina
 //  · VideoObject — motion[] oggi contiene PNG, non video. Si aggiunge da solo
-//    quando i video Aruba entreranno nei dati (vedi il ramo condizionale sotto).
+//    quando i video Jumpshare entreranno nei dati (vedi il ramo condizionale sotto).
 
 const personId = `${SITE.origin}/#person`;
 const siteId = `${SITE.origin}/#website`;

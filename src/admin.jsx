@@ -25,7 +25,47 @@ const MAX_UPLOAD = 3 * 1024 * 1024;
 //   "https://…/clip.mp4"                    → video esterno
 //   { video, poster, title }                → video esterno + copertina
 const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
-const isVideoUrl = (u) => typeof u === "string" && VIDEO_RE.test(u);
+
+// ── Jumpshare ───────────────────────────────────────────────────────────────
+// Lo storage usato per i video. Il link che dà il pulsante "Copy link" apre una
+// PAGINA di anteprima, non il file: un tag <video> non ci può fare nulla, ed è
+// il motivo per cui "Verifica link" lo rifiutava.
+//
+// Jumpshare offre due suffissi da aggiungere in fondo all'indirizzo:
+//     -   file diretto, salta il visualizzatore
+//     +   anteprima diretta, senza la cornice di Jumpshare
+//
+// Quale dei due sia riproducibile in un <video> dipende da come Jumpshare serve
+// il file, e non è documentato. Quindi non si indovina: si normalizza a "-" e,
+// se la verifica fallisce, si riprova con "+" (vedi CANDIDATI_VIDEO).
+const JUMPSHARE_RE = /^(https?:\/\/(?:www\.)?(?:jumpshare\.com\/(?:share|embed|v)\/[A-Za-z0-9_-]{4,}|jmp\.sh\/[A-Za-z0-9_-]{4,}))[+-]?\/?$/i;
+
+/** Estrae l'indirizzo dal codice di incorporamento.
+ *  Su Jumpshare si copia un <iframe src="…"></iframe>. Invece di chiedere di
+ *  isolare l'indirizzo a mano, lo si ricava dal codice incollato: cosi' il
+ *  formato dell'embed lo detta Jumpshare e non una nostra ipotesi su come sia
+ *  fatto, che e' l'unico modo di non sbagliarlo. */
+const estraiSrc = (v) => {
+  const t = String(v || "").trim();
+  const m = t.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+  return m ? m[1].trim() : t;
+};
+
+/** Toglie un eventuale suffisso e restituisce la base dell'indirizzo Jumpshare. */
+const jumpshareBase = (u) => {
+  const m = String(u || "").trim().match(JUMPSHARE_RE);
+  return m ? m[1] : null;
+};
+
+/** Gli indirizzi da provare, in ordine di preferenza. Per Jumpshare sono due
+ *  varianti dello stesso file; per tutto il resto è l'indirizzo così com'è. */
+const CANDIDATI_VIDEO = (u) => {
+  const base = jumpshareBase(u);
+  return base ? [base + "-", base + "+"] : [String(u || "").trim()];
+};
+
+const isVideoUrl = (u) =>
+  typeof u === "string" && (VIDEO_RE.test(u) || JUMPSHARE_RE.test(u));
 
 const normMedia = (v) => {
   if (!v) return { image:"", video:"", title:"" };
@@ -162,7 +202,7 @@ async function checkPassword(p){
   return { ok:true };
 }
 
-// ── Verifica di un link video esterno (Aruba & co.) ─────────────────────────
+// ── Verifica di un link video esterno (Jumpshare & co.) ─────────────────────
 function mediaErrMsg(code, url){
   const httpHint = /^http:\/\//i.test(url)
     ? " ⚠ Il link è in http:// — su un sito https i video in http vengono bloccati dal browser: usa https://."
@@ -174,7 +214,7 @@ function mediaErrMsg(code, url){
     case 1: return "Caricamento interrotto." + httpHint;
     case 2: return "File non raggiungibile: controlla che sullo storage sia impostato come PUBBLICO." + httpHint;
     case 3: return "Il browser non riesce a decodificare il file: esportalo in MP4 (H.264 + AAC)." + httpHint;
-    case 4: return "Il link non apre un file video diretto (o il formato non è supportato). Serve un URL che finisce in .mp4 e che, aperto nel browser, fa partire il video — non una pagina di anteprima o di condivisione." + httpHint;
+    case 4: return "Il link non apre un file video diretto, o il formato non è supportato. Da Jumpshare serve il link di condivisione del file (il pannello aggiunge da sé il suffisso che lo rende diretto); da altri storage serve un indirizzo che, aperto in una scheda nuova, fa partire il video — non una pagina di anteprima." + httpHint;
     default: return "Link non verificabile." + httpHint;
   }
 }
@@ -266,8 +306,8 @@ const BLANKS = {
 };
 
 const SECTIONS = [
-  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). Trascina le foto per creare un carosello; la 1ª è la copertina. Con “+ Link video” aggiungi un film ospitato su Aruba dentro il post." },
-  { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link al video su Aruba: il video parte solo al click, quindi la griglia resta veloce." },
+  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). Trascina le foto per creare un carosello; la 1ª è la copertina. Con “+ Link video” aggiungi un film ospitato su Jumpshare dentro il post." },
+  { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link al video su Jumpshare: il video parte solo al click, quindi la griglia resta veloce." },
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
   { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima e la descrizione per Google e i motori AI. Nessuna foto: solo parole." },
@@ -431,7 +471,7 @@ function useDrop(onFiles){
 }
 
 const VIDEO_DROP_MSG = (name) =>
-  '"' + name + '" è un video: i video non vanno caricati nel sito (lo appesantirebbero e GitHub li rifiuta). Caricalo sullo storage Aruba, copia il link e incollalo nel campo “Link video”.';
+  '"' + name + '" è un video: i video non vanno caricati nel sito (lo appesantirebbero e GitHub li rifiuta). Caricalo su Jumpshare, copia il link e incollalo nel campo “Link video”.';
 
 // ── Login gate ──────────────────────────────────────────────────────────────
 function Login({ onAuth }){
@@ -562,7 +602,7 @@ function ImageField({ value, password, onChange, onStatus, aspect, allowUrl }){
   );
 }
 
-// ── Campo link video esterno (Aruba) + verifica + poster automatico ─────────
+// ── Campo link video esterno (Jumpshare) + verifica + poster automatico ─────
 function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus, compact }){
   const [state, setState] = useState(null); // {kind:'ok'|'err', msg}
   const [busy, setBusy] = useState(false);
@@ -571,7 +611,10 @@ function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus,
   useEffect(() => { setState(null); }, [value]);
 
   const clean = (raw) => {
-    let u = (raw || "").trim().replace(/^["'<]+|["'>]+$/g, "");
+    // Se e' stato incollato un codice di incorporamento, si prende l'indirizzo
+    // che contiene; altrimenti si ripulisce quello che c'e'.
+    let u = estraiSrc(raw).replace(/^["'<]+|["'>]+$/g, "");
+    if (/^\/\//.test(u)) u = "https:" + u;
     return u;
   };
 
@@ -579,13 +622,33 @@ function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus,
     const url = clean(value);
     if (!url){ setState({ kind:"err", msg:"Incolla prima un link." }); return; }
     setBusy(true); setState(null);
-    try {
-      const info = await probeVideo(url, false);
-      setState({ kind:"ok", msg: "Link valido · " + fmtDur(info.duration) + " · " + info.w + "×" + info.h });
-      stopVideo(info.el); // niente buffering in background dopo il controllo
-    } catch (e) {
-      setState({ kind:"err", msg: e.message });
-    } finally { setBusy(false); }
+    // Su Jumpshare si provano le due varianti del file diretto. Il primo
+    // indirizzo che riproduce viene SCRITTO NEL CAMPO, così quello che finisce
+    // nel sito è già quello funzionante e nessuno deve ricordare il suffisso.
+    // Un iframe di un altro dominio non espone durata ne' risoluzione: il
+    // browser non lo consente. Per gli embed la verifica si limita quindi a
+    // riconoscere la forma dell'indirizzo — la prova vera e' guardare il video
+    // sul sito dopo il salvataggio.
+    if (jumpshareBase(url) || /\/embed\//i.test(url)) {
+      if (url !== value) onChange(url);
+      setState({ kind:"ok", msg:"Link di incorporamento riconosciuto. Salva e controlla il video sul sito: da un iframe durata e risoluzione non sono leggibili." });
+      setBusy(false);
+      return;
+    }
+    const candidati = CANDIDATI_VIDEO(url);
+    let ultimo = null;
+    for (const c of candidati) {
+      try {
+        const info = await probeVideo(c, false);
+        if (c !== value) onChange(c);
+        setState({ kind:"ok", msg: "Link valido · " + fmtDur(info.duration) + " · " + info.w + "×" + info.h });
+        stopVideo(info.el); // niente buffering in background dopo il controllo
+        setBusy(false);
+        return;
+      } catch (e) { ultimo = e; }
+    }
+    setState({ kind:"err", msg: (ultimo && ultimo.message) || "Link non verificabile." });
+    setBusy(false);
   };
 
   const makePoster = async () => {
@@ -607,7 +670,7 @@ function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus,
 
   return (
     <div>
-      <label className="lbl">Link video esterno · Aruba (.mp4)</label>
+      <label className="lbl">Link video esterno · Jumpshare (incolla il codice embed)</label>
       <input className="field mono" value={value || ""} onChange={e=>onChange(e.target.value.trim())}
         placeholder="https://…/nome-video.mp4" />
       <div style={{display:"flex",gap:6,marginTop:6,flexWrap:"wrap"}}>
@@ -626,7 +689,7 @@ function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus,
       )}
       {!compact && (
         <p className="mono" style={{marginTop:6,fontSize:9,color:"#555",lineHeight:1.6}}>
-          Il video resta su Aruba: il sito ne mostra solo la copertina e lo scarica al click.
+          Il video resta su Jumpshare: il sito ne mostra solo la copertina e lo scarica al click.
         </p>
       )}
     </div>
@@ -744,7 +807,7 @@ function GalleryField({ images, password, onChange, onStatus, aspect }){
         <button className="btn btn-ghost" style={{flex:1}} onClick={()=>inputRef.current && inputRef.current.click()} disabled={busy}>
           {busy ? "Carico…" : (list.length ? "+ Aggiungi foto" : "Scegli foto")}
         </button>
-        <button className="btn btn-ghost" onClick={addVideoSlide} disabled={busy} title="Aggiunge una slide che punta a un video su Aruba">+ Link video</button>
+        <button className="btn btn-ghost" onClick={addVideoSlide} disabled={busy} title="Aggiunge una slide che punta a un video su Jumpshare">+ Link video</button>
       </div>
 
       {edit >= 0 && edit < list.length && (
@@ -961,7 +1024,7 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
   );
 }
 
-// ── Motion card: copertina + link al video su Aruba ─────────────────────────
+// ── Motion card: copertina + link al video su Jumpshare ─────────────────────
 function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, onStatus }){
   const m = normMedia(item);
   const patch = (p) => onChange(toRaw({ ...m, ...p }));
@@ -993,19 +1056,19 @@ function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, on
   );
 }
 
-// ── Guida rapida Aruba ──────────────────────────────────────────────────────
+// ── Guida rapida Jumpshare ──────────────────────────────────────────────────
 function HelpBox(){
   return (
     <details className="help" style={{marginBottom:18}}>
-      <summary>▶ Come si mette un video (storage Aruba) — 4 passi</summary>
+      <summary>▶ Come si mette un video (Jumpshare) — 4 passi</summary>
       <ol>
-        <li>Esporta il video in <b>MP4 (H.264 + AAC)</b>, 1080p, e caricalo sul tuo spazio Aruba. Un reel da 30" dovrebbe stare in <b>5–15 MB</b>: più è leggero, più parte subito.</li>
-        <li>Sullo storage imposta il file come <b>pubblico</b> e copia il <b>link diretto</b>: deve finire in <code>.mp4</code> e, aperto in una nuova scheda del browser, deve far partire il video. Se apre una pagina di anteprima o chiede il login, non è il link giusto.</li>
+        <li>Esporta il video in <b>MP4 (H.264 + AAC)</b>, 1080p, e caricalo su <b>Jumpshare</b>. Un reel da 30" dovrebbe stare in <b>5–15 MB</b>: più è leggero, più parte subito.</li>
+        <li>Su Jumpshare apri il video e premi <b>Copy link</b>. Va bene il link normale: il pannello aggiunge da sé il suffisso che lo rende un file diretto.</li>
         <li>Qui nel pannello incolla il link nel campo <b>“Link video esterno”</b> e premi <b>Verifica link</b>: se compare ✓ con durata e risoluzione, il sito lo riprodurrà.</li>
         <li>Metti una <b>copertina</b>: trascina una foto nel riquadro (consigliato) oppure premi <b>Copertina auto</b> per estrarre un fotogramma dal video. Poi <b>Salva tutto</b>.</li>
       </ol>
       <p className="mono" style={{fontSize:10,color:"#666",marginTop:12,lineHeight:1.7}}>
-        I video non vengono mai copiati nel sito: restano su Aruba e il sito li richiama al click.
+        I video non vengono mai copiati nel sito: restano su Jumpshare e il sito li richiama al click.
         Le <b>foto</b> invece si trascinano direttamente qui (max 3 MB l'una) e finiscono nella cartella <code>/media</code> del sito.
       </p>
     </details>
