@@ -16,21 +16,36 @@
     {
       "url": "media/santoni-bto-4-1-1-mqunjfp4.webp",
       "images": [
-        "media/santoni-bto-4-1-1-mqunjfp4.webp"
+        "media/santoni-bto-4-1-1-mqunjfp4.webp",
+        {
+          "poster": "",
+          "video": "https://jumpshare.com/embed/TZ6X2UDBeB3DxmF9dLQL",
+          "title": ""
+        }
       ],
-      "title": "SANTONI BTO",
+      "title": "SANTONI - Back To Office",
       "year": "2025",
       "loc": "MILANO",
-      "film": "DIGITAL — BACKSTAGE"
+      "film": ""
     },
     {
       "url": "media/fabiana-01.webp",
       "images": [
         "media/fabiana-01.webp",
         "media/fabiana-02.webp",
-        "media/fabiana-03.webp"
+        "media/fabiana-03.webp",
+        {
+          "video": "",
+          "poster": "",
+          "title": ""
+        },
+        {
+          "poster": "",
+          "video": "https://jumpshare.com/embed/2P2pGOJzCYMfIx0ksg0S",
+          "title": ""
+        }
       ],
-      "title": "FABIANA FILIPPI",
+      "title": "FABIANA FILIPPI - Pizzo Cardi Design Week",
       "year": "2025",
       "loc": "MILANO",
       "film": "VETRINA — DW"
@@ -350,5 +365,5 @@
       "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2018.\nRecent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.\nShoots have taken place in MILANO, GINOSTRA, STROMBOLI.\nHe is available for commissions and can be reached at video@andreaonori.com."
     }
   },
-  "updatedAt": "2026-09-07T09:49:53.651Z"
+  "updatedAt": "2026-09-07T09:54:07.461Z"
 }
