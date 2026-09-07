@@ -3,11 +3,7 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.andreaonori.com/</loc>
-    <lastmod>2026-08-29</lastmod>
-    <image:image>
-      <image:loc>https://www.andreaonori.com/media/santoni-bto-4-1-1-mqunjfp4.webp</image:loc>
-      <image:title>SANTONI BTO — DIGITAL — BACKSTAGE — MILANO — 2025</image:title>
-    </image:image>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/greta-01.webp</image:loc>
       <image:title>GRETA BOLDINI — EDITORIAL — CAMPAIGN — MILANO — 2025</image:title>
@@ -23,6 +19,10 @@
     <image:image>
       <image:loc>https://www.andreaonori.com/media/greta-04.webp</image:loc>
       <image:title>GRETA BOLDINI — EDITORIAL — CAMPAIGN — MILANO — 2025</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.andreaonori.com/media/santoni-bto-4-1-1-mqunjfp4.webp</image:loc>
+      <image:title>SANTONI BTO — DIGITAL — BACKSTAGE — MILANO — 2025</image:title>
     </image:image>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/fabiana-01.webp</image:loc>
@@ -161,57 +161,21 @@
       <image:title>FRAMES — series by Andrea Onori, Milan</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.andreaonori.com/media/story-greta.webp</image:loc>
-      <image:title>STORY GRETA — motion still by Andrea Onori, Milan</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://www.andreaonori.com/media/story-santoni-01.webp</image:loc>
-      <image:title>STORY SANTONI — motion still by Andrea Onori, Milan</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://www.andreaonori.com/media/story-ypsum.webp</image:loc>
-      <image:title>STORY YPSUM — motion still by Andrea Onori, Milan</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://www.andreaonori.com/media/story-mugshot-01.webp</image:loc>
-      <image:title>STORY MUGSHOT — motion still by Andrea Onori, Milan</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://www.andreaonori.com/media/story-santoni-02.webp</image:loc>
-      <image:title>STORY SANTONI — motion still by Andrea Onori, Milan</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://www.andreaonori.com/media/story-mugshot-02.webp</image:loc>
-      <image:title>STORY MUGSHOT — motion still by Andrea Onori, Milan</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://www.andreaonori.com/media/greta-carousel.webp</image:loc>
-      <image:title>GRETA CAROUSEL — motion still by Andrea Onori, Milan</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://www.andreaonori.com/media/santoni-carousel.webp</image:loc>
-      <image:title>SANTONI CAROUSEL — motion still by Andrea Onori, Milan</image:title>
-    </image:image>
-    <image:image>
-      <image:loc>https://www.andreaonori.com/media/ypsum-carousel.webp</image:loc>
-      <image:title>YPSUM CAROUSEL — motion still by Andrea Onori, Milan</image:title>
-    </image:image>
-    <image:image>
       <image:loc>https://www.andreaonori.com/andrea.jpg</image:loc>
       <image:title>ANDREA — Andrea Onori, Milan</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://www.andreaonori.com/privacy</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
   </url>
   <url>
     <loc>https://www.andreaonori.com/note-legali</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
   </url>
   <url>
     <loc>https://www.andreaonori.com/work/santoni-bto</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/santoni-bto-4-1-1-mqunjfp4.webp</image:loc>
       <image:title>SANTONI BTO — DIGITAL — BACKSTAGE — MILANO — 2025 — frame 01</image:title>
@@ -255,7 +219,7 @@
   </url>
   <url>
     <loc>https://www.andreaonori.com/work/greta-boldini</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/greta-01.webp</image:loc>
       <image:title>GRETA BOLDINI — EDITORIAL — CAMPAIGN — MILANO — 2025 — frame 01</image:title>
@@ -291,7 +255,7 @@
   </url>
   <url>
     <loc>https://www.andreaonori.com/work/fabiana-filippi</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/fabiana-01.webp</image:loc>
       <image:title>FABIANA FILIPPI — VETRINA — DW — MILANO — 2025 — frame 01</image:title>
@@ -307,7 +271,7 @@
   </url>
   <url>
     <loc>https://www.andreaonori.com/work/ok-giorgio-dj-set</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/okgiorgio-01.webp</image:loc>
       <image:title>OK GIORGIO — DJ SET — DOC — LIVE — GINOSTRA — 2025 — frame 01</image:title>
@@ -323,7 +287,7 @@
   </url>
   <url>
     <loc>https://www.andreaonori.com/work/ypsum</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/ypsum-01.webp</image:loc>
       <image:title>YPSUM — CAMPAIGN — SCREEN — MILANO — 2025 — frame 01</image:title>
@@ -339,7 +303,7 @@
   </url>
   <url>
     <loc>https://www.andreaonori.com/work/mugshot</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/mugshot-backstage.webp</image:loc>
       <image:title>MUGSHOT — BACKSTAGE — 35MM — MILANO — 2025</image:title>
@@ -347,7 +311,7 @@
   </url>
   <url>
     <loc>https://www.andreaonori.com/work/ok-giorgio-grotta</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/okgiorgio-06.webp</image:loc>
       <image:title>OK GIORGIO — GROTTA — DOC — LIVE — STROMBOLI — 2025 — frame 01</image:title>
@@ -359,7 +323,7 @@
   </url>
   <url>
     <loc>https://www.andreaonori.com/work/santoni-bto-studio</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/santoni-09.webp</image:loc>
       <image:title>SANTONI BTO — DIGITAL — STUDIO — MILANO — 2025</image:title>
@@ -367,7 +331,7 @@
   </url>
   <url>
     <loc>https://www.andreaonori.com/work/ok-giorgio-vulcano</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-07</lastmod>
     <image:image>
       <image:loc>https://www.andreaonori.com/media/okgiorgio-07.webp</image:loc>
       <image:title>OK GIORGIO — GROTTA — DOC — LIVE — STROMBOLI — 2025</image:title>
