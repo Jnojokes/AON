@@ -131,7 +131,38 @@
       "film": "DOC — LIVE"
     }
   ],
-  "motion": [],
+  "motion": [
+    {
+      "poster": "media/screenshot-2026-09-07-alle-11-46-39-mtr23fcy.png",
+      "video": "https://jumpshare.com/embed/6p9zF27xKhwXEyVDBe1x",
+      "title": "PRADA - SHOW INVITATION"
+    },
+    {
+      "poster": "",
+      "video": "https://jumpshare.com/embed/mBRfOHNjDo8H7wfpJd1X",
+      "title": "SANTONI - Back To Office"
+    },
+    {
+      "poster": "",
+      "video": "https://jumpshare.com/embed/RgBhGIGg77XHvOQCbSEU",
+      "title": "MANDARINA DUCK - ROTTERDAM"
+    },
+    {
+      "poster": "",
+      "video": "https://jumpshare.com/embed/TERkMWEtbUMXLM5gD1eb",
+      "title": "OK GIORGIO - DOCUMENTARIO EST RADIO"
+    },
+    {
+      "poster": "",
+      "video": "https://jumpshare.com/embed/2gyR3s1IpcDvHaNJNXnT",
+      "title": "MOSAIQ GROUP - LUXURY PACKAGING"
+    },
+    {
+      "poster": "",
+      "video": "https://jumpshare.com/embed/NkDxsvg1FHiddjyCL4nQ",
+      "title": ""
+    }
+  ],
   "series": [
     {
       "id": "aboutme",
@@ -319,5 +350,5 @@
       "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2018.\nRecent projects include SANTONI BTO, GRETA BOLDINI, FABIANA FILIPPI, OK GIORGIO — DJ SET, YPSUM, MUGSHOT.\nShoots have taken place in MILANO, GINOSTRA, STROMBOLI.\nHe is available for commissions and can be reached at video@andreaonori.com."
     }
   },
-  "updatedAt": "2026-09-07T08:12:00.579Z"
+  "updatedAt": "2026-09-07T09:49:53.651Z"
 }
