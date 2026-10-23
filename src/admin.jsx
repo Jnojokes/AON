@@ -20,14 +20,52 @@ const API = "/api/save";
 // prima con un messaggio chiaro invece di far vedere un 413 criptico.
 const MAX_UPLOAD = 3 * 1024 * 1024;
 
-// ── Modello media (identico a quello di index.html) ─────────────────────────
+// ── Modello media (identico a quello di src/app.jsx) ────────────────────────
 //   "media/foto.jpg"                        → immagine nel repo
 //   "https://…/clip.mp4"                    → video esterno
-//   { video, poster, title }                → video esterno + copertina
+//   { video, poster, title, ratio }         → video esterno + copertina
+//                                             (+ proporzioni, es. "16/9")
 const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
 
+// ── Bunny Stream ────────────────────────────────────────────────────────────
+// Lo storage dei video. Sul sito un video Bunny si vede nel player di Bunny,
+// incorporato con il link Embed:
+//     https://player.mediadelivery.net/embed/<libreria>/<id del video>
+// (il vecchio iframe.mediadelivery.net e l'indirizzo /play/ valgono uguale).
+// Il CDN della libreria serve, senza chiavi, la miniatura e gli MP4 di ripiego:
+//     https://<cdn>/<id>/thumbnail.jpg      https://<cdn>/<id>/play_720p.mp4
+// Da lì il pannello ricava da solo proporzioni e copertina. Il CDN dipende
+// dalla libreria: una libreria nuova va aggiunta qui.
+const BUNNY_CDN = { "788231": "vz-13c73ffe-e6a.b-cdn.net" };   // libreria "andreaonori"
+const BUNNY_RE = /^https?:\/\/(?:player|iframe)\.mediadelivery\.net\/(?:embed|play)\/(\d+)\/([0-9a-f-]{36})/i;
+const bunnyInfo = (u) => {
+  const m = String(u || "").trim().match(BUNNY_RE);
+  if (!m) return null;
+  const library = m[1], guid = m[2].toLowerCase(), cdn = BUNNY_CDN[library] || "";
+  return {
+    library, guid, cdn,
+    embed: `https://player.mediadelivery.net/embed/${library}/${guid}`,
+    thumb: cdn ? `https://${cdn}/${guid}/thumbnail.jpg` : "",
+    mp4: (q) => cdn ? `https://${cdn}/${guid}/play_${q}p.mp4` : "",
+  };
+};
+
+// Proporzioni leggibili da larghezza e altezza: 1920×1080 → "16/9",
+// 1080×1350 → "4/5". Se non sono tra quelle comuni, la frazione ridotta.
+const RAPPORTI = [[16,9],[9,16],[4,3],[3,4],[4,5],[5,4],[1,1],[3,2],[2,3],[21,9],[2,1],[1,2]];
+const ratioLabel = (w, h) => {
+  if (!w || !h) return "";
+  const r = w / h;
+  for (const [a, b] of RAPPORTI) if (Math.abs(r - a / b) / (a / b) < 0.01) return a + "/" + b;
+  const mcd = (x, y) => y ? mcd(y, x % y) : x;
+  const d = mcd(w, h);
+  return (w / d <= 64 && h / d <= 64) ? (w / d) + "/" + (h / d) : String(Math.round(r * 1000) / 1000);
+};
+
 // ── Jumpshare ───────────────────────────────────────────────────────────────
-// Lo storage usato per i video. Il link che dà il pulsante "Copy link" apre una
+// Lo storage di prima: il sito non lo usa più (la CSP blocca i suoi player),
+// il riconoscimento resta per avvisare chi incolla un vecchio link.
+// Il link che dà il pulsante "Copy link" apre una
 // PAGINA di anteprima, non il file: un tag <video> non ci può fare nulla, ed è
 // il motivo per cui "Verifica link" lo rifiutava.
 //
@@ -41,10 +79,10 @@ const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
 const JUMPSHARE_RE = /^(https?:\/\/(?:www\.)?(?:jumpshare\.com\/(?:share|embed|v)\/[A-Za-z0-9_-]{4,}|jmp\.sh\/[A-Za-z0-9_-]{4,}))[+-]?\/?$/i;
 
 /** Estrae l'indirizzo dal codice di incorporamento.
- *  Su Jumpshare si copia un <iframe src="…"></iframe>. Invece di chiedere di
- *  isolare l'indirizzo a mano, lo si ricava dal codice incollato: cosi' il
- *  formato dell'embed lo detta Jumpshare e non una nostra ipotesi su come sia
- *  fatto, che e' l'unico modo di non sbagliarlo. */
+ *  Da Bunny (come prima da Jumpshare) si puo' copiare un <iframe src="…">.
+ *  Invece di chiedere di isolare l'indirizzo a mano, lo si ricava dal codice
+ *  incollato: cosi' il formato dell'embed lo detta il servizio e non una
+ *  nostra ipotesi su come sia fatto, che e' l'unico modo di non sbagliarlo. */
 const estraiSrc = (v) => {
   const t = String(v || "").trim();
   const m = t.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
@@ -65,23 +103,26 @@ const CANDIDATI_VIDEO = (u) => {
 };
 
 const isVideoUrl = (u) =>
-  typeof u === "string" && (VIDEO_RE.test(u) || JUMPSHARE_RE.test(u));
+  typeof u === "string" && (VIDEO_RE.test(u) || BUNNY_RE.test(u) || JUMPSHARE_RE.test(u));
 
 const normMedia = (v) => {
-  if (!v) return { image:"", video:"", title:"" };
+  if (!v) return { image:"", video:"", title:"", ratio:"" };
   if (typeof v === "string") {
-    return isVideoUrl(v) ? { image:"", video:v, title:"" } : { image:v, video:"", title:"" };
+    return isVideoUrl(v) ? { image:"", video:v, title:"", ratio:"" } : { image:v, video:"", title:"", ratio:"" };
   }
   const src = v.src || "";
   const video = v.video || (isVideoUrl(src) ? src : "");
   const image = v.poster || v.image || (isVideoUrl(src) ? "" : src) || v.url || "";
-  return { image, video, title: v.title || "" };
+  return { image, video, title: v.title || "", ratio: v.ratio || "" };
 };
 
 // Riscrive un media nella forma più semplice possibile: stringa se è solo una
 // foto (così media.json resta identico a prima), oggetto se c'è un video.
-const toRaw = ({ image, video, title }) =>
-  (video || title) ? { poster: image || "", video: video || "", title: title || "" } : (image || "");
+// Le proporzioni si salvano solo se ci sono.
+const toRaw = ({ image, video, title, ratio }) =>
+  (video || title)
+    ? { poster: image || "", video: video || "", title: title || "", ...(ratio ? { ratio } : {}) }
+    : (image || "");
 
 const firstImage = (arr) => {
   for (const it of (arr || [])) { const m = normMedia(it); if (m.image) return m.image; }
@@ -242,7 +283,7 @@ async function checkPassword(p){
   return { ok:true };
 }
 
-// ── Verifica di un link video esterno (Jumpshare & co.) ─────────────────────
+// ── Verifica di un link video esterno (Bunny, file .mp4 & co.) ──────────────
 function mediaErrMsg(code, url){
   const httpHint = /^http:\/\//i.test(url)
     ? " ⚠ Il link è in http:// — su un sito https i video in http vengono bloccati dal browser: usa https://."
@@ -254,7 +295,7 @@ function mediaErrMsg(code, url){
     case 1: return "Caricamento interrotto." + httpHint;
     case 2: return "File non raggiungibile: controlla che sullo storage sia impostato come PUBBLICO." + httpHint;
     case 3: return "Il browser non riesce a decodificare il file: esportalo in MP4 (H.264 + AAC)." + httpHint;
-    case 4: return "Il link non apre un file video diretto, o il formato non è supportato. Da Jumpshare serve il link di condivisione del file (il pannello aggiunge da sé il suffisso che lo rende diretto); da altri storage serve un indirizzo che, aperto in una scheda nuova, fa partire il video — non una pagina di anteprima." + httpHint;
+    case 4: return "Il link non apre un file video diretto, o il formato non è supportato. Per un video su Bunny Stream incolla il link Embed; da altri storage serve un indirizzo che, aperto in una scheda nuova, fa partire il video — non una pagina di anteprima." + httpHint;
     default: return "Link non verificabile." + httpHint;
   }
 }
@@ -286,6 +327,21 @@ function probeVideo(url, withCors){
     };
     v.src = url;
   });
+}
+
+// Proporzioni e durata di un video Bunny dai metadati dell'MP4 di ripiego
+// (il browser scarica solo l'intestazione). Larghezza e altezza si leggono
+// anche senza permessi CORS. Se manca la versione a 360p si prova le altre.
+async function bunnyMeta(info){
+  let ultimo = null;
+  for (const q of [360, 240, 480, 720]) {
+    try {
+      const v = await probeVideo(info.mp4(q), false);
+      stopVideo(v.el);
+      return v;
+    } catch (e) { ultimo = e; }
+  }
+  throw ultimo || new Error("video non raggiungibile");
 }
 
 // Estrae un frame dal video e lo restituisce come data URL JPEG.
@@ -351,8 +407,8 @@ const BLANKS = {
 };
 
 const SECTIONS = [
-  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). La Copertina è l'immagine della cella e si vede solo nella griglia: può essere una WebP o GIF animata, si carica così com'è (max 3 MB) e, se è piccola, il sito la ingrandisce a pixel netti. Senza Copertina la cella mostra la prima foto del carosello. Il Logo (PNG o SVG trasparente) compare centrato sopra la copertina. Il carosello è quello che si sfoglia aprendo il post: trascina le foto e, con “+ Link video”, aggiungi un film ospitato su Jumpshare. Il titolo è il nome del video; sotto, nella scheda, compaiono i Crediti: etichetta e valore liberi, nell'ordine che scegli, e le voci vuote non si vedono. Il valore di CLIENT compare anche passando col mouse sulla griglia. Anno, luogo e formato non si vedono nella scheda: servono a Google e alle pagine dei progetti." },
-  { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link al video su Jumpshare: il video parte solo al click, quindi la griglia resta veloce." },
+  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). La Copertina è l'immagine della cella e si vede solo nella griglia: può essere una WebP o GIF animata, si carica così com'è (max 3 MB) e, se è piccola, il sito la ingrandisce a pixel netti. Senza Copertina la cella mostra la prima foto del carosello. Il Logo (PNG o SVG trasparente) compare centrato sopra la copertina. Il carosello è quello che si sfoglia aprendo il post: trascina le foto e, con “+ Link video”, aggiungi un film ospitato su Bunny Stream: incolla il link Embed e proporzioni e copertina si compilano da sole. Il titolo è il nome del video; sotto, nella scheda, compaiono i Crediti: etichetta e valore liberi, nell'ordine che scegli, e le voci vuote non si vedono. Il valore di CLIENT compare anche passando col mouse sulla griglia. Anno, luogo e formato non si vedono nella scheda: servono a Google e alle pagine dei progetti." },
+  { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link Embed del video su Bunny Stream: il video parte solo al click, quindi la griglia resta veloce. Se la copertina manca, il pannello mette la miniatura di Bunny." },
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
   { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel sopra il Feed e la descrizione per Google e i motori AI." },
@@ -508,7 +564,7 @@ function useDrop(onFiles){
 }
 
 const VIDEO_DROP_MSG = (name) =>
-  '"' + name + '" è un video: i video non vanno caricati nel sito (lo appesantirebbero e GitHub li rifiuta). Caricalo su Jumpshare, copia il link e incollalo nel campo “Link video”.';
+  '"' + name + '" è un video: i video non vanno caricati nel sito (lo appesantirebbero e GitHub li rifiuta). Caricalo su Bunny Stream, copia il link Embed e incollalo nel campo “Link video”.';
 
 // ── Login gate ──────────────────────────────────────────────────────────────
 function Login({ onAuth }){
@@ -727,13 +783,31 @@ function CellAssetField({ kind, item, password, onPatch, onStatus }){
   );
 }
 
-// ── Campo link video esterno (Jumpshare) + verifica + poster automatico ─────
-function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus, compact }){
+// ── Campo link video (Bunny Stream) + proporzioni + copertina automatica ─────
+// Si incolla il link Embed di Bunny (o tutto il codice <iframe>): il campo lo
+// ripulisce, legge proporzioni e durata dal video e, se la slide non ha
+// ancora una copertina, mette la miniatura di Bunny. Le proporzioni restano
+// modificabili a mano. Un file .mp4 diretto continua a funzionare.
+// onPatch riceve più campi insieme ({ video, ratio, image }): applicarli uno
+// alla volta farebbe perdere i precedenti.
+function VideoLinkField({ value, poster, ratio, password, onChange, onPoster, onPatch, onStatus, compact }){
   const [state, setState] = useState(null); // {kind:'ok'|'err', msg}
   const [busy, setBusy] = useState(false);
   const [gen, setGen] = useState(false);
+  // Dopo un'attesa (la lettura del video) si usano le funzioni del genitore
+  // aggiornate: la modifica si applica alla slide com'è in quel momento.
+  const latest = useRef({});
+  latest.current = { onChange, onPatch, poster };
+  const applica = (p) => {
+    const l = latest.current;
+    if (l.onPatch) l.onPatch(p);
+    else if ("video" in p) l.onChange(p.video);
+  };
 
-  useEffect(() => { setState(null); }, [value]);
+  // Il messaggio sotto il campo si azzera quando il link cambia a mano, non
+  // quando è il pannello a ripulirlo (lì il messaggio è la conferma).
+  const tieni = useRef(false);
+  useEffect(() => { if (tieni.current) { tieni.current = false; return; } setState(null); }, [value]);
 
   const clean = (raw) => {
     // Se e' stato incollato un codice di incorporamento, si prende l'indirizzo
@@ -743,31 +817,67 @@ function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus,
     return u;
   };
 
+  const info = bunnyInfo(clean(value || ""));
+  const jumpshare = Boolean(jumpshareBase(clean(value || "")));
+
+  // Proporzioni e copertina di un video Bunny. forzaCopertina: anche se la
+  // slide ne ha già una (pulsante "Copertina auto").
+  const autoBunny = async (b, forzaCopertina) => {
+    if (!b.cdn) {
+      setState({ kind:"err", msg:"Video di una libreria Bunny che il pannello non conosce (" + b.library + "): scrivi a mano proporzioni e copertina." });
+      return;
+    }
+    setBusy(true);
+    try {
+      const meta = await bunnyMeta(b);
+      const p = { ratio: ratioLabel(meta.w, meta.h) };
+      if (forzaCopertina || !latest.current.poster) p.image = b.thumb;
+      applica(p);
+      setState({ kind:"ok", msg: "Video Bunny · " + fmtDur(meta.duration) + " · " + meta.w + "×" + meta.h + " → proporzioni " + p.ratio + (p.image ? " · copertina: la miniatura di Bunny" : "") });
+    } catch (e) {
+      setState({ kind:"err", msg:"Non riesco a leggere il video su Bunny: controlla che il link sia giusto e che Bunny abbia finito di elaborarlo. Le proporzioni si possono scrivere a mano." });
+    } finally { setBusy(false); }
+  };
+
+  const onInput = (raw) => {
+    const t = raw.trim();
+    const b = bunnyInfo(clean(t));
+    if (b) {
+      // Nel campo resta il link pulito, senza parametri: quelli li aggiunge il sito.
+      applica({ video: b.embed });
+      autoBunny(b, false);
+      return;
+    }
+    applica({ video: t });
+  };
+
   const verify = async () => {
     const url = clean(value);
     if (!url){ setState({ kind:"err", msg:"Incolla prima un link." }); return; }
+    if (info) { await autoBunny(info, false); return; }
+    if (jumpshare) {
+      setState({ kind:"err", msg:"Jumpshare non è più usato: il sito blocca i suoi video. Carica il video su Bunny Stream e incolla qui il link Embed." });
+      return;
+    }
     setBusy(true); setState(null);
-    // Su Jumpshare si provano le due varianti del file diretto. Il primo
-    // indirizzo che riproduce viene SCRITTO NEL CAMPO, così quello che finisce
-    // nel sito è già quello funzionante e nessuno deve ricordare il suffisso.
     // Un iframe di un altro dominio non espone durata ne' risoluzione: il
     // browser non lo consente. Per gli embed la verifica si limita quindi a
     // riconoscere la forma dell'indirizzo — la prova vera e' guardare il video
     // sul sito dopo il salvataggio.
-    if (jumpshareBase(url) || /\/embed\//i.test(url)) {
-      if (url !== value) onChange(url);
+    if (/\/embed\//i.test(url)) {
+      if (url !== value) { tieni.current = true; applica({ video: url }); }
       setState({ kind:"ok", msg:"Link di incorporamento riconosciuto. Salva e controlla il video sul sito: da un iframe durata e risoluzione non sono leggibili." });
       setBusy(false);
       return;
     }
-    const candidati = CANDIDATI_VIDEO(url);
     let ultimo = null;
-    for (const c of candidati) {
+    for (const c of CANDIDATI_VIDEO(url)) {
       try {
-        const info = await probeVideo(c, false);
-        if (c !== value) onChange(c);
-        setState({ kind:"ok", msg: "Link valido · " + fmtDur(info.duration) + " · " + info.w + "×" + info.h });
-        stopVideo(info.el); // niente buffering in background dopo il controllo
+        const v = await probeVideo(c, false);
+        if (c !== value) tieni.current = true;
+        applica({ video: c, ratio: ratioLabel(v.w, v.h) });
+        setState({ kind:"ok", msg: "Link valido · " + fmtDur(v.duration) + " · " + v.w + "×" + v.h + " → proporzioni " + ratioLabel(v.w, v.h) });
+        stopVideo(v.el); // niente buffering in background dopo il controllo
         setBusy(false);
         return;
       } catch (e) { ultimo = e; }
@@ -779,12 +889,13 @@ function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus,
   const makePoster = async () => {
     const url = clean(value);
     if (!url){ setState({ kind:"err", msg:"Incolla prima un link." }); return; }
+    if (info) { await autoBunny(info, true); return; }
     setGen(true);
     onStatus && onStatus("Estraggo un fotogramma dal video…", "info");
     try {
       const dataUrl = await grabPoster(url);
       const path = await uploadDataUrl(dataUrl, posterName(url), password);
-      onPoster && onPoster(path);
+      if (onPatch) onPatch({ image: path }); else onPoster && onPoster(path);
       onStatus && onStatus("Copertina generata dal video: " + path, "ok");
     } catch (e) {
       onStatus && onStatus(e.message, "err");
@@ -795,26 +906,39 @@ function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus,
 
   return (
     <div>
-      <label className="lbl">Link video esterno · Jumpshare (incolla il codice embed)</label>
-      <input className="field mono" value={value || ""} onChange={e=>onChange(e.target.value.trim())}
-        placeholder="https://…/nome-video.mp4" />
+      <label className="lbl">Link video · Bunny Stream (incolla il link Embed)</label>
+      <input className="field mono" value={value || ""} onChange={e=>onInput(e.target.value)}
+        placeholder="https://player.mediadelivery.net/embed/788231/…" />
       <div style={{display:"flex",gap:6,marginTop:6,flexWrap:"wrap"}}>
-        <button className="btn btn-ghost btn-xs" onClick={verify} disabled={busy || !value}>{busy ? "Verifico…" : "Verifica link"}</button>
-        <button className="btn btn-ghost btn-xs" onClick={makePoster} disabled={gen || !value} title="Prova a generare la copertina prendendo un fotogramma dal video">
+        <button className="btn btn-ghost btn-xs" onClick={verify} disabled={busy || !value}>{busy ? "Leggo il video…" : "Verifica link"}</button>
+        <button className="btn btn-ghost btn-xs" onClick={makePoster} disabled={gen || busy || !value}
+          title={info ? "Usa la miniatura di Bunny come copertina" : "Prova a generare la copertina prendendo un fotogramma dal video"}>
           {gen ? "Genero…" : "Copertina auto"}
         </button>
-        {value && <button className="btn btn-ghost btn-xs" onClick={()=>onChange("")}>Rimuovi video</button>}
+        {value && <button className="btn btn-ghost btn-xs" onClick={()=>applica({ video:"", ratio:"" })}>Rimuovi video</button>}
       </div>
+      {value && onPatch && (
+        <div style={{marginTop:8}}>
+          <label className="lbl">Proporzioni · es. 16/9, 4/3, 4/5, 9/16</label>
+          <input className="field sm mono" value={ratio || ""} placeholder={info ? "si compilano da sole" : "16/9"}
+            onChange={e=>onPatch({ ratio: e.target.value.trim() })} />
+        </div>
+      )}
       {httpWarn && <div className="chip err" style={{marginTop:6}}>usa https://</div>}
+      {jumpshare && (
+        <div className="mono" style={{marginTop:6,fontSize:10,lineHeight:1.5,color:"var(--accent)"}}>
+          ✕ Link Jumpshare: il sito non li mostra più. Carica il video su Bunny Stream e incolla qui il link Embed.
+        </div>
+      )}
       {state && (
-        <div className={"mono " + (state.kind === "ok" ? "" : "")} style={{
+        <div className="mono" style={{
           marginTop:6,fontSize:10,lineHeight:1.5,
           color: state.kind === "ok" ? "var(--ok)" : "var(--accent)",
         }}>{state.kind === "ok" ? "✓ " : "✕ "}{state.msg}</div>
       )}
       {!compact && (
         <p className="mono" style={{marginTop:6,fontSize:9,color:"#555",lineHeight:1.6}}>
-          Il video resta su Jumpshare: il sito ne mostra solo la copertina e lo scarica al click.
+          Il video resta su Bunny: il sito ne mostra solo la copertina e lo carica al click.
         </p>
       )}
     </div>
@@ -833,9 +957,10 @@ function SlideEditor({ item, password, onChange, onStatus, onDone, aspect }){
           onChange={(v)=>patch({ image:v })} onStatus={onStatus} allowUrl />
       </div>
       <div style={{display:"flex",flexDirection:"column",gap:10,minWidth:0}}>
-        <VideoLinkField value={m.video} password={password} compact
+        <VideoLinkField value={m.video} poster={m.image} ratio={m.ratio} password={password} compact
           onChange={(v)=>patch({ video:v })}
           onPoster={(p)=>patch({ image:p })}
+          onPatch={patch}
           onStatus={onStatus} />
         <div>
           <label className="lbl">Titolo slide (opzionale)</label>
@@ -934,7 +1059,7 @@ function GalleryField({ images, password, onChange, onStatus, aspect, coverIndex
         <button className="btn btn-ghost" style={{flex:1}} onClick={()=>inputRef.current && inputRef.current.click()} disabled={busy}>
           {busy ? "Carico…" : (list.length ? "+ Aggiungi foto" : "Scegli foto")}
         </button>
-        <button className="btn btn-ghost" onClick={addVideoSlide} disabled={busy} title="Aggiunge una slide che punta a un video su Jumpshare">+ Link video</button>
+        <button className="btn btn-ghost" onClick={addVideoSlide} disabled={busy} title="Aggiunge una slide che punta a un video su Bunny Stream">+ Link video</button>
       </div>
 
       {edit >= 0 && edit < list.length && (
@@ -1059,10 +1184,23 @@ function TextGroup({ group, values, onChange }){
 // Il video in loop sopra la griglia del Feed (settings.feedReel). Da non
 // confondere con lo "Showreel della foto profilo", che è una presentazione di
 // foto. Qui serve un file video diretto: un <video> in loop non sa riprodurre
-// la pagina di Jumpshare, che funziona solo dentro un iframe.
+// il player di Bunny, che funziona solo dentro un iframe. Se si incolla il
+// link Embed di Bunny, il pannello lo converte nell'MP4 diretto dello stesso
+// video (1080p) e, se manca, mette la miniatura come copertina.
 function FeedReelEditor({ value, password, onChange, onStatus }){
   const v = value || {};
   const set = (k, x) => onChange({ ...v, [k]: x });
+  const [nota, setNota] = useState("");
+  const onVideo = (raw) => {
+    const b = bunnyInfo(estraiSrc(raw.trim()));
+    if (b && b.cdn) {
+      onChange({ ...v, video: b.mp4(1080), poster: v.poster || b.thumb });
+      setNota("Link Bunny convertito nel file MP4 diretto a 1080p" + (v.poster ? "." : ", con la miniatura di Bunny come copertina."));
+      return;
+    }
+    setNota("");
+    set("video", raw.trim());
+  };
   const video = String(v.video || "").trim();
   const embed = Boolean(video) && (JUMPSHARE_RE.test(video) || /\/embed\//i.test(video) || /<iframe/i.test(video));
   // L'anteprima si accende solo su un indirizzo che finisce come un file
@@ -1078,15 +1216,17 @@ function FeedReelEditor({ value, password, onChange, onStatus }){
       <p className="hint">
         Il video a tutta larghezza sopra la griglia del Feed: parte da solo, muto, e gira in loop.
         Serve l'indirizzo di un file video diretto (.mp4): un file del sito come
-        media/showreel.mp4, oppure il link .mp4 di uno storage video. I link Jumpshare qui non
-        funzionano. Con il campo video vuoto il blocco non compare.
+        media/showreel.mp4, oppure l'MP4 di un video su Bunny Stream. Puoi incollare
+        anche il link Embed di Bunny: il pannello lo converte da solo nell'MP4 a 1080p
+        (per un file più leggero cambia 1080 in 720). Con il campo video vuoto il blocco non compare.
       </p>
       <div className="set-grid">
         <div style={{ gridColumn:"1 / -1" }}>
           <label className="lbl">Video (.mp4)</label>
           <input className="field mono" value={v.video || ""} placeholder="media/showreel.mp4"
-            onChange={e => set("video", e.target.value.trim())} />
-          {embed && <div className="mono" style={avviso}>✕ Questo è un link da incorporare (Jumpshare): qui serve il file .mp4 diretto. Così com'è, sul sito il blocco non compare.</div>}
+            onChange={e => onVideo(e.target.value)} />
+          {nota && <div className="mono" style={{ ...avviso, color:"var(--ok)" }}>✓ {nota}</div>}
+          {embed && <div className="mono" style={avviso}>✕ Questo è un link da incorporare: qui serve il file .mp4 diretto. Così com'è, sul sito il blocco non compare.</div>}
           {strano && <div className="mono" style={avviso}>Non sembra un file video: l'indirizzo dovrebbe finire in .mp4 (o .webm, .mov). Il sito proverà comunque a riprodurlo.</div>}
         </div>
         <div>
@@ -1278,7 +1418,7 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
   );
 }
 
-// ── Motion card: copertina + link al video su Jumpshare ─────────────────────
+// ── Motion card: copertina + link al video su Bunny Stream ──────────────────
 function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, onStatus }){
   const m = normMedia(item);
   const patch = (p) => onChange(toRaw({ ...m, ...p }));
@@ -1298,9 +1438,10 @@ function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, on
         <ImageField value={m.image} password={password} aspect="9/16"
           onChange={(v)=>patch({ image:v })} onStatus={onStatus} allowUrl />
       </div>
-      <VideoLinkField value={m.video} password={password}
+      <VideoLinkField value={m.video} poster={m.image} ratio={m.ratio} password={password}
         onChange={(v)=>patch({ video:v })}
         onPoster={(p)=>patch({ image:p })}
+        onPatch={patch}
         onStatus={onStatus} />
       <div>
         <label className="lbl">Titolo (opzionale)</label>
@@ -1310,19 +1451,19 @@ function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, on
   );
 }
 
-// ── Guida rapida Jumpshare ──────────────────────────────────────────────────
+// ── Guida rapida: i video su Bunny Stream ───────────────────────────────────
 function HelpBox(){
   return (
     <details className="help" style={{marginBottom:18}}>
-      <summary>▶ Come si mette un video (Jumpshare) — 4 passi</summary>
+      <summary>▶ Come si mette un video (Bunny Stream) — 4 passi</summary>
       <ol>
-        <li>Esporta il video in <b>MP4 (H.264 + AAC)</b>, 1080p, e caricalo su <b>Jumpshare</b>. Un reel da 30" dovrebbe stare in <b>5–15 MB</b>: più è leggero, più parte subito.</li>
-        <li>Su Jumpshare apri il video e premi <b>Copy link</b>. Va bene il link normale: il pannello aggiunge da sé il suffisso che lo rende un file diretto.</li>
-        <li>Qui nel pannello incolla il link nel campo <b>“Link video esterno”</b> e premi <b>Verifica link</b>: se compare ✓ con durata e risoluzione, il sito lo riprodurrà.</li>
-        <li>Metti una <b>copertina</b>: trascina una foto nel riquadro (consigliato) oppure premi <b>Copertina auto</b> per estrarre un fotogramma dal video. Poi <b>Salva tutto</b>.</li>
+        <li>Carica il video su <b>Bunny Stream</b>, nella libreria <b>andreaonori</b>, e aspetta che finisca l'elaborazione.</li>
+        <li>Su Bunny apri il video, scegli <b>Embed</b> e copia il link (<code>player.mediadelivery.net/embed/788231/…</code>). Va bene anche tutto il codice <code>&lt;iframe&gt;</code>.</li>
+        <li>Qui nel pannello incollalo: in un post del Feed con <b>“+ Link video”</b>, in un reel nel campo <b>“Link video”</b>. Il pannello legge il video e compila da solo <b>proporzioni</b> e, se manca, la <b>copertina</b> (la miniatura di Bunny).</li>
+        <li>Se vuoi una copertina tua trascina una foto nel riquadro. Poi <b>Salva tutto</b>.</li>
       </ol>
       <p className="mono" style={{fontSize:10,color:"#666",marginTop:12,lineHeight:1.7}}>
-        I video non vengono mai copiati nel sito: restano su Jumpshare e il sito li richiama al click.
+        I video non vengono mai copiati nel sito: restano su Bunny e il sito li carica al click, nel player di Bunny.
         Le <b>foto</b> invece si trascinano direttamente qui (max 3 MB l'una) e finiscono nella cartella <code>/media</code> del sito.
       </p>
     </details>

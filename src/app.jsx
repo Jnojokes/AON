@@ -177,49 +177,83 @@ import * as ReactDOM from 'react-dom/client';
         //   { video:"https://…/clip.mp4",
         //     poster:"media/cover.jpg", title:"…" }   → video esterno + copertina
         // `src` resta accettato come alias (video se ha estensione video, altrimenti poster).
-        // I video NON stanno nel repo: sono link a uno storage esterno (Jumpshare) e
-        // vengono scaricati solo quando l'utente clicca → la griglia resta leggera.
+        // `ratio` (es. "16/9", "4/5") sono le proporzioni del video: servono a dare
+        // al player la forma del video (vedi fitStyle).
+        // I video NON stanno nel repo: sono su Bunny Stream e vengono caricati
+        // solo quando l'utente clicca → la griglia resta leggera.
         const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
-        // I link Jumpshare non finiscono in .mp4: senza questo un video ospitato
-        // lì verrebbe classificato come immagine. Copre tutte le forme che il
-        // servizio produce — /share/, /embed/, /v/ e il dominio breve jmp.sh.
+        // Bunny Stream: il player da incorporare. Il vecchio dominio
+        // iframe.mediadelivery.net e l'indirizzo /play/ si riconoscono uguali.
+        // Gruppo 1 = libreria, gruppo 2 = id del video (guid).
+        const BUNNY_RE = /^https?:\/\/(?:player|iframe)\.mediadelivery\.net\/(?:embed|play)\/(\d+)\/([0-9a-f-]{36})/i;
+        // Jumpshare, lo storage di prima: i suoi link restano riconosciuti
+        // finche' qualcuno ne usa ancora uno. Copre /share/, /embed/, /v/ e jmp.sh.
         const JUMPSHARE_RE = /^https?:\/\/(?:www\.)?(?:jumpshare\.com\/(?:share|embed|v)\/[A-Za-z0-9_-]{4,}|jmp\.sh\/[A-Za-z0-9_-]{4,})[+-]?\/?/i;
-        const isVideoUrl = (u) => typeof u === 'string' && (VIDEO_RE.test(u) || JUMPSHARE_RE.test(u));
+        const isVideoUrl = (u) => typeof u === 'string' && (VIDEO_RE.test(u) || BUNNY_RE.test(u) || JUMPSHARE_RE.test(u));
 
-        /** Vero se l'indirizzo va riprodotto in un iframe invece che con <video>.
-         *  NESSUN indirizzo Jumpshare e' riproducibile in un tag <video>: il
-         *  servizio non espone il file, solo pagine. Vale anche per qualunque
-         *  altro indirizzo che contenga /embed/, così un cambio di fornitore
-         *  non richiede di toccare questa riga. */
+        /** Vero se l'indirizzo va riprodotto in un iframe invece che con <video>:
+         *  Bunny e Jumpshare danno un player da incorporare, non il file. Vale
+         *  anche per qualunque altro indirizzo che contenga /embed/, così un
+         *  cambio di fornitore non richiede di toccare questa riga. */
         const isEmbedUrl = (u) => {
             const t = String(u || '');
-            return JUMPSHARE_RE.test(t) || /\/embed\//i.test(t);
+            return BUNNY_RE.test(t) || JUMPSHARE_RE.test(t) || /\/embed\//i.test(t);
         };
+
+        // Indirizzo del player Bunny con le impostazioni del sito: parte da solo,
+        // si adatta al riquadro, non riprende da dove si era fermato, e non
+        // carica una qualita' piu' alta di quella che il riquadro mostra.
+        // Un /play/ diventa /embed/; parametri gia' presenti nel link vincono.
+        const BUNNY_PARAMS = { autoplay: 'true', preload: 'true', responsive: 'true', rememberPosition: 'false', levelCap: 'true' };
+        const bunnySrc = (u) => {
+            const m = String(u || '').match(BUNNY_RE);
+            if (!m) return u;
+            try {
+                const url = new URL(u);
+                url.pathname = `/embed/${m[1]}/${m[2]}`;
+                for (const [k, v] of Object.entries(BUNNY_PARAMS)) if (!url.searchParams.has(k)) url.searchParams.set(k, v);
+                return url.toString();
+            } catch (e) { return u; }
+        };
+
+        // Proporzioni di un video: "16/9", "4:5" o un numero → larghezza/altezza.
+        // 0 = sconosciute. Un video Bunny senza proporzioni si tratta da 16:9.
+        const ratioOf = (r) => {
+            const t = String(r || '').trim();
+            const m = t.match(/^(\d+(?:\.\d+)?)\s*[\/:x×]\s*(\d+(?:\.\d+)?)$/i);
+            const n = m ? Number(m[1]) / Number(m[2]) : Number(t);
+            return isFinite(n) && n > 0.2 && n < 5 ? n : 0;
+        };
+        const videoRatio = (s, predefinito) => ratioOf(s.ratio) || (BUNNY_RE.test(s.video || '') ? predefinito : 0);
+        // Riquadro con la forma del video: largo quanto c'e' spazio, ma mai piu'
+        // alto di maxH. Così i controlli del player stanno sul video, non in
+        // fondo a una fascia nera (com'era con Jumpshare).
+        const fitStyle = (r, maxH) => ({ width: `min(100%, calc(${maxH} * ${r}))`, aspectRatio: String(r), height: 'auto' });
 
         // ── Riproduzione ────────────────────────────────────────────────────
         //
         // Due modi, scelti in base all'indirizzo:
         //
-        //   <video>  per i file diretti (.mp4 e simili). E' il modo migliore:
-        //            player del sito, nessun marchio di terzi, e la copertina
-        //            si puo' estrarre dal filmato.
+        //   <video>  per i file diretti (.mp4 e simili): player del browser,
+        //            nessun marchio di terzi.
         //
-        //   <iframe> per Jumpshare, che non espone il file ma una pagina da
-        //            incorporare. Comporta il player di Jumpshare con i suoi
-        //            controlli, e rende impossibile leggere un fotogramma per
-        //            la copertina — va sempre caricata a mano.
+        //   <iframe> per Bunny Stream (e Jumpshare, lo storage di prima), che
+        //            danno un player da incorporare. Il player di Bunny ha i
+        //            suoi controlli (colore e pulsanti si scelgono su Bunny) e
+        //            adatta la qualita' al riquadro e alla rete.
         //
         // In entrambi i casi la riproduzione parte solo quando questo
         // componente viene montato, cioe' dopo un click: la griglia resta
         // leggera e nulla viene richiesto a terzi durante la navigazione.
         const Player = ({ src, poster, titolo, style, className, onEnded, onTimeUpdate, autoPlay = true }) => {
             if (isEmbedUrl(src)) {
+                const bunny = BUNNY_RE.test(src);
                 return (
                     <iframe
-                        src={src}
+                        src={bunny ? bunnySrc(src) : src}
                         title={titolo || 'Video'}
                         loading="lazy"
-                        allow="autoplay; fullscreen; picture-in-picture"
+                        allow={bunny ? 'autoplay; encrypted-media; picture-in-picture; fullscreen' : 'autoplay; fullscreen; picture-in-picture'}
                         allowFullScreen
                         referrerPolicy="strict-origin-when-cross-origin"
                         className={className}
@@ -244,16 +278,16 @@ import * as ReactDOM from 'react-dom/client';
         };
 
         const normMedia = (v) => {
-            if (!v) return { image: '', video: '', title: '' };
+            if (!v) return { image: '', video: '', title: '', ratio: '' };
             if (typeof v === 'string') {
                 return isVideoUrl(v)
-                    ? { image: '', video: v, title: '' }
-                    : { image: v, video: '', title: '' };
+                    ? { image: '', video: v, title: '', ratio: '' }
+                    : { image: v, video: '', title: '', ratio: '' };
             }
             const src = v.src || '';
             const video = v.video || (isVideoUrl(src) ? src : '');
             const image = v.poster || v.image || (isVideoUrl(src) ? '' : src) || v.url || '';
-            return { image, video, title: v.title || '' };
+            return { image, video, title: v.title || '', ratio: v.ratio || '' };
         };
 
         // Slide di un post (FEED / INDEX): immagini e video mescolati, in ordine.
@@ -268,6 +302,7 @@ import * as ReactDOM from 'react-dom/client';
                     image: post.poster || (slides.find(s => s.image) || {}).image || '',
                     video: post.video,
                     title: post.title || '',
+                    ratio: post.ratio || '',
                 });
             }
             return slides;
@@ -936,9 +971,10 @@ import * as ReactDOM from 'react-dom/client';
         };
 
         // Showreel in testa al Feed: video a tutta larghezza, muto, in loop
-        // (settings.feedReel, dal pannello). Serve un file video diretto: un
-        // link Jumpshare e' una pagina da incorporare e un <video> non sa
-        // riprodurla, quindi in quel caso il blocco non compare, come senza video.
+        // (settings.feedReel, dal pannello). Serve un file video diretto, del
+        // sito o di Bunny (…b-cdn.net/<id>/play_1080p.mp4): il link Embed di
+        // Bunny e' una pagina da incorporare e un <video> non sa riprodurla,
+        // quindi in quel caso il blocco non compare, come senza video.
         const FeedReel = () => {
             const r = S().feedReel || {};
             const video = String(r.video || '').trim();
@@ -1048,6 +1084,9 @@ import * as ReactDOM from 'react-dom/client';
         // Fullscreen viewer for a MOTION item — plays real videos, shows images otherwise
         const MotionViewer = ({ item, onClose }) => {
             const m = normMedia(item);
+            // Video Bunny: il riquadro ha la forma del video (di solito 9:16) e
+            // non e' mai piu' alto dell'88% dello schermo.
+            const r = m.video && isEmbedUrl(m.video) ? videoRatio(m, 9 / 16) : 0;
             useEffect(() => {
                 document.body.style.overflow = 'hidden';
                 const onKey = (e) => { if (e.key === 'Escape') onClose(); };
@@ -1060,11 +1099,15 @@ import * as ReactDOM from 'react-dom/client';
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
                 <div className="modal-overlay" onClick={onClose}>
-                    <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '440px', maxHeight: '88vh', display: 'flex' }}>
+                    <div onClick={e => e.stopPropagation()} style={r
+                            ? { width: `min(100%, calc(88vh * ${r}))`, display: 'flex' }
+                            : { width: '100%', maxWidth: '440px', maxHeight: '88vh', display: 'flex' }}>
                         {m.video
                             ? <Player src={m.video} poster={m.image} titolo={m.title}
-                                      style={{ width: '100%', height: isEmbedUrl(m.video) ? '88vh' : undefined,
-                                               maxHeight: '88vh', objectFit: 'contain', background: '#000' }} />
+                                      style={r
+                                          ? { width: '100%', aspectRatio: String(r), height: 'auto', background: '#000' }
+                                          : { width: '100%', height: isEmbedUrl(m.video) ? '88vh' : undefined,
+                                              maxHeight: '88vh', objectFit: 'contain', background: '#000' }} />
                             : <img src={m.image} alt={m.title || ''} style={{ width: '100%', maxHeight: '88vh', objectFit: 'contain' }} />}
                     </div>
                 </div>
@@ -1173,8 +1216,10 @@ import * as ReactDOM from 'react-dom/client';
                                 <Player key={cur.video} src={cur.video} poster={cur.image}
                                     onTimeUpdate={(e) => { const v = e.target; if (v.duration) setProgress(Math.min(100, (v.currentTime / v.duration) * 100)); }}
                                     onEnded={goNext}
-                                    style={{ maxWidth: '100%', height: isEmbedUrl(cur.video) ? '82vh' : undefined,
-                                             maxHeight: '82vh', background: '#000' }} />
+                                    style={isEmbedUrl(cur.video) && videoRatio(cur, 9 / 16)
+                                        ? { ...fitStyle(videoRatio(cur, 9 / 16), '82vh'), background: '#000' }
+                                        : { maxWidth: '100%', height: isEmbedUrl(cur.video) ? '82vh' : undefined,
+                                            maxHeight: '82vh', background: '#000' }} />
                             </>
                         ) : (
                             <>
@@ -1249,12 +1294,20 @@ import * as ReactDOM from 'react-dom/client';
                 <div className="modal-overlay" onClick={onClose}>
                     <div className="max-w-6xl w-full flex flex-col md:flex-row gap-10 items-start" onClick={e => e.stopPropagation()}>
                         <div className="flex-1 max-w-3xl" style={{ position: 'relative', width: '100%' }}>
-                            {/* Foto, video e iframe condividono il riquadro .post-media
-                                (index.html): da desktop e' alto 76vh per tutti, cosi'
-                                cambiando slide nulla si sposta. */}
-                            {slide.video
-                                ? <Player key={slide.video} src={slide.video} poster={slide.image} className="post-media" />
-                                : <img src={slide.image} alt={altOf(post)} className="post-media" loading="lazy" decoding="async" />}
+                            {/* Foto, video e iframe stanno in un riquadro che da
+                                desktop e' alto 76vh per tutti, cosi' cambiando slide
+                                titolo e pallini non si spostano. Un video Bunny prende
+                                le proporzioni vere del video, centrato in quel palco:
+                                i controlli stanno sul video. */}
+                            {slide.video && isEmbedUrl(slide.video) && videoRatio(slide, 16 / 9)
+                                ? <div className="post-stage">
+                                      <Player key={slide.video} src={slide.video} poster={slide.image}
+                                          titolo={slide.title || post.title}
+                                          style={fitStyle(videoRatio(slide, 16 / 9), '76vh')} />
+                                  </div>
+                                : slide.video
+                                    ? <Player key={slide.video} src={slide.video} poster={slide.image} titolo={slide.title || post.title} className="post-media" />
+                                    : <img src={slide.image} alt={altOf(post)} className="post-media" loading="lazy" decoding="async" />}
                             {multi && (
                                 <>
                                     <button className="carousel-arrow" style={{ left: '12px' }} onClick={() => setPhoto(p => Math.max(p - 1, 0))} disabled={photo === 0} aria-label="Previous photo">‹</button>

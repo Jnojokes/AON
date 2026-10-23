@@ -124,10 +124,11 @@ const aboutBrand = (entries) => {
 };
 
 const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
-// Come in src/app.jsx: i link Jumpshare non finiscono in .mp4, e senza questo
-// coverOf() li tratterebbe come immagini finendo per metterli in sitemap.
+// Come in src/app.jsx: i link Bunny e Jumpshare non finiscono in .mp4, e senza
+// questo coverOf() li tratterebbe come immagini finendo per metterli in sitemap.
+const BUNNY_RE = /^https?:\/\/(?:player|iframe)\.mediadelivery\.net\/(?:embed|play)\/(\d+)\/([0-9a-f-]{36})/i;
 const JUMPSHARE_RE = /^https?:\/\/(?:www\.)?(?:jumpshare\.com\/(?:share|embed|v)\/[A-Za-z0-9_-]{4,}|jmp\.sh\/[A-Za-z0-9_-]{4,})[+-]?\/?/i;
-const isVideo = (u) => VIDEO_RE.test(u) || JUMPSHARE_RE.test(u);
+const isVideo = (u) => VIDEO_RE.test(u) || BUNNY_RE.test(u) || JUMPSHARE_RE.test(u);
 
 /** Slug di un progetto. Usato per l'@id nel JSON-LD, per l'URL della pagina
  *  dedicata e per la voce in sitemap: deve essere calcolato in un posto solo,

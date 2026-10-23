@@ -6,9 +6,10 @@
       "coverPoster": "media/covers/greta-boldini-poster.jpg",
       "images": [
         {
-          "poster": "",
-          "video": "https://jumpshare.com/embed/kU0mhNYdxHjMR7QbV7Yj",
-          "title": ""
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/591d9dd1-4c05-466d-9e2c-5cf7202c5539/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/591d9dd1-4c05-466d-9e2c-5cf7202c5539",
+          "title": "",
+          "ratio": "4/3"
         },
         "media/greta-01.webp",
         "media/greta-02.webp",
@@ -47,12 +48,13 @@
       "cover": "media/covers/santoni.webp",
       "coverPoster": "media/covers/santoni-poster.jpg",
       "images": [
-        "media/santoni-bto-4-1-1-mqunjfp4.webp",
         {
-          "poster": "",
-          "video": "https://jumpshare.com/embed/TZ6X2UDBeB3DxmF9dLQL",
-          "title": ""
-        }
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/b5536c8a-6f38-476a-b58c-e1744e59b024/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/b5536c8a-6f38-476a-b58c-e1744e59b024",
+          "title": "",
+          "ratio": "16/9"
+        },
+        "media/santoni-bto-4-1-1-mqunjfp4.webp"
       ],
       "title": "BACK TO OFFICE",
       "year": "2025",
@@ -90,19 +92,15 @@
       "cover": "media/covers/fabiana-filippi.webp",
       "coverPoster": "media/covers/fabiana-filippi-poster.jpg",
       "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6",
+          "title": "",
+          "ratio": "4/5"
+        },
         "media/fabiana-01.webp",
         "media/fabiana-02.webp",
-        "media/fabiana-03.webp",
-        {
-          "video": "",
-          "poster": "",
-          "title": ""
-        },
-        {
-          "poster": "",
-          "video": "https://jumpshare.com/embed/2P2pGOJzCYMfIx0ksg0S",
-          "title": ""
-        }
+        "media/fabiana-03.webp"
       ],
       "title": "VETRINA",
       "year": "2025",
@@ -134,6 +132,12 @@
     {
       "url": "media/okgiorgio-01.webp",
       "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/fb9ee58f-2737-4150-b147-798b03e833f9/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/fb9ee58f-2737-4150-b147-798b03e833f9",
+          "title": "",
+          "ratio": "16/9"
+        },
         "media/okgiorgio-01.webp",
         "media/okgiorgio-02.webp",
         "media/okgiorgio-03.webp"
@@ -170,6 +174,12 @@
       "cover": "media/covers/ypsum.webp",
       "coverPoster": "media/covers/ypsum-poster.jpg",
       "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/7e5db36d-da9c-4170-a359-76df08b5d4d9/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/7e5db36d-da9c-4170-a359-76df08b5d4d9",
+          "title": "",
+          "ratio": "4/3"
+        },
         "media/ypsum-01.webp",
         "media/ypsum-02.webp",
         "media/ypsum-03.webp"
@@ -209,6 +219,15 @@
       "url": "media/mugshot-backstage.webp",
       "cover": "media/covers/mugshot.webp",
       "coverPoster": "media/covers/mugshot-poster.jpg",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/30bfd0d5-18a0-4de3-a7e4-111c0d9e2839/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/30bfd0d5-18a0-4de3-a7e4-111c0d9e2839",
+          "title": "",
+          "ratio": "16/9"
+        },
+        "media/mugshot-backstage.webp"
+      ],
       "title": "IL CASO EST RADIO",
       "year": "2025",
       "loc": "MILANO",
@@ -241,6 +260,12 @@
       "cover": "media/covers/santoni.webp",
       "coverPoster": "media/covers/santoni-poster.jpg",
       "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/b5536c8a-6f38-476a-b58c-e1744e59b024/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/b5536c8a-6f38-476a-b58c-e1744e59b024",
+          "title": "",
+          "ratio": "16/9"
+        },
         "media/santoni-09.webp",
         "media/santoni-10.webp",
         "media/santoni-11.webp",
@@ -282,6 +307,12 @@
       "cover": "media/covers/greta-boldini.webp",
       "coverPoster": "media/covers/greta-boldini-poster.jpg",
       "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/591d9dd1-4c05-466d-9e2c-5cf7202c5539/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/591d9dd1-4c05-466d-9e2c-5cf7202c5539",
+          "title": "",
+          "ratio": "4/3"
+        },
         "media/greta-05.webp",
         "media/greta-06.webp",
         "media/greta-07.webp",
@@ -317,6 +348,12 @@
     {
       "url": "media/okgiorgio-06.webp",
       "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/fb9ee58f-2737-4150-b147-798b03e833f9/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/fb9ee58f-2737-4150-b147-798b03e833f9",
+          "title": "",
+          "ratio": "16/9"
+        },
         "media/okgiorgio-06.webp",
         "media/okgiorgio-07.webp"
       ],
@@ -351,6 +388,15 @@
       "url": "media/fabiana-03.webp",
       "cover": "media/covers/fabiana-filippi.webp",
       "coverPoster": "media/covers/fabiana-filippi-poster.jpg",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6",
+          "title": "",
+          "ratio": "4/5"
+        },
+        "media/fabiana-03.webp"
+      ],
       "title": "VETRINA",
       "year": "2025",
       "loc": "MILANO",
@@ -383,6 +429,12 @@
       "cover": "media/covers/santoni.webp",
       "coverPoster": "media/covers/santoni-poster.jpg",
       "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/b5536c8a-6f38-476a-b58c-e1744e59b024/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/b5536c8a-6f38-476a-b58c-e1744e59b024",
+          "title": "",
+          "ratio": "16/9"
+        },
         "media/santoni-14.webp",
         "media/santoni-15.webp",
         "media/santoni-16.webp",
@@ -421,6 +473,15 @@
     },
     {
       "url": "media/okgiorgio-07.webp",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/fb9ee58f-2737-4150-b147-798b03e833f9/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/fb9ee58f-2737-4150-b147-798b03e833f9",
+          "title": "",
+          "ratio": "16/9"
+        },
+        "media/okgiorgio-07.webp"
+      ],
       "title": "OK GIORGIO — VULCANO",
       "year": "2025",
       "loc": "STROMBOLI",
@@ -451,34 +512,46 @@
   ],
   "motion": [
     {
+      "poster": "https://vz-13c73ffe-e6a.b-cdn.net/65cd8d52-dd38-428d-bd4f-a695cafcd65a/thumbnail.jpg",
+      "video": "https://player.mediadelivery.net/embed/788231/65cd8d52-dd38-428d-bd4f-a695cafcd65a",
+      "title": "SANTONI - Back To Office",
+      "ratio": "9/16"
+    },
+    {
       "poster": "media/screenshot-2026-09-07-alle-11-46-39-mtr23fcy.png",
-      "video": "https://jumpshare.com/embed/6p9zF27xKhwXEyVDBe1x",
-      "title": "PRADA - SHOW INVITATION"
+      "video": "https://player.mediadelivery.net/embed/788231/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6",
+      "title": "PRADA - SHOW INVITATION",
+      "ratio": "9/16"
     },
     {
-      "poster": "",
-      "video": "https://jumpshare.com/embed/mBRfOHNjDo8H7wfpJd1X",
-      "title": "SANTONI - Back To Office"
+      "poster": "https://vz-13c73ffe-e6a.b-cdn.net/665f251a-1226-4ce9-84f3-2871054616ef/thumbnail.jpg",
+      "video": "https://player.mediadelivery.net/embed/788231/665f251a-1226-4ce9-84f3-2871054616ef",
+      "title": "FABIANA FILIPPI - VETRINA",
+      "ratio": "9/16"
     },
     {
-      "poster": "",
-      "video": "https://jumpshare.com/embed/RgBhGIGg77XHvOQCbSEU",
-      "title": "MANDARINA DUCK - ROTTERDAM"
+      "poster": "https://vz-13c73ffe-e6a.b-cdn.net/684bbd6f-606e-486b-a756-18568a4868e3/thumbnail.jpg",
+      "video": "https://player.mediadelivery.net/embed/788231/684bbd6f-606e-486b-a756-18568a4868e3",
+      "title": "OK GIORGIO - DOCUMENTARIO EST RADIO",
+      "ratio": "9/16"
     },
     {
-      "poster": "",
-      "video": "https://jumpshare.com/embed/TERkMWEtbUMXLM5gD1eb",
-      "title": "OK GIORGIO - DOCUMENTARIO EST RADIO"
+      "poster": "https://vz-13c73ffe-e6a.b-cdn.net/2a38efe0-f8f0-4c23-b340-bd0b6bd18155/thumbnail.jpg",
+      "video": "https://player.mediadelivery.net/embed/788231/2a38efe0-f8f0-4c23-b340-bd0b6bd18155",
+      "title": "YPSUM",
+      "ratio": "9/16"
     },
     {
-      "poster": "",
-      "video": "https://jumpshare.com/embed/2gyR3s1IpcDvHaNJNXnT",
-      "title": "MOSAIQ GROUP - LUXURY PACKAGING"
+      "poster": "https://vz-13c73ffe-e6a.b-cdn.net/759ae4a9-b1c2-43f4-9382-49ea54c8bea8/thumbnail.jpg",
+      "video": "https://player.mediadelivery.net/embed/788231/759ae4a9-b1c2-43f4-9382-49ea54c8bea8",
+      "title": "MOSAIQ GROUP - LUXURY PACKAGING",
+      "ratio": "9/16"
     },
     {
-      "poster": "",
-      "video": "https://jumpshare.com/embed/NkDxsvg1FHiddjyCL4nQ",
-      "title": ""
+      "poster": "https://vz-13c73ffe-e6a.b-cdn.net/45a8e060-7e73-4c2d-9ce2-e023cdff7881/thumbnail.jpg",
+      "video": "https://player.mediadelivery.net/embed/788231/45a8e060-7e73-4c2d-9ce2-e023cdff7881",
+      "title": "MANDARINA DUCK - ROTTERDAM",
+      "ratio": "9/16"
     }
   ],
   "series": [

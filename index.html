@@ -844,6 +844,12 @@
             .post-media { height: 76vh; max-height: 76vh; object-fit: contain; }
             .post-info { align-self: center; }
         }
+        /* Video Bunny nella scheda: il player ha le proporzioni vere del video
+           (fitStyle in src/app.jsx) ed è centrato in questo palco, che da
+           desktop è alto 76vh come le foto. I controlli stanno così sul video
+           e, passando da un video a una foto, titolo e pallini non si muovono. */
+        .post-stage { display: flex; align-items: center; justify-content: center; width: 100%; }
+        @media (min-width: 768px) { .post-stage { height: 76vh; } }
         /* Pallini del carosello: fuori dal riquadro, sotto, nella stessa
            posizione per foto e video (non coprono i controlli del player). */
         .post-dots {
