@@ -18,17 +18,6 @@ import * as ReactDOM from 'react-dom/client';
 
         const { useState, useEffect, useRef } = React;
 
-        // Live time HUD
-        const updateClock = () => {
-            const el = document.getElementById('liveTime');
-            if (el) {
-                const d = new Date();
-                el.textContent = d.toTimeString().slice(0,8);
-            }
-        };
-        updateClock();
-        setInterval(updateClock, 1000);
-
         // Live media accessor — reads window.MEDIA (populated from media.json) at
         // render time. If the fetch failed, M() is empty and each section falls
         // back to a clean empty-state (no placeholder images).
@@ -52,8 +41,10 @@ import * as ReactDOM from 'react-dom/client';
                 { label: 'EDITION',     value: 'BOLD / 01' },
                 { label: 'SHIPPING',    value: 'WORLDWIDE' },
             ],
-            hud: { coords: '45.4642° N · 9.1900° E', tz: 'CET' },
             topbar: { left: 'andrea__onori', right: 'ARCHIVE / 25 · VOLUME 01' },
+            // Un campo svuotato dal pannello toglie l'elemento: è così che
+            // badge, link al sito e pulsante secondario sono spariti nella
+            // versione 1, senza perdere la possibilità di rimetterli.
             profile: {
                 badge: 'VERIFIED · 25',
                 eyebrow: '◌ PHOTOGRAPHER · BASED IN MILAN',
@@ -78,7 +69,6 @@ import * as ReactDOM from 'react-dom/client';
                 indexTitle: 'TITLE',
                 indexLocation: 'LOCATION',
                 indexYear: 'YEAR',
-                motionCorner: 'MOV · ',
                 motionPrefix: 'REEL #',
                 motionYear: '2025',
                 // {SECTION} viene sostituito col nome della sezione vuota.
@@ -108,6 +98,14 @@ import * as ReactDOM from 'react-dom/client';
                 headline: 'A YEAR\nIN FRAMES.',
                 frame: 'FRAME',
                 autoplay: 'AUTOPLAY',
+            },
+            // Video in loop in testa al Feed. Da non confondere con "showreel"
+            // qui sopra, che è la presentazione di foto della foto profilo.
+            // Senza video il blocco non compare.
+            feedReel: {
+                video: '',
+                poster: '',
+                label: 'SHOWREEL',
             },
             contact: {
                 // Vuoto = si usa il modulo interno (richiede SMTP su Vercel).
@@ -348,8 +346,7 @@ import * as ReactDOM from 'react-dom/client';
                         borderRadius: '50%',
                         objectFit: 'cover',
                         border: '1px solid rgba(255,255,255,0.25)',
-                        filter: 'grayscale(20%) contrast(1.04)',
-                        transition: 'opacity .3s var(--ease-out), filter .3s var(--ease-out)',
+                        transition: 'opacity .3s var(--ease-out)',
                     }}
                 />
                 <div className="play-overlay" style={{
@@ -363,13 +360,15 @@ import * as ReactDOM from 'react-dom/client';
                 }}>
                     <svg width="38" height="38" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
                 </div>
-                <div className="mono" style={{
+                {/* Etichetta vuota nel pannello = niente badge (prima restava un
+                    rettangolino bianco senza testo). */}
+                {S().profile.badge && <div className="mono" style={{
                     position: 'absolute', bottom: '-6px', right: '-6px',
                     background: 'var(--fg)', color: 'var(--bg)',
                     fontSize: '8px', padding: '4px 7px',
                     letterSpacing: '0.18em', textTransform: 'uppercase',
                     zIndex: 2,
-                }}>{S().profile.badge}</div>
+                }}>{S().profile.badge}</div>}
             </div>
         );
 
@@ -683,42 +682,45 @@ import * as ReactDOM from 'react-dom/client';
         const ProfileHeader = ({ onAvatarClick }) => {
             const p = S().profile;
             const [formAperto, setFormAperto] = useState(false);
+            const conCta = (p.ctaPrimary && p.ctaEmail) || p.ctaSecondary;
             return (
             <div>
                 <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-start mb-14 md:mb-10">
                     <Avatar onClick={onAvatarClick} />
-                    <div className="flex-1 w-full">
-                        {p.eyebrow && <div className="mb-3 mono uline" style={{ color: 'var(--mute)', fontSize: '10px' }}>
-                            {p.eyebrow}
-                        </div>}
-
-                        <h1 className="display" style={{ fontSize: 'clamp(48px, 8vw, 96px)' }}>
+                    {/* Nome a tutta riga; sotto, le righe di presentazione a
+                        sinistra e il bottone a destra (vedi .profile-main in
+                        index.html). L'eyebrow sta sotto il nome dalla versione 1. */}
+                    <div className="profile-main flex-1 w-full">
+                        <h1 className="display profile-name" style={{ fontSize: 'clamp(48px, 8vw, 96px)' }}>
                             <span className="reveal-line d1"><span>{p.nameFirst}</span></span>{' '}
                             <span className="reveal-line d2"><span>{p.nameLast}</span></span>
-                            <span className="verified"></span>
                         </h1>
 
-                        {p.handle && <p className="mono uline mt-3 mb-7 md:mb-5" style={{ color: 'var(--mute)', fontSize: '11px' }}>
-                            {p.handle}
-                        </p>}
+                        <div className="profile-lines">
+                            {p.eyebrow && <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '10px' }}>
+                                {p.eyebrow}
+                            </div>}
 
-                        {p.disciplines && <div className="mb-7 md:mb-5 space-y-1">
-                            <p className="grot uline" style={{ fontSize: '13px', fontWeight: 600 }}>{p.disciplines}</p>
-                        </div>}
+                            {p.handle && <p className="mono uline" style={{ color: 'var(--mute)', fontSize: '11px' }}>
+                                {p.handle}
+                            </p>}
 
-                        {/* Svuotare un campo dal pannello toglie il testo dal sito
-                            (è voluto), ma un indirizzo vuoto non deve lasciare in
-                            piedi un link rotto: href="" ricarica la pagina e
-                            "mailto:" apre il client di posta senza destinatario.
-                            Senza indirizzo il testo resta, il link no. */}
-                        {p.siteLabel && (p.siteUrl
-                            ? <a href={p.siteUrl}
-                                 className="mono uline mb-7 md:mb-5 inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
-                                {p.siteLabel}
-                              </a>
-                            : <span className="mono uline mb-7 md:mb-5 inline-block" style={{ fontSize: '11px' }}>{p.siteLabel}</span>)}
+                            {p.disciplines && <p className="grot uline" style={{ fontSize: '13px', fontWeight: 600 }}>{p.disciplines}</p>}
 
-                        <div className="flex gap-3 md:gap-2 flex-wrap mt-7 md:mt-5">
+                            {/* Svuotare un campo dal pannello toglie il testo dal sito
+                                (è voluto), ma un indirizzo vuoto non deve lasciare in
+                                piedi un link rotto: href="" ricarica la pagina e
+                                "mailto:" apre il client di posta senza destinatario.
+                                Senza indirizzo il testo resta, il link no. */}
+                            {p.siteLabel && (p.siteUrl
+                                ? <a href={p.siteUrl}
+                                     className="mono uline inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
+                                    {p.siteLabel}
+                                  </a>
+                                : <span className="mono uline inline-block" style={{ fontSize: '11px' }}>{p.siteLabel}</span>)}
+                        </div>
+
+                        {conCta && <div className="profile-ctas flex gap-3 md:gap-2 flex-wrap">
                             {/* Apre il modulo, non un link mailto: — vedi il
                                 commento su ContactModal. */}
                             {p.ctaPrimary && p.ctaEmail && <button type="button"
@@ -730,7 +732,7 @@ import * as ReactDOM from 'react-dom/client';
                                 <span className="pulse-dot"></span>
                                 {p.ctaSecondary}
                             </button>}
-                        </div>
+                        </div>}
                     </div>
                 </div>
                 {formAperto && <ContactModal
@@ -761,12 +763,17 @@ import * as ReactDOM from 'react-dom/client';
         const Series = ({ onClick }) => {
             const series = (M().series && M().series.length) ? M().series : [];
             if (!series.length) return null;
+            const { seriesTitle, seriesUnit } = S().sections;
             return (
                 <div className="mb-12">
-                    <div className="flex items-baseline justify-between mb-5 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
-                        <div className="mono uline" style={{ fontSize: '10px' }}>{S().sections.seriesTitle}</div>
-                        <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '9px' }}>{String(series.length).padStart(2,'0')} {S().sections.seriesUnit}</div>
-                    </div>
+                    {/* Titolo e unità vuoti nel pannello = niente riga sopra i
+                        cerchi (versione 1). */}
+                    {(seriesTitle || seriesUnit) && (
+                        <div className="flex items-baseline justify-between mb-5 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
+                            <div className="mono uline" style={{ fontSize: '10px' }}>{seriesTitle}</div>
+                            <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '9px' }}>{String(series.length).padStart(2,'0')} {seriesUnit}</div>
+                        </div>
+                    )}
                     <div className="flex gap-7 overflow-x-auto pb-2">
                         {series.map((s, i) => (
                             <div key={s.id} className="flex flex-col items-center gap-3 flex-shrink-0 cursor-pointer" role="button" tabIndex={0} aria-label={s.label} onClick={() => onClick(s)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(s); } }}>
@@ -775,7 +782,6 @@ import * as ReactDOM from 'react-dom/client';
                                 </div>
                                 <div className="text-center">
                                     <div className="mono uline" style={{ fontSize: '9px' }}>{s.label}</div>
-                                    <div className="mono" style={{ color: 'var(--mute)', fontSize: '9px', marginTop: '2px' }}>—{(s.images && s.images.length) || s.count || 0}</div>
                                 </div>
                             </div>
                         ))}
@@ -787,7 +793,10 @@ import * as ReactDOM from 'react-dom/client';
         // Tabs
         // Le chiavi ('FEED'/'MOTION'/'INDEX') restano interne: rinominare una
         // tab dal pannello cambia l'etichetta, non la logica né gli eventi GA4.
-        const TAB_KEYS = ['FEED', 'MOTION', 'INDEX'];
+        // INDEX non si mostra dalla versione 1 (decisione di Andrea, ottobre
+        // 2026). IndexView e i dati restano: per riattivarla basta rimettere
+        // 'INDEX' in questa lista.
+        const TAB_KEYS = ['FEED', 'MOTION'];
         const tabLabel = (k) => ({
             FEED: S().sections.tabFeed,
             MOTION: S().sections.tabMotion,
@@ -815,7 +824,6 @@ import * as ReactDOM from 'react-dom/client';
                                 className={`tab-btn ${active === t ? 'active' : ''}`}
                                 onClick={() => setActive(t)}
                             >
-                                <span style={{ color: 'var(--mute)', marginRight: '8px', fontSize: '9px' }}>0{i + 1}</span>
                                 {tabLabel(t)}
                             </button>
                         ))}
@@ -866,19 +874,55 @@ import * as ReactDOM from 'react-dom/client';
                     : <div style={{ width: '100%', height: '100%', background: '#0d0d0d' }} />
         );
 
+        // Showreel in testa al Feed: video a tutta larghezza, muto, in loop
+        // (settings.feedReel, dal pannello). Serve un file video diretto: un
+        // link Jumpshare e' una pagina da incorporare e un <video> non sa
+        // riprodurla, quindi in quel caso il blocco non compare, come senza video.
+        const FeedReel = () => {
+            const r = S().feedReel || {};
+            const video = String(r.video || '').trim();
+            const ref = useRef(null);
+            // Chi ha chiesto al sistema meno movimento vede la copertina ferma,
+            // con i controlli per farlo partire: come il resto del sito, che in
+            // quel caso spegne le animazioni.
+            const calmo = typeof window.matchMedia === 'function'
+                && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            useEffect(() => {
+                const v = ref.current;
+                if (!v || calmo) return;
+                // React imposta muted come proprieta', non come attributo, e
+                // Safari su iPhone guarda l'attributo per concedere l'autoplay.
+                v.muted = true;
+                v.setAttribute('muted', '');
+                const p = v.play();
+                if (p && typeof p.catch === 'function') p.catch(() => {});
+            }, [video]);
+            if (!video || isEmbedUrl(video)) return null;
+            return (
+                <div className="feed-reel">
+                    <video ref={ref} src={video} poster={r.poster || undefined}
+                        autoPlay={!calmo} controls={calmo} muted loop playsInline
+                        preload={calmo ? 'metadata' : 'auto'}
+                        aria-label={r.label || 'Showreel'} />
+                    {r.label && <div className="feed-reel-label mono uline" aria-hidden="true">{r.label}</div>}
+                </div>
+            );
+        };
+
         // Feed Grid — uniform 4:5 cells on every breakpoint (no bento, no mixed ratios, no holes)
         const FeedGrid = ({ onClick }) => {
             const images = (M().feed && M().feed.length) ? M().feed : [];
             if (!images.length) return <EmptyState section="FEED" />;
 
             return (
-                <div className="grid grid-cols-3 gap-0">
+                <>
+                <FeedReel />
+                <div className="grid grid-cols-3 feed-grid">
                     {images.map((img, i) => {
                         const slides = slidesOf(img);
                         const nVideo = slides.filter(s => s.video).length;
                         return (
                         <div key={i} className="feed-item" style={{ aspectRatio: '4 / 5' }} role="button" tabIndex={0} aria-label={altOf(img)} onClick={() => onClick(i, images)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(i, images); } }}>
-                            <span className="feed-corner mono">{String(i + 1).padStart(2, '0')}</span>
                             <div className="cell-badges">
                                 {slides.length > 1 && (
                                     <span className="carousel-badge" title={slides.length + ' media'}>
@@ -903,6 +947,7 @@ import * as ReactDOM from 'react-dom/client';
                         );
                     })}
                 </div>
+                </>
             );
         };
 
@@ -910,7 +955,7 @@ import * as ReactDOM from 'react-dom/client';
             const items = (M().motion && M().motion.length) ? M().motion : [];
             if (!items.length) return <EmptyState section="MOTION" />;
             return (
-                <div className="grid grid-cols-3 gap-0">
+                <div className="grid grid-cols-3 feed-grid">
                     {items.map((raw, i) => {
                         const m = normMedia(raw);
                         const derived = titleFromFilename(m.image || m.video);
@@ -920,7 +965,6 @@ import * as ReactDOM from 'react-dom/client';
                         <div key={i} className="feed-item" style={{ aspectRatio: '9/16' }} role="button" tabIndex={0}
                             aria-label={m.video ? `Riproduci ${label}` : label}
                             onClick={() => { track('motion_play', { reel_label: label, reel_index: i + 1 }); onClick(raw); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(raw); } }}>
-                            <span className="feed-corner mono">{S().sections.motionCorner}{String(i+1).padStart(2,'0')}</span>
                             <GridMedia image={m.image} video={m.video} alt={alt} />
                             {m.video && <PlayBadge />}
                             <div className="feed-meta">
@@ -1116,20 +1160,19 @@ import * as ReactDOM from 'react-dom/client';
                 <div className="modal-overlay" onClick={onClose}>
                     <div className="max-w-6xl w-full flex flex-col md:flex-row gap-10 items-start" onClick={e => e.stopPropagation()}>
                         <div className="flex-1 max-w-3xl" style={{ position: 'relative', width: '100%' }}>
+                            {/* Foto, video e iframe condividono il riquadro .post-media
+                                (index.html): da desktop e' alto 76vh per tutti, cosi'
+                                cambiando slide nulla si sposta. */}
                             {slide.video
-                                ? <Player key={slide.video} src={slide.video} poster={slide.image} className="w-full"
-                                          style={{ display: 'block', height: isEmbedUrl(slide.video) ? '80vh' : undefined,
-                                                   maxHeight: '80vh', background: '#000' }} />
-                                : <img src={slide.image} alt={altOf(post)} className="w-full" style={{ display: 'block' }} loading="lazy" decoding="async" />}
+                                ? <Player key={slide.video} src={slide.video} poster={slide.image} className="post-media" />
+                                : <img src={slide.image} alt={altOf(post)} className="post-media" loading="lazy" decoding="async" />}
                             {multi && (
                                 <>
                                     <button className="carousel-arrow" style={{ left: '12px' }} onClick={() => setPhoto(p => Math.max(p - 1, 0))} disabled={photo === 0} aria-label="Previous photo">‹</button>
                                     <button className="carousel-arrow" style={{ right: '12px' }} onClick={() => setPhoto(p => Math.min(p + 1, photos.length - 1))} disabled={photo === photos.length - 1} aria-label="Next photo">›</button>
-                                    <div className="mono" style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(0,0,0,0.75)', padding: '3px 8px', fontSize: '10px', letterSpacing: '0.1em' }}>
-                                        {slide.video && <span style={{ color: 'var(--accent)' }}>▶&nbsp;</span>}{photo + 1} / {photos.length}
-                                    </div>
-                                    {/* i pallini salgono quando c'è un video, per non coprire i controlli */}
-                                    <div style={{ position: 'absolute', bottom: slide.video ? '58px' : '12px', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '6px', transition: 'bottom .2s var(--ease-out)' }}>
+                                    {/* Pallini fuori dal riquadro, sotto: stessa posizione
+                                        per foto e video, e non coprono i controlli del player. */}
+                                    <div className="post-dots">
                                         {photos.map((s, i) => (
                                             <button key={i} onClick={() => setPhoto(i)} aria-label={(s.video ? 'Video ' : 'Foto ') + (i + 1)}
                                                 style={{ width: i === photo ? '18px' : '6px', height: '6px', borderRadius: '3px', padding: 0, border: 'none', cursor: 'pointer', background: i === photo ? 'var(--fg)' : (s.video ? 'var(--accent)' : 'rgba(255,255,255,0.45)'), transition: 'width .25s var(--ease-out), background .25s var(--ease-out)' }} />
@@ -1138,7 +1181,7 @@ import * as ReactDOM from 'react-dom/client';
                                 </>
                             )}
                         </div>
-                        <div className="w-full md:w-80 space-y-6">
+                        <div className="post-info w-full md:w-80 space-y-6">
                             <div className="mono uline" style={{ fontSize: '10px', color: 'var(--mute)' }}>
                                 {String(idx + 1).padStart(2,'0')} / {String(images.length).padStart(2,'0')}
                                 {multi && <span> &nbsp;·&nbsp; {S().post.carousel} {photos.length}</span>}
@@ -1185,20 +1228,21 @@ import * as ReactDOM from 'react-dom/client';
         // Renderla qui, dallo stesso settings.seo.bio, risolve il rischio e da'
         // alla home il testo lungo che le mancava — che e' anche l'unica cosa
         // che un motore generativo puo' citare.
+        //
+        // Dalla versione 1 restano solo i paragrafi, piu' piccoli: niente
+        // etichetta "ABOUT" e niente titolone. Non si nascondono con un trucco
+        // CSS, semplicemente non ci sono: per le ragioni dette sopra, un testo
+        // nascosto e' peggio di un testo assente.
         const About = () => {
             const bio = String((S().seo && S().seo.bio) || '').trim();
             if (!bio) return null;
             const paras = bio.split(/\n+/).map(t => t.trim()).filter(Boolean);
             if (!paras.length) return null;
             return (
-                <section id="about" aria-labelledby="about-h" style={{ margin: '72px 0 8px' }}>
-                    <div className="mono uline reveal-on-scroll" style={{ fontSize: '10px', color: 'var(--mute)', marginBottom: '14px' }}>ABOUT</div>
-                    <h2 id="about-h" className="display reveal-on-scroll" style={{ fontSize: 'clamp(22px, 3.2vw, 34px)', lineHeight: 1.15, marginBottom: '18px', textTransform: 'uppercase' }}>
-                        {S().profile.nameFirst} {S().profile.nameLast} — {S().profile.eyebrow}
-                    </h2>
+                <section id="about" aria-label="About" style={{ margin: '72px 0 8px' }}>
                     <div className="reveal-on-scroll delay-1" style={{ maxWidth: '68ch' }}>
                         {paras.map((t, i) => (
-                            <p key={i} style={{ fontSize: '15px', lineHeight: 1.65, color: 'var(--mute)', marginBottom: '10px' }}>{t}</p>
+                            <p key={i} style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--mute)', marginBottom: '10px' }}>{t}</p>
                         ))}
                     </div>
                 </section>
@@ -1534,17 +1578,17 @@ import * as ReactDOM from 'react-dom/client';
             );
         };
 
-        // HUD e banner cookie vivono fuori da #root (devono esserci anche prima
-        // che Babel abbia compilato il JSX), quindi React non li tocca: i loro
-        // testi si aggiornano qui, una volta sola, dopo il fetch di media.json.
+        // Il banner cookie vive fuori da #root (deve esserci anche prima che il
+        // bundle sia caricato), quindi React non lo tocca: i suoi testi si
+        // aggiornano qui, una volta sola, dopo il fetch di media.json.
+        // (Fino alla versione 1 qui si aggiornava anche l'HUD con orologio e
+        // coordinate, poi tolto.)
         const hydrateStatic = () => {
             const s = S();
             const set = (id, text) => {
                 const el = document.getElementById(id);
                 if (el && text != null) el.textContent = text;
             };
-            set('hudCoords', s.hud.coords);
-            set('hudTz', s.hud.tz);
             set('consentAccept', s.consent.accept);
             set('consentReject', s.consent.reject);
             const link = document.getElementById('consentLink');

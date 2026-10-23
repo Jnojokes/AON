@@ -38,7 +38,7 @@ const TYPES = {
   ".xml": "application/xml; charset=utf-8", ".woff2": "font/woff2",
   ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
   ".webp": "image/webp", ".avif": "image/avif", ".svg": "image/svg+xml",
-  ".ico": "image/x-icon",
+  ".ico": "image/x-icon", ".mp4": "video/mp4", ".webm": "video/webm",
 };
 
 // Le immagini caricate durante la cattura restano qui, in memoria: il punto e'
@@ -60,6 +60,15 @@ const vercel = JSON.parse(fs.readFileSync(path.join(ROOT, "vercel.json"), "utf8"
 const globalHeaders = (vercel.headers || [])
   .filter((h) => h.source === "/(.*)")
   .flatMap((h) => h.headers || []);
+
+// Rewrite di vercel.json a percorso fisso (es. /versione1 -> /index): come su
+// Vercel, l'indirizzo resta quello e si serve il file di destinazione. Quelli
+// con parametri o verso altri siti non servono in locale e vengono saltati.
+const rewrites = new Map(
+  (vercel.rewrites || [])
+    .filter((r) => !/[:(*]/.test(r.source) && r.destination.startsWith("/"))
+    .map((r) => [r.source, r.destination])
+);
 
 const server = http.createServer(async (req, res) => {
   for (const h of globalHeaders) {
@@ -119,6 +128,8 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  if (rewrites.has(pathname)) pathname = rewrites.get(pathname);
+
   // cleanUrls generico, come su Vercel: qualsiasi percorso senza estensione che
   // corrisponda a un .html viene servito. Prima le tre rotte erano elencate a
   // mano e /note-legali dava 404 in locale pur funzionando in produzione.
@@ -132,10 +143,27 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }).end("404");
     return;
   }
-  res.writeHead(200, {
+  const size = fs.statSync(file).size;
+  const headers = {
     "Content-Type": TYPES[path.extname(file).toLowerCase()] || "application/octet-stream",
     "Cache-Control": "no-store",
-  });
+    "Accept-Ranges": "bytes",
+  };
+  // Richieste a pezzi (Range), come su Vercel: Safari le usa per i video e
+  // senza un 206 lo showreel in locale non partirebbe.
+  const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || "");
+  if (range && (range[1] || range[2])) {
+    const start = range[1] ? Number(range[1]) : Math.max(0, size - Number(range[2]));
+    const end = range[1] && range[2] ? Math.min(Number(range[2]), size - 1) : size - 1;
+    if (start > end || start >= size) {
+      res.writeHead(416, { "Content-Range": `bytes */${size}` }).end();
+      return;
+    }
+    res.writeHead(206, { ...headers, "Content-Range": `bytes ${start}-${end}/${size}`, "Content-Length": end - start + 1 });
+    fs.createReadStream(file, { start, end }).pipe(res);
+    return;
+  }
+  res.writeHead(200, { ...headers, "Content-Length": size });
   fs.createReadStream(file).pipe(res);
 });
 

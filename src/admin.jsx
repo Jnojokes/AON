@@ -310,11 +310,11 @@ const SECTIONS = [
   { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link al video su Jumpshare: il video parte solo al click, quindi la griglia resta veloce." },
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
-  { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima e la descrizione per Google e i motori AI. Nessuna foto: solo parole." },
+  { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel sopra il Feed e la descrizione per Google e i motori AI." },
 ];
 
 // ── Schema dei testi del sito ───────────────────────────────────────────────
-// Deve restare allineato a TEXT_DEFAULTS in index.html: là ci sono i valori di
+// Deve restare allineato a TEXT_DEFAULTS in src/app.jsx: là ci sono i valori di
 // default, qui le etichette con cui il pannello li presenta. Un campo assente
 // qui esiste comunque nel sito, semplicemente non è modificabile da qui.
 // Aggiungere una voce = aggiungerla in entrambi i file.
@@ -322,13 +322,13 @@ const SETTINGS_SCHEMA = [
   {
     key: "profile",
     title: "Intestazione — nome e presentazione",
-    hint: "Il blocco in cima alla pagina, accanto alla foto profilo.",
+    hint: "Il blocco in cima alla pagina, accanto alla foto profilo. Sotto il nome ci sono tre righe, nell'ordine qui sotto. Un campo lasciato vuoto non compare sul sito.",
     fields: [
-      ["eyebrow",     "Riga sopra il nome"],
       ["nameFirst",   "Nome (1ª riga del titolo)"],
       ["nameLast",    "Cognome (2ª riga del titolo)"],
-      ["handle",      "Riga sotto il nome"],
-      ["disciplines", "Riga discipline"],
+      ["eyebrow",     "1ª riga sotto il nome"],
+      ["handle",      "2ª riga sotto il nome"],
+      ["disciplines", "3ª riga sotto il nome (discipline)"],
       ["badge",       "Etichetta sulla foto profilo"],
       ["siteLabel",   "Testo del link al sito"],
       ["siteUrl",     "Indirizzo del link al sito"],
@@ -353,26 +353,19 @@ const SETTINGS_SCHEMA = [
     fields: [["left", "Testo a sinistra"], ["right", "Testo a destra"]],
   },
   {
-    key: "hud",
-    title: "Riquadro in alto a destra",
-    hint: "Orologio e coordinate. L'ora è automatica, questi sono i testi fissi.",
-    fields: [["tz", "Fuso orario"], ["coords", "Coordinate"]],
-  },
-  {
     key: "sections",
     title: "Sezioni e tab",
-    hint: "Nomi delle tre tab e intestazioni delle liste. Rinominare una tab cambia solo l'etichetta: la sezione resta la stessa.",
+    hint: "Nomi delle tab e intestazioni delle liste. Rinominare una tab cambia solo l'etichetta: la sezione resta la stessa. Con titolo e unità delle serie vuoti, la riga sopra i cerchi non compare.",
     fields: [
       ["tabFeed",       "Tab 1"],
       ["tabMotion",     "Tab 2"],
-      ["tabIndex",      "Tab 3"],
+      ["tabIndex",      "Tab 3 — INDEX (ora nascosta)"],
       ["seriesTitle",   "Titolo blocco serie"],
       ["seriesUnit",    "Unità di misura serie"],
       ["indexNo",       "Colonna indice — N."],
       ["indexTitle",    "Colonna indice — titolo"],
       ["indexLocation", "Colonna indice — luogo"],
       ["indexYear",     "Colonna indice — anno"],
-      ["motionCorner",  "Contatore sui reel (in alto a sinistra)"],
       ["motionPrefix",  "Prefisso reel senza titolo"],
       ["motionYear",    "Anno mostrato sui reel senza video"],
       ["empty",         "Messaggio sezione vuota ({SECTION})"],
@@ -399,8 +392,8 @@ const SETTINGS_SCHEMA = [
   },
   {
     key: "showreel",
-    title: "Showreel",
-    hint: "La presentazione a schermo intero che parte cliccando la foto profilo.",
+    title: "Showreel della foto profilo",
+    hint: "La presentazione di foto a schermo intero che parte cliccando la foto profilo. Il video in loop sopra il Feed si imposta più in alto, in “Showreel nel feed”.",
     fields: [
       ["title",    "Titolo"],
       ["subtitle", "Sottotitolo"],
@@ -415,8 +408,8 @@ const SETTINGS_SCHEMA = [
     hint: "L'anno del copyright è automatico.",
     fields: [
       ["name",        "Nome"],
-      ["studioLabel", "Etichetta studio"],
-      ["studioValue", "Città studio"],
+      ["studioLabel", "Etichetta città"],
+      ["studioValue", "Città"],
       ["emailLabel",  "Etichetta email"],
       ["emailValue",  "Email"],
       ["socialLabel", "Etichetta social"],
@@ -889,8 +882,64 @@ function TextGroup({ group, values, onChange }){
   );
 }
 
+// ── Showreel nel feed ───────────────────────────────────────────────────────
+// Il video in loop sopra la griglia del Feed (settings.feedReel). Da non
+// confondere con lo "Showreel della foto profilo", che è una presentazione di
+// foto. Qui serve un file video diretto: un <video> in loop non sa riprodurre
+// la pagina di Jumpshare, che funziona solo dentro un iframe.
+function FeedReelEditor({ value, password, onChange, onStatus }){
+  const v = value || {};
+  const set = (k, x) => onChange({ ...v, [k]: x });
+  const video = String(v.video || "").trim();
+  const embed = Boolean(video) && (JUMPSHARE_RE.test(video) || /\/embed\//i.test(video) || /<iframe/i.test(video));
+  // L'anteprima si accende solo su un indirizzo che finisce come un file
+  // video: altrimenti, mentre si scrive, ogni lettera ("h", "ht", …) farebbe
+  // partire una richiesta a vuoto.
+  const file = Boolean(video) && !embed && VIDEO_RE.test(video);
+  const strano = Boolean(video) && !embed && !file;
+  const avviso = { marginTop:6, fontSize:10, lineHeight:1.5, color:"var(--accent)" };
+
+  return (
+    <div className="set-group">
+      <h3>Showreel nel feed (video in loop)</h3>
+      <p className="hint">
+        Il video a tutta larghezza sopra la griglia del Feed: parte da solo, muto, e gira in loop.
+        Serve l'indirizzo di un file video diretto (.mp4): un file del sito come
+        media/showreel.mp4, oppure il link .mp4 di uno storage video. I link Jumpshare qui non
+        funzionano. Con il campo video vuoto il blocco non compare.
+      </p>
+      <div className="set-grid">
+        <div style={{ gridColumn:"1 / -1" }}>
+          <label className="lbl">Video (.mp4)</label>
+          <input className="field mono" value={v.video || ""} placeholder="media/showreel.mp4"
+            onChange={e => set("video", e.target.value.trim())} />
+          {embed && <div className="mono" style={avviso}>✕ Questo è un link da incorporare (Jumpshare): qui serve il file .mp4 diretto. Così com'è, sul sito il blocco non compare.</div>}
+          {strano && <div className="mono" style={avviso}>Non sembra un file video: l'indirizzo dovrebbe finire in .mp4 (o .webm, .mov). Il sito proverà comunque a riprodurlo.</div>}
+        </div>
+        <div>
+          <label className="lbl">Copertina · si vede finché il video carica</label>
+          <ImageField value={v.poster || ""} password={password} aspect="16/9"
+            onChange={(x) => set("poster", x)} onStatus={onStatus} allowUrl />
+        </div>
+        <div>
+          <label className="lbl">Anteprima</label>
+          {file
+            ? <video key={video} src={srcOf(video)} poster={v.poster ? srcOf(v.poster) : undefined}
+                controls muted playsInline preload="metadata"
+                style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", background:"#000", display:"block" }} />
+            : <div className="mono" style={{ width:"100%", aspectRatio:"16/9", background:"#111", display:"flex",
+                alignItems:"center", justifyContent:"center", fontSize:9, color:"#555", letterSpacing:"0.14em" }}>NESSUN VIDEO</div>}
+          <label className="lbl" style={{ marginTop:12 }}>Scritta in basso a sinistra</label>
+          <input className="field" value={v.label != null ? v.label : ""} placeholder="SHOWREEL"
+            onChange={e => set("label", e.target.value)} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Pannello "Impostazioni generali" ────────────────────────────────────────
-function SettingsEditor({ settings, onChange }){
+function SettingsEditor({ settings, password, onChange, onStatus }){
   const s = settings || {};
   const patch = (k, v) => onChange({ ...s, [k]: v });
   const seo = s.seo || {};
@@ -925,6 +974,9 @@ function SettingsEditor({ settings, onChange }){
           {(seo.bio || "").split(/\r?\n/).filter(l => l.trim()).length} paragrafi
         </p>
       </div>
+
+      <FeedReelEditor value={s.feedReel} password={password} onStatus={onStatus}
+        onChange={(v) => patch("feedReel", v)} />
 
       {SETTINGS_SCHEMA.map(g => (
         <TextGroup key={g.key} group={g} values={s[g.key]} onChange={(v) => patch(g.key, v)} />
@@ -1187,7 +1239,8 @@ function CMS({ password }){
         </div>
 
         {meta.single ? (
-          <SettingsEditor settings={media.settings} onChange={(v)=>update("settings", v)} />
+          <SettingsEditor settings={media.settings} password={password} onStatus={status}
+            onChange={(v)=>update("settings", v)} />
         ) : list.length === 0 ? (
           <div className="card" style={{padding:40,textAlign:"center"}}>
             <p className="mono" style={{fontSize:12,color:"var(--mute)"}}>Nessun elemento. Usa “+ Aggiungi” per iniziare.</p>

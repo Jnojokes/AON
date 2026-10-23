@@ -14,7 +14,7 @@
          dall'addestramento va espresso, non sottinteso. Termini: /note-legali -->
     <meta name="tdm-reservation" content="1">
     <meta name="tdm-policy" content="https://www.andreaonori.com/note-legali">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#161616">
 
     <!-- ─────────────────────────────────────────────────────────────────────
          VERIFICA PROPRIETÀ — Search Console e Bing.
@@ -481,11 +481,16 @@
 
     <style>
         :root {
-            --bg: #000000;
+            /* Grafite dalla versione 1 (ottobre 2026); prima lo sfondo era nero
+               pieno. La scheda progetto resta nera: vedi .modal-overlay. */
+            --bg: #161616;
             --fg: #FFFFFF;
             --mute: #707070;
-            --line: rgba(255,255,255,0.14);
-            --line-strong: rgba(255,255,255,0.32);
+            --line: rgba(255,255,255,0.12);
+            --line-strong: rgba(255,255,255,0.26);
+            /* Celle del feed e cerchi delle serie: un tono sopra lo sfondo,
+               si vede finché la foto non è arrivata. */
+            --cell: #1E1E1E;
             --accent: #FF3D00;
             --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
             --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -528,32 +533,6 @@
         @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-100%); } }
         .marquee-item { display: inline-flex; align-items: center; gap: 14px; font-size: 11px; }
         .marquee-dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
-
-        /* Coordinates HUD */
-        .hud {
-            position: fixed;
-            top: 56px;
-            right: 16px;
-            z-index: 50;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-            pointer-events: none;
-        }
-        @media (max-width: 768px) { .hud { display: none; } }
-        .hud-row { display: flex; align-items: center; gap: 8px; font-size: 10px; line-height: 1; }
-        .hud-pill {
-            border: 1px solid var(--line-strong);
-            padding: 5px 9px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-        }
-        .live-dot {
-            width: 6px; height: 6px; background: var(--accent); border-radius: 50%;
-            animation: blink 1.4s ease-in-out infinite;
-        }
-        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
 
         /* Buttons */
         .btn-primary {
@@ -651,34 +630,21 @@
         }
         .feed-item:hover .motion-play { background: rgba(0,0,0,0.72); }
 
-        /* Feed grid */
+        /* Feed grid — celle ferme. Dalla versione 1 in hover non c'è più
+           sollevamento, zoom, cornice bianca né numero d'angolo: resta solo il
+           nome in basso (.feed-meta). Foto sempre a colori pieni. */
+        .feed-grid { gap: 20px; }
+        @media (max-width: 768px) { .feed-grid { gap: 6px; } }
         .feed-item {
             position: relative;
             overflow: hidden;
-            background: #0a0a0a;
+            background: var(--cell);
             cursor: pointer;
-            transition: transform .6s var(--ease-out);
-            will-change: transform;
         }
-        .feed-item::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            box-shadow: inset 0 0 0 0 var(--fg);
-            pointer-events: none;
-            transition: box-shadow .5s var(--ease-out);
-            z-index: 3;
-        }
-        .feed-item:hover { transform: translateY(-3px); }
-        .feed-item:hover::after { box-shadow: inset 0 0 0 2px var(--fg); }
         .feed-item img {
             width: 100%; height: 100%;
             object-fit: cover;
-            transition: transform 1.8s var(--ease-out), filter .8s var(--ease-out);
-            filter: grayscale(45%) contrast(1.05);
-            will-change: transform;
         }
-        .feed-item:hover img { transform: scale(1.08); filter: grayscale(0%) contrast(1.08); }
         .feed-meta {
             position: absolute;
             inset: auto 0 0 0;
@@ -698,18 +664,26 @@
             color: var(--fg);
         }
         .feed-item:hover .feed-meta { opacity: 1; transform: translateY(0); transition-delay: .05s; }
-        .feed-corner {
-            position: absolute; top: 10px; left: 10px; z-index: 4;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 0.15em;
-            background: rgba(0,0,0,0.7);
-            padding: 4px 7px;
-            opacity: 0;
-            transform: translateY(-6px);
-            transition: opacity .4s var(--ease-out), transform .4s var(--ease-out);
+
+        /* Showreel in testa al Feed — video a tutta larghezza, 16:9, muto e in
+           loop. La sorgente è settings.feedReel in media.json (pannello →
+           Impostazioni). Sotto ha lo stesso spazio che c'è tra le celle. */
+        .feed-reel {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            margin-bottom: 20px;
+            background: #000;
+            overflow: hidden;
         }
-        .feed-item:hover .feed-corner { opacity: 1; transform: translateY(0); }
+        .feed-reel video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .feed-reel-label {
+            position: absolute; left: 16px; bottom: 14px;
+            font-size: 10px; color: #fff;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+            pointer-events: none;
+        }
+        @media (max-width: 768px) { .feed-reel { margin-bottom: 6px; } }
 
         /* Reveal on scroll */
         .reveal-on-scroll {
@@ -742,7 +716,7 @@
             border: 1.5px solid var(--fg);
             overflow: hidden;
             transition: transform .45s var(--ease-out);
-            background: #0a0a0a;
+            background: var(--cell);
             position: relative;
             will-change: transform;
         }
@@ -758,15 +732,31 @@
         .series-circle:hover::before { border-color: var(--accent); inset: -5px; }
         .series-circle img {
             width: 100%; height: 100%; object-fit: cover;
-            filter: grayscale(60%);
-            transition: filter .5s var(--ease-out), transform .7s var(--ease-out);
+            transition: transform .7s var(--ease-out);
             border-radius: 50%;
         }
-        .series-circle:hover img { filter: grayscale(0%); transform: scale(1.1); }
+        .series-circle:hover img { transform: scale(1.1); }
 
         /* Avatar play overlay on bold */
         .avatar-bold:hover img { opacity: 0.55; }
         .avatar-bold:hover .play-overlay { opacity: 1; background: rgba(0,0,0,0.35); }
+
+        /* Intestazione — il nome occupa tutta la riga. Sotto, a sinistra, le
+           righe di presentazione; a destra il bottone, allineato in basso
+           all'ultima riga. Da mobile il bottone va sotto, a sinistra. */
+        .profile-main {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            column-gap: 40px;
+            align-items: end;
+        }
+        .profile-name { grid-column: 1 / -1; margin-bottom: 20px; }
+        .profile-lines > * + * { margin-top: 8px; }
+        .profile-ctas { justify-self: end; }
+        @media (max-width: 768px) {
+            .profile-main { grid-template-columns: minmax(0, 1fr); }
+            .profile-ctas { justify-self: start; margin-top: 24px; }
+        }
 
         /* Tabs */
         .tab-btn {
@@ -829,6 +819,26 @@
         }
         @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* Scheda progetto — da desktop foto, <video> e iframe stanno nello
+           stesso riquadro alto 76vh (contain, fondo nero): passando dal video
+           alla foto il blocco non cambia altezza, quindi titolo e pallini
+           restano fermi. Da mobile le altezze restano quelle di prima. */
+        .post-media { display: block; width: 100%; background: #000; }
+        @media (max-width: 767.98px) {
+            iframe.post-media { height: 80vh; }
+            video.post-media { max-height: 80vh; }
+        }
+        @media (min-width: 768px) {
+            .post-media { height: 76vh; max-height: 76vh; object-fit: contain; }
+            .post-info { align-self: center; }
+        }
+        /* Pallini del carosello: fuori dal riquadro, sotto, nella stessa
+           posizione per foto e video (non coprono i controlli del player). */
+        .post-dots {
+            position: absolute; left: 0; right: 0; bottom: -28px;
+            display: flex; justify-content: center; gap: 6px;
+        }
+
         /* Story viewer */
         .story-viewer {
             position: fixed; inset: 0;
@@ -856,21 +866,6 @@
         .reveal-line.d1 > span { animation-delay: 0.08s; }
         .reveal-line.d2 > span { animation-delay: 0.18s; }
         .reveal-line.d3 > span { animation-delay: 0.28s; }
-
-        /* Brand badge */
-        .verified {
-            display: inline-block;
-            width: 12px; height: 12px;
-            background: var(--fg);
-            margin-left: 14px;
-            vertical-align: middle;
-            position: relative;
-            transform: translateY(-6px);
-        }
-
-        @media (max-width: 768px) {
-            .hud { font-size: 9px; }
-        }
 
         /* Footer */
         footer {
@@ -1039,18 +1034,6 @@
     <link rel="stylesheet" href="/assets/tailwind.css?v=f4f2d1ad">
 </head>
 <body>
-    <!-- HUD coordinates -->
-    <div class="hud">
-        <div class="hud-row hud-pill mono">
-            <span class="live-dot"></span>
-            <span id="liveTime">--:--:--</span>
-            <span id="hudTz" style="color: var(--mute);">CET</span>
-        </div>
-        <div class="hud-row hud-pill mono" id="hudCoords" style="color: var(--mute);">
-            45.4642° N · 9.1900° E
-        </div>
-    </div>
-
     <!-- Il contenuto statico qui sotto è generato da scripts/prerender.mjs a ogni
          build e sostituito da React al mount. Serve ai crawler che non eseguono
          JavaScript (Bingbot e tutti i bot AI) e fa comparire il contenuto subito
