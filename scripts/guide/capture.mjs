@@ -189,6 +189,78 @@ await page.evaluate(() => { const b = document.querySelector("#consentAccept"); 
 await wait(1200);
 await shot(page, "sito-pubblico", { settle: 1200 });
 
+// ── 7. Ottobre 2026: copertina e logo, video su Bunny, showreel ──────────────
+// In coda, cosi' i numeri degli scatti precedenti (citati in guide.html) non
+// cambiano.
+await page.goto(`${BASE}/admin-edits`, { waitUntil: "domcontentloaded" });
+await page.waitForSelector('input[placeholder="admin"]', { timeout: 20000 });
+await page.type('input[placeholder="admin"]', "admin", { delay: 10 });
+await page.type('input[type="password"]', PASSWORD, { delay: 10 });
+await clickText(page, "Entra");
+await page.waitForSelector(".card", { timeout: 25000 });
+await wait(1500);
+
+// La barra in alto e' fissa: negli scatti di un singolo riquadro finirebbe
+// sopra il contenuto. Da qui la si lascia al suo posto, in cima alla pagina.
+const sblocca = () => page.evaluate(() => {
+  const h = document.querySelector("header");
+  if (h) h.style.position = "relative";
+});
+await sblocca();
+
+// Il primo progetto del FEED, dall'alto fino al carosello: Copertina e Logo,
+// poi le slide. Tutta la card sarebbe alta piu' di una pagina.
+await page.evaluate(() => window.scrollTo(0, 0));
+await wait(300);
+const clipFeed = await page.evaluate(() => {
+  const card = document.querySelector(".card");
+  const r = card.getBoundingClientRect();
+  const fine = [...card.querySelectorAll("button")].find((b) => /Link video/.test(b.textContent));
+  const bottom = fine ? fine.getBoundingClientRect().bottom + 12 : r.bottom;
+  return { x: r.x - 6, y: r.y + window.scrollY - 6, width: r.width + 12, height: bottom - r.y + 6 };
+});
+await wait(1200);
+n += 1;
+await page.screenshot({ path: path.join(SHOTS, `${String(n).padStart(2, "0")}-scheda-feed.jpg`), type: "jpeg", quality: 92, clip: clipFeed });
+console.log("  ▸", `${String(n).padStart(2, "0")}-scheda-feed.jpg`);
+
+// FEED, secondo progetto: "+ Link video" e si incolla il link Embed di Bunny.
+// Il pannello legge il video e compila da solo proporzioni e copertina.
+await page.evaluate(() => {
+  const card = document.querySelectorAll(".card")[1];
+  [...card.querySelectorAll("button")].find((b) => /Link video/.test(b.textContent)).click();
+});
+await wait(500);
+await page.evaluate(() => {
+  const input = document.querySelectorAll(".card")[1].querySelector(".panel input[placeholder^='https://player.mediadelivery.net']");
+  const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+  set.call(input, "https://player.mediadelivery.net/embed/788231/1ba07f8f-8f02-461d-94f2-7d81950f154f");
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.closest(".panel").setAttribute("data-aon-shot", "video");
+  input.closest(".panel").scrollIntoView({ block: "center" });
+});
+await page.waitForFunction(() => {
+  const p = document.querySelector("[data-aon-shot=video]");
+  const img = p && p.querySelector("img.thumb");
+  return p && /✓ Video Bunny/.test(p.innerText) && img && img.complete && img.naturalWidth > 0;
+}, { timeout: 30000 }).catch(() => console.warn("    ⚠︎ il video Bunny non ha risposto in tempo"));
+await shot(page, "video-bunny", { selector: "[data-aon-shot=video]", settle: 900 });
+
+// IMPOSTAZIONI → Showreel nel feed: il link Embed diventa il file MP4.
+await clickText(page, "IMPOSTAZIONI");
+await wait(700);
+await page.evaluate(() => {
+  const input = document.querySelector("input[placeholder='media/showreel.mp4']");
+  const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+  set.call(input, "https://player.mediadelivery.net/embed/788231/b5536c8a-6f38-476a-b58c-e1744e59b024");
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.closest(".set-group").scrollIntoView({ block: "center" });
+});
+await page.waitForFunction(() => { const v = document.querySelector(".set-group video"); return v && v.readyState >= 2; }, { timeout: 30000 })
+  .catch(() => console.warn("    ⚠︎ l'MP4 di Bunny non ha risposto in tempo"));
+await page.evaluate(() => { const g = document.querySelector("input[placeholder='media/showreel.mp4']").closest(".set-group"); g.setAttribute("data-aon-shot", "reel"); });
+await shot(page, "showreel-feed", { selector: "[data-aon-shot=reel]", settle: 900 });
+
 await browser.close();
 console.log(`\n✓ ${n} screenshot in scripts/guide/shots/\n`);
 process.exit(0);

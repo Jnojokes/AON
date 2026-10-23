@@ -31,6 +31,9 @@
         table { width:100%; border-collapse:collapse; margin:14px 0 6px; font-size:13px; }
         th, td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); color:var(--mute); vertical-align:top; }
         th { color:var(--fg); font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; }
+        /* Nomi lunghi (bunny_stream_settings_…): vanno a capo nei punti segnati
+           con <wbr> invece di allargare la tabella da telefono. */
+        td code { overflow-wrap:break-word; }
         .back { font-size:10px; color:var(--mute); text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:2px; }
         .note { border:1px dashed var(--line); padding:14px 16px; margin:18px 0; }
         button { font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; padding:9px 16px; cursor:pointer; border:1px solid var(--fg); background:transparent; color:var(--fg); }
@@ -46,7 +49,7 @@
 
     <a class="back mono" href="/">← Andrea Onori</a>
     <h1>Privacy &amp;<br>Cookie Policy</h1>
-    <p class="mono" style="font-size:10px; color:var(--mute);">Ultimo aggiornamento: 3 settembre 2026</p>
+    <p class="mono" style="font-size:10px; color:var(--mute);">Ultimo aggiornamento: 23 ottobre 2026</p>
 
     <h2>1. Titolare del trattamento</h2>
     <p>
@@ -72,6 +75,11 @@
     <p>Il modulo <strong>non viene caricato all'apertura del sito</strong>: compare soltanto dopo che hai premuto un pulsante di contatto. Finché non lo fai, nessuna richiesta viene inviata a Tally e nessun dato, nemmeno tecnico, le viene trasmesso.</p>
     <p>Le richieste ricevute restano consultabili dal titolare nel pannello Tally, oltre che nella propria casella di posta. Puoi in qualsiasi momento chiederne la cancellazione scrivendo a <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>.</p>
 
+    <h3>Video</h3>
+    <p>I video del portfolio e le loro immagini di anteprima sono ospitati su <strong>Bunny Stream</strong> (BunnyWay d.o.o., Lubiana, Slovenia), che li distribuisce attraverso la propria rete di server e tratta i dati in qualità di responsabile del trattamento per conto del titolare.</p>
+    <p>Il player di Bunny <strong>non viene caricato all'apertura del sito</strong>: parte soltanto quando apri un progetto o un reel che contiene un video. In quel momento, e ogni volta che una pagina mostra immagini o video ospitati su Bunny (per esempio le anteprime della sezione Motion), il tuo browser si collega ai server di Bunny, che ricevono i dati tecnici necessari a consegnare i file: indirizzo IP, tipo di browser e alcune misure sulla qualità della riproduzione.</p>
+    <p>Il player <strong>non installa cookie</strong>. Se cambi il volume o togli l'audio, ricorda la tua scelta nella memoria del browser, come indicato nella sezione Cookie.</p>
+
     <h3>Dati di misurazione</h3>
     <p>Se presti il consenso, il sito utilizza <strong>Google Analytics 4</strong> (identificativo di misurazione <code>G-EG1T5HLFSX</code>) per capire come viene usato. <strong>Senza consenso lo script di Google non viene nemmeno scaricato</strong>: nessuna richiesta parte verso i server di Google e nessun cookie di misurazione viene installato.</p>
     <p>Oltre alle visualizzazioni di pagina, con il tuo consenso vengono registrate alcune interazioni con il sito. Non contengono dati identificativi, ma è giusto sapere quali sono:</p>
@@ -93,7 +101,7 @@
     <table>
         <thead><tr><th>Finalità</th><th>Base giuridica</th><th>Conservazione</th></tr></thead>
         <tbody>
-            <tr><td>Erogazione e sicurezza del sito</td><td>Legittimo interesse (art. 6.1.f GDPR)</td><td>Log tecnici: max 12 mesi</td></tr>
+            <tr><td>Erogazione e sicurezza del sito, riproduzione dei video</td><td>Legittimo interesse (art. 6.1.f GDPR)</td><td>Log tecnici: max 12 mesi</td></tr>
             <tr><td>Risposta a richieste via email</td><td>Misure precontrattuali (art. 6.1.b GDPR)</td><td>Durata della corrispondenza e obblighi di legge</td></tr>
             <tr><td>Gestione delle richieste dal modulo di contatto</td><td>Consenso (art. 6.1.a GDPR) e misure precontrattuali (art. 6.1.b)</td><td>Durata della corrispondenza; il messaggio resta nella casella di posta del titolare</td></tr>
             <tr><td>Analisi statistica delle visite</td><td>Consenso (art. 6.1.a GDPR)</td><td>14 mesi</td></tr>
@@ -109,6 +117,7 @@
         <thead><tr><th>Nome</th><th>Finalità</th><th>Durata</th></tr></thead>
         <tbody>
             <tr><td><code>aon-consent-v2</code></td><td>Memorizza la tua scelta sui cookie e la data in cui l'hai espressa, per non richiederla a ogni visita. È salvato in localStorage, non è un cookie trasmesso al server.</td><td>6 mesi, poi il consenso viene richiesto di nuovo</td></tr>
+            <tr><td><code>bunny_<wbr>stream_<wbr>settings_<wbr>788231</code></td><td>Salvato dal player di Bunny solo se cambi il volume o togli l'audio di un video, per ricordare la tua scelta. Contiene soltanto queste due impostazioni. È salvato in localStorage, non è un cookie trasmesso al server.</td><td>Finché non cancelli i dati del browser</td></tr>
         </tbody>
     </table>
 
@@ -148,6 +157,7 @@
     <p>Il sito si appoggia a fornitori che, per erogare il servizio, possono trattare dati tecnici come l'indirizzo IP:</p>
     <ul>
         <li><strong>Vercel Inc.</strong> — hosting e distribuzione del sito. <a href="https://vercel.com/legal/privacy-policy" rel="noopener" target="_blank">Privacy policy</a></li>
+        <li><strong>BunnyWay d.o.o. (Bunny.net)</strong> — hosting e riproduzione dei video (Bunny Stream) e delle loro immagini di anteprima. Società slovena, con sede nell'Unione Europea; i file sono distribuiti dalla sua rete di server, che risponde dal nodo più vicino a chi guarda. <a href="https://bunny.net/privacy/" rel="noopener" target="_blank">Privacy policy</a> · <a href="https://bunny.net/gdpr/" rel="noopener" target="_blank">GDPR</a></li>
         <li><strong>Tally BV</strong> — modulo di contatto e conservazione delle richieste ricevute. Società belga, dati trattati su server nell'Unione Europea. <a href="https://tally.so/help/privacy-policy" rel="noopener" target="_blank">Privacy policy</a> · <a href="https://tally.so/help/data-processing-agreement" rel="noopener" target="_blank">Accordo sul trattamento dei dati</a></li>
         <li><strong>Aruba S.p.A.</strong> — servizio di posta elettronica su cui trasita e viene conservato il messaggio inviato dal modulo di contatto. Società italiana, dati trattati nell'Unione Europea. <a href="https://www.aruba.it/informativa-privacy.aspx" rel="noopener" target="_blank">Privacy policy</a></li>
         <li><strong>Google Ireland Ltd.</strong> — Google Analytics 4 (solo con consenso) e Google Fonts. <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">Privacy policy</a></li>
@@ -163,7 +173,7 @@
 
     <div class="lang">
         <h2>English summary</h2>
-        <p>This site is operated by Andrea Onori, photographer and filmmaker based in Milan, Italy. The contact form is provided by Tally (Tally BV, Belgium) acting as data processor, with data stored on EU servers; the message is also delivered to the owner's mailbox at Aruba S.p.A. (Italy, EU). The form is not loaded until you press a contact button, so nothing is sent to Tally while you simply browse. It sets no tracking cookies unless you accept them. Technical logs are kept for security and are retained for a maximum of 12 months. If you consent, Google Analytics 4 collects aggregated usage statistics with a 14-month retention. You may withdraw consent at any time by clearing this site's data in your browser. To exercise your rights under the GDPR — access, rectification, erasure, restriction, portability, objection — write to <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>. You may also lodge a complaint with the Italian Data Protection Authority.</p>
+        <p>This site is operated by Andrea Onori, photographer and filmmaker based in Milan, Italy. The contact form is provided by Tally (Tally BV, Belgium) acting as data processor, with data stored on EU servers; the message is also delivered to the owner's mailbox at Aruba S.p.A. (Italy, EU). The form is not loaded until you press a contact button, so nothing is sent to Tally while you simply browse. Videos and their preview images are hosted by Bunny Stream (BunnyWay d.o.o., Slovenia, EU), acting as data processor: the Bunny player loads only when you open a project or reel with a video, and when it does, or when a page shows images or videos hosted on Bunny, your browser connects to Bunny's servers, which receive technical data such as your IP address. The player sets no cookies; if you change the volume or mute a video, it remembers that choice in your browser's local storage. The site sets no tracking cookies unless you accept them. Technical logs are kept for security and are retained for a maximum of 12 months. If you consent, Google Analytics 4 collects aggregated usage statistics with a 14-month retention. You may withdraw consent at any time by clearing this site's data in your browser. To exercise your rights under the GDPR — access, rectification, erasure, restriction, portability, objection — write to <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>. You may also lodge a complaint with the Italian Data Protection Authority.</p>
     </div>
 
     <footer>

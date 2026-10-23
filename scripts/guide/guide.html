@@ -82,7 +82,7 @@
     <h1>Guida al<br>pannello<br>admin</h1>
     <p class="sub">Come cambiare le foto, i testi e l'ordine dei progetti sul tuo sito, senza toccare una riga di codice e senza dover chiedere a nessuno.</p>
   </div>
-  <div class="foot">Versione 1.0 · Settembre 2026</div>
+  <div class="foot">Versione 1.1 · Ottobre 2026</div>
 </section>
 
 <!-- ══════════════════ INDICE ══════════════════ -->
@@ -93,7 +93,7 @@
     <li><span class="n">02</span><span class="t">Entrare</span><span class="d">Indirizzo, utente, password e i messaggi d'errore</span></li>
     <li><span class="n">03</span><span class="t">Le cinque sezioni</span><span class="d">FEED, MOTION, SERIES, INDEX, IMPOSTAZIONI</span></li>
     <li><span class="n">04</span><span class="t">Le operazioni di tutti i giorni</span><span class="d">Aggiungere, caricare, riordinare, eliminare, salvare</span></li>
-    <li><span class="n">05</span><span class="t">I video</span><span class="d">Caricarli su Jumpshare e collegarli al sito, passo per passo</span></li>
+    <li><span class="n">05</span><span class="t">I video</span><span class="d">Caricarli su Bunny Stream e collegarli al sito, passo per passo</span></li>
     <li><span class="n">06</span><span class="t">Le regole d'oro</span><span class="d">Proporzioni, pesi, campi da non toccare</span></li>
     <li><span class="n">07</span><span class="t">Quando qualcosa non va</span><span class="d">Ogni messaggio d'errore e cosa fare</span></li>
     <li><span class="n">08</span><span class="t">Rimediare a un errore</span><span class="d">Non c'è annulla: ecco come si torna indietro</span></li>
@@ -108,8 +108,8 @@
   <h3>Cosa puoi fare</h3>
   <ul>
     <li>Aggiungere, togliere e riordinare le foto e i progetti.</li>
-    <li>Cambiare titoli, anni, luoghi e formati.</li>
-    <li>Collegare i video ospitati sullo storage esterno.</li>
+    <li>Cambiare titoli, crediti, copertine e loghi dei progetti.</li>
+    <li>Collegare i video ospitati su Bunny Stream.</li>
     <li>Riscrivere praticamente ogni testo del sito, comprese le etichette dei pulsanti.</li>
   </ul>
 
@@ -117,7 +117,7 @@
   <ul>
     <li>Cambiare la grafica, i colori o la disposizione degli elementi.</li>
     <li>Aggiungere pagine nuove.</li>
-    <li>Caricare video direttamente: vanno sullo storage esterno, vedi capitolo 05.</li>
+    <li>Caricare video direttamente: vanno su Bunny Stream, vedi capitolo 05.</li>
   </ul>
 
   <h3>Come arriva online una modifica</h3>
@@ -195,11 +195,11 @@
   <table>
     <thead><tr><th style="width:22%">Sezione</th><th>Cosa governa sul sito</th></tr></thead>
     <tbody>
-      <tr><td><strong>FEED</strong></td><td>La griglia principale, quella che si vede appena si apre il sito. Ogni riquadro è un progetto e può contenere più foto: la prima è la copertina, le altre si sfogliano cliccando.</td></tr>
-      <tr><td><strong>MOTION</strong></td><td>I reel verticali. Una copertina più, se c'è, il collegamento al video.</td></tr>
+      <tr><td><strong>FEED</strong></td><td>La griglia principale, quella che si vede appena si apre il sito. Ogni riquadro è un progetto: nella griglia si vede la sua <strong>copertina</strong>; cliccando si apre la scheda, con il carosello di video e foto e i crediti.</td></tr>
+      <tr><td><strong>MOTION</strong></td><td>I reel verticali. Una copertina più il collegamento al video su Bunny.</td></tr>
       <tr><td><strong>SERIES</strong></td><td>Le storie in evidenza, quelle nei cerchi. Ogni serie è una cartella di immagini che si sfogliano come le storie di Instagram.</td></tr>
-      <tr><td><strong>INDEX</strong></td><td>L'elenco numerato in fondo alla pagina.</td></tr>
-      <tr><td><strong>IMPOSTAZIONI</strong></td><td>Tutti i testi del sito. Nessuna foto: solo parole.</td></tr>
+      <tr><td><strong>INDEX</strong></td><td>Un elenco numerato dei lavori. Oggi la sua scheda è nascosta sul sito: i dati restano nel pannello.</td></tr>
+      <tr><td><strong>IMPOSTAZIONI</strong></td><td>Tutti i testi del sito, la barra scorrevole, lo showreel in testa al feed e la descrizione per Google.</td></tr>
     </tbody>
   </table>
 
@@ -207,14 +207,21 @@
   <table>
     <thead><tr><th style="width:26%">Campo</th><th>Dove finisce</th></tr></thead>
     <tbody>
-      <tr><td><strong>Media del post</strong></td><td>Le foto. <strong>La prima è la copertina</strong> e si riconosce dall'etichetta arancione <code>COVER</code>.</td></tr>
-      <tr><td><strong>Titolo</strong></td><td>Il nome del progetto, sotto la foto nella griglia e in cima alla scheda.</td></tr>
-      <tr><td><strong>Anno</strong></td><td>In basso a destra sulla foto.</td></tr>
-      <tr><td><strong>Luogo</strong></td><td>Sopra l'anno.</td></tr>
-      <tr><td><strong>Pellicola / Formato</strong></td><td>La riga grigia sopra il titolo. Testo libero: la convenzione è <code>CATEGORIA — DETTAGLIO</code>.</td></tr>
+      <tr><td><strong>Copertina</strong></td><td>L'immagine del riquadro nella griglia. Si vede <strong>solo lì</strong>, non dentro la scheda. Può essere una foto o una WebP/GIF animata: se è piccola, il sito la ingrandisce a pixel netti. Senza copertina, il riquadro mostra la prima foto del carosello.</td></tr>
+      <tr><td><strong>Logo</strong></td><td>Un PNG o SVG trasparente, centrato sopra la copertina. Resta sempre nitido.</td></tr>
+      <tr><td><strong>Carosello della scheda</strong></td><td>Le foto e i video che si sfogliano aprendo il progetto, nell'ordine in cui li metti. L'etichetta arancione <code>COVER</code> segna la foto che la griglia usa quando manca la Copertina.</td></tr>
+      <tr><td><strong>Titolo</strong></td><td>Il nome del video o del progetto: in cima alla scheda e, passando col mouse, sul riquadro.</td></tr>
+      <tr><td><strong>Crediti</strong></td><td>Le righe sotto il titolo nella scheda: etichetta e valore liberi (CLIENT, DIRECTION…), nell'ordine che scegli. Le voci senza valore non si vedono. Il valore di CLIENT compare anche passando col mouse sulla griglia.</td></tr>
+      <tr><td><strong>Anno, Luogo, Pellicola / Formato</strong></td><td>Non si vedono nella scheda: servono a Google e alle pagine dei singoli progetti. Compilali comunque.</td></tr>
+      <tr><td><strong>Descrizione del progetto</strong></td><td>Il testo della pagina dedicata al progetto (<code>andreaonori.com/work/…</code>): 3–4 paragrafi in terza persona.</td></tr>
       <tr><td><strong>Contenuto Enhanced con AI</strong></td><td>Se spuntata, sul sito appare il marchio <code>◇ AI</code>. Oggi non è spuntata da nessuna parte: lasciala così finché non pubblichi qualcosa realizzato con l'IA.</td></tr>
     </tbody>
   </table>
+
+  <figure style="max-width:60mm">
+    <img src="/scripts/guide/shots/17-scheda-feed.jpg" alt="Un progetto del FEED nel pannello">
+    <figcaption>Un progetto del <b>FEED</b>: in alto Copertina e Logo, sotto il carosello della scheda. Più giù seguono titolo, crediti e gli altri campi.</figcaption>
+  </figure>
 </section>
 
 <section class="page">
@@ -273,15 +280,18 @@
     <p>Le foto vengono <strong>caricate subito</strong>, appena le trascini — prima e indipendentemente da <em>Salva tutto</em>. Quel pulsante serve a salvare <em>dove</em> le foto vanno e i testi che hai scritto, non le foto in sé.</p>
   </div>
 
+  <h3>Copertina e logo</h3>
+  <p>Hanno due riquadri propri, in cima a ogni progetto del FEED: trascina il file lì sopra, oppure premi <strong>Scegli</strong>. Il file si carica <strong>così com'è</strong>, senza essere ricompresso: una WebP animata resta animata. Se la copertina è animata, il pannello prepara da solo anche un fermo immagine, che il sito mostra a chi ha disattivato le animazioni sul proprio dispositivo. Il limite resta di 3 MB.</p>
+
   <h3>Riordinare</h3>
   <ul>
     <li><span class="kbd">↑</span> <span class="kbd">↓</span> in alto a destra di ogni riquadro spostano <strong>l'intero progetto</strong> nella lista.</li>
-    <li><span class="kbd">←</span> <span class="kbd">→</span> sotto ogni miniatura spostano <strong>una singola foto</strong> dentro il progetto. Ricorda: la prima è la copertina.</li>
+    <li><span class="kbd">←</span> <span class="kbd">→</span> sotto ogni miniatura spostano <strong>una singola foto o video</strong> dentro il carosello. La prima slide è quella che si vede aprendo il progetto.</li>
   </ul>
   <p>Non si trascina per riordinare: il trascinamento serve solo a caricare le foto.</p>
 
   <h3>Eliminare</h3>
-  <p>La <span class="kbd">✕</span> arancione elimina: quella in alto nel riquadro toglie l'intero progetto, quella sulla miniatura toglie una sola foto.</p>
+  <p>La <span class="kbd">✕</span> arancione elimina: quella in alto nel riquadro toglie l'intero progetto, quella sulla miniatura toglie una sola foto. La <span class="kbd">✕</span> accanto a Copertina e Logo li toglie.</p>
   <div class="box warn">
     <span class="lbl">Non c'è conferma</span>
     <p>Nessuna finestra che chiede «sei sicuro?»: quello che premi sparisce subito. Se è stato un errore, <strong>non salvare</strong> e ricarica la pagina: tutto torna com'era.</p>
@@ -303,64 +313,81 @@
   <h2>05 · I video</h2>
   <div class="box warn">
     <span class="lbl">La regola</span>
-    <p><strong>I video non si caricano mai nel pannello.</strong> Restano su Jumpshare; nel sito si incolla soltanto il loro codice di incorporamento. Se provi a trascinare un <code>.mp4</code>, il pannello lo rifiuta e te lo ricorda.</p>
+    <p><strong>I video non si caricano mai nel pannello.</strong> Stanno su <strong>Bunny Stream</strong>; nel sito si incolla soltanto il loro link di incorporamento (Embed). Se provi a trascinare un <code>.mp4</code>, il pannello lo rifiuta e te lo ricorda.</p>
   </div>
-  <p>Il motivo è pratico: un video pesa quanto centinaia di foto. Tenendolo fuori, il sito resta leggero e il video si carica solo quando qualcuno lo clicca.</p>
+  <p>Il motivo è pratico: un video pesa quanto centinaia di foto. Tenendolo fuori, il sito resta leggero e il video si carica solo quando qualcuno apre il progetto, nel player di Bunny, che sceglie da solo la qualità giusta per lo schermo e la connessione.</p>
 
   <ol class="steps">
     <li>
-      <strong>Esporta il video.</strong> MP4, codec <strong>H.264 + audio AAC</strong>, 1080p — oppure 1080×1920 per i verticali.<br>
-      Peso indicativo per un reel di 20–40 secondi: <strong>5–15 MB</strong>. Più è leggero, più parte subito su un telefono.<br>
-      <span style="color:var(--mute)">Da Premiere: preset <em>H.264 → Match Source, Adaptive Medium Bitrate</em>. Da DaVinci: <em>MP4, H.264, 6–8 Mbps</em>.</span>
+      <strong>Esporta il video.</strong> MP4, codec <strong>H.264 + audio AAC</strong>, 1080p — oppure 1080×1920 per i verticali. Non serve alleggerirlo: le versioni per i telefoni le prepara Bunny.<br>
+      <span style="color:var(--mute)">Da Premiere: preset <em>H.264 → Match Source, High Bitrate</em>. Da DaVinci: <em>MP4, H.264</em>, qualità automatica.</span>
     </li>
-    <li><strong>Caricalo su Jumpshare.</strong> Trascina il file su <code>jumpshare.com</code> e attendi che il caricamento finisca del tutto.</li>
+    <li><strong>Caricalo su Bunny Stream</strong>, nella libreria <strong>andreaonori</strong>, e aspetta che Bunny finisca di elaborarlo: per un video lungo può volerci qualche minuto.</li>
     <li>
-      <strong>Copia il codice embed.</strong> Apri il video → <strong>Share</strong> → scheda <strong>Embed</strong> → <strong>Copy Code</strong>.<br>
-      Ottieni una riga tipo <code>&lt;iframe src="https://jumpshare.com/embed/…"&gt;</code>. <strong>Copiala tutta:</strong> non serve isolare l'indirizzo, il pannello lo estrae da sé.
+      <strong>Copia il link Embed.</strong> Apri il video su Bunny e copia il codice di incorporamento (<em>Embed</em>).<br>
+      Va bene sia tutto il codice <code>&lt;iframe src="…"&gt;</code> sia il solo indirizzo, che inizia con <code>player.mediadelivery.net/embed/788231/</code>: il pannello estrae da sé quello che serve.
     </li>
     <li>
       <strong>Incollalo nel pannello,</strong> dove vuoi il video:
       <ul style="margin-top:4pt">
-        <li><strong>MOTION</strong> — campo <em>«Link video esterno · Jumpshare»</em>;</li>
-        <li><strong>FEED</strong> — pulsante <em>«+ Link video»</em> dentro il post;</li>
+        <li><strong>MOTION</strong> — campo <em>«Link video · Bunny Stream»</em> del reel;</li>
+        <li><strong>FEED</strong> — pulsante <em>«+ Link video»</em> sotto il carosello del progetto, poi incolla nel campo che si apre;</li>
         <li><strong>SERIES</strong> — stesso pulsante, il video diventa una slide della storia.</li>
       </ul>
     </li>
-    <li><strong>Premi «Verifica link».</strong> Se compare ✓, l'indirizzo è stato riconosciuto.</li>
-    <li><strong>Metti la copertina</strong> trascinando una foto nel riquadro. È l'immagine che si vede prima del click ed è ciò che tiene il sito leggero.</li>
+    <li><strong>Il pannello fa il resto.</strong> Appena incolli, legge il video e compila da solo le <strong>Proporzioni</strong> (16/9, 4/5, 9/16…) e, se manca, la <strong>copertina</strong> con la miniatura di Bunny. Compare un messaggio verde con durata e risoluzione.</li>
+    <li><strong>Se vuoi un'altra copertina,</strong> trascina una foto nel riquadro. <em>«Copertina auto»</em> rimette la miniatura di Bunny.</li>
     <li><strong>Premi «Salva tutto».</strong> Dopo una ventina di secondi il video è sul sito.</li>
   </ol>
 
-  <div class="box">
-    <span class="lbl">Due cose che cambiano con Jumpshare</span>
-    <p><strong>La verifica non mostra durata e risoluzione.</strong> Con un video incorporato quei dati non sono leggibili: il browser non permette a un sito di ispezionare il contenuto di un altro dominio. La verifica controlla la forma dell'indirizzo; la prova vera è guardare il video sul sito.</p>
-    <p><strong>«Copertina auto» non funziona.</strong> Per estrarre un fotogramma servirebbe accedere al file, e Jumpshare non lo consente. La copertina va sempre trascinata a mano — che dà comunque un risultato migliore, perché scegli tu il fotogramma.</p>
+  <!-- Schermata stretta e alta: accanto alla spiegazione invece che da sola,
+       altrimenti va a capo e lascia mezza pagina vuota. -->
+  <div class="two" style="grid-template-columns:58mm 1fr;align-items:start;break-inside:avoid">
+    <figure>
+      <img src="/scripts/guide/shots/18-video-bunny.jpg" alt="Un video aggiunto a un progetto, subito dopo aver incollato il link di Bunny">
+      <figcaption>Un video aggiunto con <b>«+ Link video»</b>: incollato il link, proporzioni e copertina si sono compilate da sole.</figcaption>
+    </figure>
+    <div class="box">
+      <span class="lbl">Perché le proporzioni contano</span>
+      <p>Servono al sito per dare al player la <strong>forma del video</strong>: un 16:9 resta largo, un 4:5 alto, e i controlli stanno sopra il video, senza bande nere.</p>
+      <p>Nella scheda, passando dal video alle foto, titolo e pallini restano fermi.</p>
+      <p>Se un giorno vedi un video con le bande nere, quasi sempre le proporzioni sono sbagliate: correggile a mano o premi <em>«Verifica link»</em> per rileggerle.</p>
+    </div>
   </div>
 </section>
 
-<section class="page">
-  <h2>05 · I video — se qualcosa non va</h2>
+<!-- Stesso capitolo: continua sulla stessa pagina, senza salto. -->
+<section>
+  <h2 style="margin-top:14pt">05 · Lo showreel in testa al feed</h2>
+  <p>Il video in loop sopra la griglia si imposta in <strong>IMPOSTAZIONI → Showreel nel feed</strong>. Lì non c'è il player di Bunny ma il file video vero e proprio, che parte da solo, muto. Incolla pure il link Embed di Bunny: il pannello lo converte da solo nel file MP4 a 1080p. Per un file più leggero, cambia <code>1080</code> in <code>720</code> nell'indirizzo.</p>
+  <figure>
+    <img src="/scripts/guide/shots/19-showreel-feed.jpg" alt="Lo showreel del feed nelle impostazioni">
+    <figcaption>Il link Embed di Bunny incollato nello showreel diventa il file <b>MP4</b>; a destra l'anteprima.</figcaption>
+  </figure>
+
+  <h2 style="margin-top:18pt">05 · I video — se qualcosa non va</h2>
   <table>
     <thead><tr><th style="width:42%">Cosa vedi</th><th>Cosa fare</th></tr></thead>
     <tbody>
-      <tr><td><strong>Il riquadro resta nero o vuoto</strong></td><td>Su Jumpshare controlla che il file sia ancora condivisibile e non scaduto. Riapri <em>Share → Embed</em> e ricopia il codice.</td></tr>
-      <tr><td><strong>Il link non apre un file video diretto</strong></td><td>Hai incollato l'indirizzo che vedi nel browser invece del codice <strong>Embed</strong>. Torna al passo 3.</td></tr>
-      <tr><td><strong>Il video parte ma va a scatti</strong></td><td>File troppo pesante. Riesporta seguendo il punto 1.</td></tr>
-      <tr><td><strong>«Copertina auto» dà errore</strong></td><td>È previsto, non è un guasto. Trascina una foto.</td></tr>
-      <tr><td><strong>Trascino un video e lo rifiuta</strong></td><td>È voluto: i video non entrano nel sito, vanno su Jumpshare.</td></tr>
+      <tr><td><strong>«Non riesco a leggere il video su Bunny»</strong></td><td>Bunny sta ancora elaborando il video, oppure il link è sbagliato. Aspetta qualche minuto e premi <em>«Verifica link»</em>. Le proporzioni puoi anche scriverle a mano.</td></tr>
+      <tr><td><strong>Il riquadro del video resta nero</strong></td><td>Su Bunny controlla che il video abbia finito l'elaborazione e che sia nella libreria <strong>andreaonori</strong>. Ricopia il link Embed.</td></tr>
+      <tr><td><strong>Il video ha bande nere</strong></td><td>Le proporzioni non corrispondono al video: correggile (per esempio <code>4/5</code> invece di <code>16/9</code>) o premi <em>«Verifica link»</em>.</td></tr>
+      <tr><td><strong>«Link Jumpshare: il sito non li mostra più»</strong></td><td>Jumpshare non si usa più. Carica il video su Bunny e incolla il link Embed.</td></tr>
+      <tr><td><strong>Il video parte ma va a scatti</strong></td><td>Di solito è la connessione: Bunny abbassa la qualità da solo. Se succede sempre, controlla su Bunny che l'elaborazione sia finita.</td></tr>
+      <tr><td><strong>Trascino un video e lo rifiuta</strong></td><td>È voluto: i video non entrano nel sito, vanno su Bunny.</td></tr>
     </tbody>
   </table>
 
   <h3>Cosa non serve fare</h3>
   <ul>
-    <li>Non serve comprimere i video sotto i 100 MB «per farli stare nel sito»: non ci entrano comunque.</li>
-    <li>Non serve cancellare i video vecchi da Jumpshare quando li sostituisci: basta cambiare il codice nel pannello.</li>
+    <li>Non serve comprimere i video per il sito: Bunny prepara da solo le versioni per ogni schermo.</li>
+    <li>Non serve cancellare i video vecchi da Bunny quando li sostituisci: basta cambiare il link nel pannello. Su Bunny però occupano spazio: se non ti servono più, eliminali da lì.</li>
     <li>Non serve toccare nessun file di codice: tutto passa dal pannello.</li>
   </ul>
 
   <div class="box">
     <span class="lbl">Una volta sola</span>
-    <p>I passi 1–3 riguardano Jumpshare e si imparano la prima volta. Dalla seconda in poi il lavoro è: esporta, carica, copia il codice, incolla, salva. Cinque minuti.</p>
+    <p>I passi 1–3 riguardano Bunny e si imparano la prima volta. Dalla seconda in poi il lavoro è: esporta, carica, copia il link Embed, incolla, salva. Cinque minuti.</p>
   </div>
 </section>
 
@@ -373,7 +400,8 @@
   <table>
     <thead><tr><th style="width:26%">Sezione</th><th style="width:20%">Proporzione</th><th>In pratica</th></tr></thead>
     <tbody>
-      <tr><td><strong>FEED</strong></td><td>4:5</td><td>Verticale, come un post Instagram</td></tr>
+      <tr><td><strong>FEED</strong> — copertina</td><td>4:5</td><td>Verticale, come un post Instagram. Una copertina animata piccola (es. 272×340) viene ingrandita a pixel netti</td></tr>
+      <tr><td><strong>Video</strong></td><td>Qualsiasi</td><td>Il player prende la forma del video: basta che le proporzioni nel pannello siano giuste</td></tr>
       <tr><td><strong>MOTION</strong></td><td>9:16</td><td>Verticale pieno, come una storia</td></tr>
       <tr><td><strong>SERIES</strong> — copertina</td><td>1:1 in cerchio</td><td>Il soggetto va al centro</td></tr>
       <tr><td><strong>SERIES</strong> — slide</td><td>9:16</td><td>Come le storie</td></tr>
@@ -397,6 +425,7 @@
   <ul>
     <li><strong>Comprimi le foto prima di caricarle.</strong> È la cosa che più incide sulla velocità del sito.</li>
     <li><strong>Compila sempre titolo, luogo e anno.</strong> Finiscono nelle descrizioni che leggono Google e gli assistenti IA: un progetto senza titolo è un progetto che non verrà mai citato.</li>
+    <li><strong>Compila CLIENT nei crediti.</strong> Compare passando col mouse sulla griglia e aiuta Google a collegare il progetto al brand.</li>
     <li><strong>Ricaricare la stessa foto ne crea una copia.</strong> Non è un problema, ma evita di farlo per abitudine.</li>
   </ul>
 </section>
@@ -410,7 +439,7 @@
     <thead><tr><th style="width:40%">Messaggio</th><th>Cosa fare</th></tr></thead>
     <tbody>
       <tr><td><strong>«…» pesa 4,2 MB: il limite dal pannello è 3 MB</strong></td><td>Comprimi la foto: lato lungo 2000 px, qualità 80.</td></tr>
-      <tr><td><strong>«…» è un video: i video non vanno caricati nel sito</strong></td><td>Caricalo su Jumpshare e incolla il codice embed. Vedi capitolo 05.</td></tr>
+      <tr><td><strong>«…» è un video: i video non vanno caricati nel sito</strong></td><td>Caricalo su Bunny Stream e incolla il link Embed. Vedi capitolo 05.</td></tr>
       <tr><td><strong>Trascina un file immagine (jpg, png, webp)</strong></td><td>Hai trascinato un file che non è una foto — spesso un PDF o un file di Photoshop.</td></tr>
       <tr><td><strong>Password errata (401)</strong></td><td>La password è cambiata mentre eri dentro. Salva quello che puoi, ricarica, rientra.</td></tr>
       <tr><td><strong>Rete non raggiungibile</strong></td><td>Manca la connessione. Le modifiche sono ancora lì: riconnettiti e ripremi <strong>Salva tutto</strong>.</td></tr>
@@ -454,7 +483,7 @@
 
   <h3>Il risultato</h3>
   <figure>
-    <img src="/scripts/guide/shots/16-sito-pubblico.jpg" alt="Il sito pubblico">
+    <img src="/scripts/guide/shots/16-sito-pubblico.jpg" alt="Il sito pubblico" style="max-width:78mm;margin:0 auto">
     <figcaption>Il sito pubblico. Quello che modifichi nel pannello è quello che compare qui.</figcaption>
   </figure>
 
