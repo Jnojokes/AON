@@ -91,11 +91,20 @@
     .wip { position: relative; margin: 40px 0 0; }
     .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
     .tile {
-        aspect-ratio: 4 / 5; background: #0a0a0a; position: relative; overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.04);
+        aspect-ratio: 4 / 5; background: transparent; position: relative; overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.07);
     }
+    /* Montaggio sfocato dei lavori sotto la scritta (WebP animata, ~3,1 MB) */
+    .wip { overflow: hidden; background: #0a0a0a; }
+    .wip-reel, .wip-reel img {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        object-fit: cover; display: block;
+    }
+    .wip-reel img { filter: brightness(0.48) saturate(0.95); transform: scale(1.04); }
+    .tiles { position: relative; z-index: 1; }
+    .wip-label { z-index: 2; text-shadow: 0 2px 24px rgba(0,0,0,0.55); }
     /* Riflesso lento che attraversa le celle: "si sta caricando" */
-    .tile::after {
+    .tile::after { display: none;
         content: ''; position: absolute; inset: 0;
         background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.045) 50%, transparent 65%);
         transform: translateX(-100%);
@@ -121,7 +130,7 @@
         font-size: clamp(34px, 7vw, 84px); line-height: 0.92;
         letter-spacing: -0.025em; text-transform: uppercase;
     }
-    .wip-label h2 .soft { color: var(--mute); }
+    .wip-label h2 .soft { color: #9a9a9a; }
     .wip-label p { margin-top: 18px; font-size: 11px; color: var(--mute); }
     /* Link al profilo: sul telefono il link https apre direttamente l'app
        Instagram se installata (universal link), altrimenti il profilo web. */
@@ -168,7 +177,7 @@
             <div>
                 <div class="eyebrow mono uline">◌ Filmmaker · Based in Milan</div>
                 <h1>Andrea Onori</h1>
-                <p class="handle mono uline">@andrea__onori · Established MMXVIII</p>
+                <p class="handle mono uline">@andrea__onori · Born MM</p>
                 <div class="ctas">
                     <a class="btn-primary" href="mailto:video@andreaonori.com?subject=Production%20enquiry">Get in touch <span aria-hidden="true">→</span></a>
                     <a class="btn-secondary" href="https://www.instagram.com/andrea__onori" rel="noopener">Instagram ↗</a>
@@ -183,6 +192,10 @@
         </nav>
 
         <section class="wip" aria-labelledby="wip-title">
+            <picture class="wip-reel" aria-hidden="true">
+                <source media="(prefers-reduced-motion: reduce)" srcset="/media/wip-reel-poster.jpg">
+                <img src="/media/wip-reel.webp" alt="" decoding="async">
+            </picture>
             <div class="tiles" aria-hidden="true">
                 <div class="tile"></div><div class="tile"></div><div class="tile"></div>
                 <div class="tile"></div><div class="tile"></div><div class="tile"></div>
