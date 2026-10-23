@@ -7,6 +7,9 @@ asset/
 *.mov
 *.MP4
 *.MOV
+# Unica eccezione: lo showreel segnaposto in testa al Feed (8 MB). Resta nel
+# repo finché i video non passano a uno storage esterno (Bunny Stream).
+!media/showreel-segnaposto.mp4
 
 # macOS
 .DS_Store

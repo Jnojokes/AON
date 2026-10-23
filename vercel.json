@@ -46,6 +46,10 @@
     {
       "source": "/admin-edits",
       "destination": "/admin-edits.html"
+    },
+    {
+      "source": "/versione1",
+      "destination": "/index"
     }
   ],
   "headers": [
@@ -73,6 +77,15 @@
         {
           "key": "X-Robots-Tag",
           "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/versione1",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
         }
       ]
     },

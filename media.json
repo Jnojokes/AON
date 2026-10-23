@@ -291,25 +291,25 @@
       "right": "ARCHIVE / 26 · VOLUME 01"
     },
     "profile": {
-      "badge": "26",
+      "badge": "",
       "eyebrow": "◌ FILM-MAKER · BASED IN MILAN",
       "nameFirst": "ANDREA",
       "nameLast": "ONORI",
       "handle": "@andrea__onori · ESTABLISHED MMXVIII",
       "disciplines": "EDITORIAL · WORKS · PERSONAL PROJECTS",
-      "siteLabel": "↗ ANDREAONORI.COM",
-      "siteUrl": "https://www.andreaonori.com/",
-      "ctaPrimary": "GET IN TOUCH",
+      "siteLabel": "",
+      "siteUrl": "",
+      "ctaPrimary": "LET'S ROLL",
       "ctaEmail": "video@andreaonori.com",
       "ctaSubject": "Production enquiry",
-      "ctaSecondary": "AVAILABLE FOR WORK"
+      "ctaSecondary": ""
     },
     "contact": {
       "tallyId": "44bVlA"
     },
     "sections": {
-      "seriesTitle": "◯ SERIES",
-      "seriesUnit": "COLLECTIONS",
+      "seriesTitle": "",
+      "seriesUnit": "",
       "tabFeed": "FEED",
       "tabMotion": "MOTION",
       "tabIndex": "INDEX",
@@ -328,7 +328,7 @@
       "format": "FORMAT",
       "prev": "← POST PREC.",
       "next": "POST SUCC. →",
-      "inquire": "INQUIRE",
+      "inquire": "LET'S ROLL",
       "inquireSubject": "Inquiry — {TITLE}",
       "carousel": "CAROUSEL",
       "video": "▶ VIDEO",
@@ -343,9 +343,14 @@
       "frame": "FRAME",
       "autoplay": "AUTOPLAY"
     },
+    "feedReel": {
+      "video": "media/showreel-segnaposto.mp4",
+      "poster": "media/showreel-poster.jpg",
+      "label": "SHOWREEL"
+    },
     "footer": {
       "name": "ANDREA ONORI",
-      "studioLabel": "STUDIO",
+      "studioLabel": "BASED",
       "studioValue": "MILAN — IT",
       "emailLabel": "EMAIL",
       "emailValue": "video@andreaonori.com",
