@@ -942,7 +942,6 @@ import * as ReactDOM from 'react-dom/client';
                 <div className="grid grid-cols-3 feed-grid">
                     {images.map((img, i) => {
                         const slides = slidesOf(img);
-                        const nVideo = slides.filter(s => s.video).length;
                         return (
                         <div key={i} className="feed-item" style={{ aspectRatio: '4 / 5' }} role="button" tabIndex={0} aria-label={altOf(img)} onClick={() => onClick(i, images)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(i, images); } }}>
                             <div className="cell-badges">
@@ -953,8 +952,11 @@ import * as ReactDOM from 'react-dom/client';
                                 )}
                                 {img.ai && <span className="ai-mark">{S().post.aiShort}</span>}
                             </div>
+                            {/* Niente simbolo play sulle celle del feed: le copertine
+                                sono disegnate (logo del brand sopra) e il simbolo le
+                                coprirebbe. Che il post contenga un video lo dice la
+                                scheda ("▶ VIDEO"). Nella tab Motion il simbolo resta. */}
                             <GridMedia image={firstImageOf(slides)} video={firstVideoOf(slides)} alt={altOf(img)} />
-                            {nVideo > 0 && <PlayBadge />}
                             {/* In hover: titolo a sinistra, cliente a destra (senza
                                 cliente, o se il titolo lo dice gia', l'anno).
                                 Niente luogo. */}
