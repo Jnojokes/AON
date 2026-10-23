@@ -2,15 +2,45 @@
   "feed": [
     {
       "url": "media/santoni-01.webp",
+      "cover": "media/covers/ypsum.webp",
+      "coverPoster": "media/covers/ypsum-poster.jpg",
+      "logo": "scripts/guide/fixtures/logo-esempio.svg",
       "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/1ba07f8f-8f02-461d-94f2-7d81950f154f/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/1ba07f8f-8f02-461d-94f2-7d81950f154f",
+          "title": "",
+          "ratio": "16/9"
+        },
         "media/santoni-01.webp",
-        "media/santoni-02.webp",
-        "media/santoni-03.webp"
+        "media/santoni-02.webp"
       ],
       "title": "PROGETTO ESEMPIO",
       "year": "2026",
       "loc": "MILANO",
-      "film": "DIGITAL — BACKSTAGE"
+      "film": "DIGITAL — BACKSTAGE",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Brand Esempio"
+        },
+        {
+          "label": "YEAR",
+          "value": "2026"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Campaign"
+        },
+        {
+          "label": "DIRECTION",
+          "value": "Andrea Onori"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": ""
+        }
+      ]
     },
     {
       "url": "media/greta-01.webp",
@@ -35,7 +65,12 @@
     }
   ],
   "motion": [
-    "media/story-greta.webp",
+    {
+      "poster": "media/story-greta.webp",
+      "video": "https://player.mediadelivery.net/embed/788231/2a38efe0-f8f0-4c23-b340-bd0b6bd18155",
+      "title": "REEL ESEMPIO",
+      "ratio": "9/16"
+    },
     "media/story-ypsum.webp",
     "media/story-mugshot-01.webp"
   ],
@@ -192,6 +227,11 @@
       "author": "Andrea Onori",
       "avatarAlt": "Andrea Onori, fashion photographer and filmmaker based in Milan",
       "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery.\nHe is available for commissions."
+    },
+    "feedReel": {
+      "video": "media/showreel-segnaposto.mp4",
+      "poster": "media/showreel-poster.jpg",
+      "label": "SHOWREEL"
     }
   },
   "updatedAt": "2026-09-01T10:00:00.000Z"
