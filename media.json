@@ -13,10 +13,32 @@
         "media/greta-03.webp",
         "media/greta-04.webp"
       ],
-      "title": "GRETA BOLDINI",
+      "title": "GRETA'S GARDEN",
       "year": "2025",
       "loc": "MILANO",
-      "film": "EDITORIAL — CAMPAIGN"
+      "film": "EDITORIAL — CAMPAIGN",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Greta Boldini"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": ""
+        },
+        {
+          "label": "DIRECTION",
+          "value": "Raffaele Cerulo & Jasmine Jessica De Pretto"
+        },
+        {
+          "label": "SET DESIGN",
+          "value": "Alexander Flagella"
+        }
+      ]
     },
     {
       "url": "media/santoni-bto-4-1-1-mqunjfp4.webp",
@@ -28,10 +50,36 @@
           "title": ""
         }
       ],
-      "title": "SANTONI - Back To Office",
+      "title": "BACK TO OFFICE",
       "year": "2025",
       "loc": "MILANO",
-      "film": ""
+      "film": "",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Santoni"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Campaign"
+        },
+        {
+          "label": "ART DIRECTION",
+          "value": "Paolo Santosuosso // Socialrise"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "Silvia Gesuelli // BlackFrog"
+        },
+        {
+          "label": "1AC",
+          "value": "@paq"
+        }
+      ]
     },
     {
       "url": "media/fabiana-01.webp",
@@ -50,10 +98,32 @@
           "title": ""
         }
       ],
-      "title": "FABIANA FILIPPI - Pizzo Cardi Design Week",
+      "title": "VETRINA",
       "year": "2025",
       "loc": "MILANO",
-      "film": "VETRINA — DW"
+      "film": "VETRINA — DW",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Fabiana Filippi"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Lookbook"
+        },
+        {
+          "label": "ART DIRECTION",
+          "value": "SocialRise"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "BlackFrog"
+        }
+      ]
     },
     {
       "url": "media/okgiorgio-01.webp",
@@ -65,7 +135,29 @@
       "title": "OK GIORGIO — DJ SET",
       "year": "2025",
       "loc": "GINOSTRA",
-      "film": "DOC — LIVE"
+      "film": "DOC — LIVE",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Est Radio"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Documentary"
+        },
+        {
+          "label": "WRITTEN BY",
+          "value": "Carlo Sabatucci"
+        },
+        {
+          "label": "SOUND",
+          "value": "Francesco Ciccarelli"
+        }
+      ]
     },
     {
       "url": "media/ypsum-01.webp",
@@ -77,14 +169,62 @@
       "title": "YPSUM",
       "year": "2025",
       "loc": "MILANO",
-      "film": "CAMPAIGN — SCREEN"
+      "film": "CAMPAIGN — SCREEN",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Ypsum"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": ""
+        },
+        {
+          "label": "CRAFTED BY",
+          "value": "Andrea Onori & Pasquale Rosa"
+        },
+        {
+          "label": "1AD",
+          "value": "Gabriele Vanin"
+        },
+        {
+          "label": "SET DESIGN",
+          "value": "Martina Sesso"
+        }
+      ]
     },
     {
       "url": "media/mugshot-backstage.webp",
-      "title": "MUGSHOT",
+      "title": "IL CASO EST RADIO",
       "year": "2025",
       "loc": "MILANO",
-      "film": "BACKSTAGE — 35MM"
+      "film": "BACKSTAGE — 35MM",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Est Radio"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Campaign"
+        },
+        {
+          "label": "WRITTEN BY",
+          "value": "Carlo Sabatucci & Andrea Scotto Di Carlo"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "Bianca Rovati, Viola Cecconello, Enrico Sorbini"
+        }
+      ]
     },
     {
       "url": "media/santoni-09.webp",
@@ -94,10 +234,36 @@
         "media/santoni-11.webp",
         "media/santoni-12.webp"
       ],
-      "title": "SANTONI BTO",
+      "title": "BACK TO OFFICE",
       "year": "2025",
       "loc": "MILANO",
-      "film": "DIGITAL — STUDIO"
+      "film": "DIGITAL — STUDIO",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Santoni"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Campaign"
+        },
+        {
+          "label": "ART DIRECTION",
+          "value": "Paolo Santosuosso // Socialrise"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "Silvia Gesuelli // BlackFrog"
+        },
+        {
+          "label": "1AC",
+          "value": "@paq"
+        }
+      ]
     },
     {
       "url": "media/greta-05.webp",
@@ -107,10 +273,32 @@
         "media/greta-07.webp",
         "media/greta-08.webp"
       ],
-      "title": "GRETA BOLDINI",
+      "title": "GRETA'S GARDEN",
       "year": "2025",
       "loc": "MILANO",
-      "film": "EDITORIAL — PORTRAIT"
+      "film": "EDITORIAL — PORTRAIT",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Greta Boldini"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": ""
+        },
+        {
+          "label": "DIRECTION",
+          "value": "Raffaele Cerulo & Jasmine Jessica De Pretto"
+        },
+        {
+          "label": "SET DESIGN",
+          "value": "Alexander Flagella"
+        }
+      ]
     },
     {
       "url": "media/okgiorgio-06.webp",
@@ -121,14 +309,58 @@
       "title": "OK GIORGIO — GROTTA",
       "year": "2025",
       "loc": "STROMBOLI",
-      "film": "DOC — LIVE"
+      "film": "DOC — LIVE",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Est Radio"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Documentary"
+        },
+        {
+          "label": "WRITTEN BY",
+          "value": "Carlo Sabatucci"
+        },
+        {
+          "label": "SOUND",
+          "value": "Francesco Ciccarelli"
+        }
+      ]
     },
     {
       "url": "media/fabiana-03.webp",
-      "title": "FABIANA FILIPPI",
+      "title": "VETRINA",
       "year": "2025",
       "loc": "MILANO",
-      "film": "VETRINA — DW"
+      "film": "VETRINA — DW",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Fabiana Filippi"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Lookbook"
+        },
+        {
+          "label": "ART DIRECTION",
+          "value": "SocialRise"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "BlackFrog"
+        }
+      ]
     },
     {
       "url": "media/santoni-14.webp",
@@ -138,17 +370,65 @@
         "media/santoni-16.webp",
         "media/santoni-17.webp"
       ],
-      "title": "SANTONI BTO",
+      "title": "BACK TO OFFICE",
       "year": "2025",
       "loc": "MILANO",
-      "film": "DIGITAL — DETAIL"
+      "film": "DIGITAL — DETAIL",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Santoni"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Campaign"
+        },
+        {
+          "label": "ART DIRECTION",
+          "value": "Paolo Santosuosso // Socialrise"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "Silvia Gesuelli // BlackFrog"
+        },
+        {
+          "label": "1AC",
+          "value": "@paq"
+        }
+      ]
     },
     {
       "url": "media/okgiorgio-07.webp",
       "title": "OK GIORGIO — VULCANO",
       "year": "2025",
       "loc": "STROMBOLI",
-      "film": "DOC — LIVE"
+      "film": "DOC — LIVE",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Est Radio"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Documentary"
+        },
+        {
+          "label": "WRITTEN BY",
+          "value": "Carlo Sabatucci"
+        },
+        {
+          "label": "SOUND",
+          "value": "Francesco Ciccarelli"
+        }
+      ]
     }
   ],
   "motion": [
@@ -295,7 +575,7 @@
       "eyebrow": "◌ FILM-MAKER · BASED IN MILAN",
       "nameFirst": "ANDREA",
       "nameLast": "ONORI",
-      "handle": "@andrea__onori · ESTABLISHED MMXVIII",
+      "handle": "@andrea__onori · BORN MM",
       "disciplines": "EDITORIAL · WORKS · PERSONAL PROJECTS",
       "siteLabel": "",
       "siteUrl": "",

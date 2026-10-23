@@ -93,10 +93,35 @@ const abs = (p) => {
   return SITE.origin + '/' + String(p).replace(/^\.?\//, '');
 };
 
-/** Stessa forma dell'helper altOf in index.html — gli alt devono coincidere
+/** Valore di una voce dei crediti del post (CLIENT, YEAR…), come in src/app.jsx.
+ *  I crediti sono coppie etichetta/valore libere scritte dal pannello. */
+const creditValue = (p, label) => {
+  const list = p && Array.isArray(p.credits) ? p.credits : [];
+  const hit = list.find(
+    (c) => c && String(c.value || '').trim() && String(c.label || '').trim().toUpperCase() === label
+  );
+  return hit ? String(hit.value).trim() : '';
+};
+
+/** Il cliente del post, se il titolo non lo dice gia'. Dai crediti in poi il
+ *  titolo e' il nome del video ("BACK TO OFFICE"): senza questo "Santoni"
+ *  sparirebbe dagli alt e dai dati strutturati. */
+const brandOf = (p) => {
+  const client = creditValue(p, 'CLIENT');
+  return client && !String(p.title || '').toLowerCase().includes(client.toLowerCase()) ? client : '';
+};
+
+/** Stessa forma dell'helper altOf in src/app.jsx — gli alt devono coincidere
  *  tra versione statica e versione React. */
 const altOf = (p) =>
-  [p.title, p.film, p.location || p.loc, p.year].filter(Boolean).join(' — ');
+  [p.title, brandOf(p), p.film, p.location || p.loc, p.year].filter(Boolean).join(' — ');
+
+/** Il cliente come Brand nei dati strutturati (proprieta' "about"): l'opera ha
+ *  il nome del video, il marchio per cui e' stata fatta resta leggibile. */
+const aboutBrand = (entries) => {
+  const client = entries.map((e) => creditValue(e, 'CLIENT')).find(Boolean);
+  return client ? { about: { '@type': 'Brand', name: client } } : {};
+};
 
 const VIDEO_RE = /\.(mp4|mov|webm|m4v|m3u8)(\?|#|$)/i;
 // Come in src/app.jsx: i link Jumpshare non finiscono in .mp4, e senza questo
@@ -473,6 +498,7 @@ for (const title of projectTitles) {
     '@type': 'Photograph',
     '@id': `${SITE.origin}/work/${slugify(title)}#work`,
     name: title,
+    ...aboutBrand(entries),
     // Solo creator, non copyrightHolder: la paternita' dello scatto e' sempre di
     // Andrea, la titolarita' dei diritti economici sul lavoro commissionato e'
     // spesso ceduta al brand per contratto. Dichiararla a macchina su ogni opera
@@ -620,7 +646,8 @@ const projectPages = projectTitles
           `For licensing, full production credits or commissions, contact ${SITE.email}.`,
         ].filter(Boolean);
 
-    return { title, slug, images, year, loc, film, ai, paragraphs, hasDesc: Boolean(desc) };
+    const brand = entries.map(brandOf).find(Boolean) || '';
+    return { title, slug, images, year, loc, film, ai, paragraphs, hasDesc: Boolean(desc), brand, about: aboutBrand(entries) };
   })
   .filter(Boolean);
 
@@ -638,6 +665,7 @@ const projectPageHtml = (pg, others = []) => {
       '@type': 'CreativeWork',
       '@id': `${url}#work`,
       name: pg.title,
+      ...pg.about,
       url,
       description: testo,
       creator: { '@id': `${SITE.origin}/#person` },
@@ -727,7 +755,7 @@ ${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }, null, 2)
 ${pg.paragraphs.map((t) => `    <p>${esc(t)}</p>`).join('\n')}
   </div>
   <div class="grid">
-${pg.images.map((src, i) => `    <img src="${esc(abs(src))}" alt="${esc(pg.title)}${pg.film ? ' — ' + esc(pg.film) : ''}${pg.loc ? ' — ' + esc(pg.loc) : ''}${pg.year ? ' — ' + esc(pg.year) : ''}" loading="${i < 2 ? 'eager' : 'lazy'}" decoding="async">`).join('\n')}
+${pg.images.map((src, i) => `    <img src="${esc(abs(src))}" alt="${esc(pg.title)}${pg.brand ? ' — ' + esc(pg.brand) : ''}${pg.film ? ' — ' + esc(pg.film) : ''}${pg.loc ? ' — ' + esc(pg.loc) : ''}${pg.year ? ' — ' + esc(pg.year) : ''}" loading="${i < 2 ? 'eager' : 'lazy'}" decoding="async">`).join('\n')}
   </div>
   ${others.length ? `<nav class="altri">
     <div class="mono" style="font-size:10px;color:var(--mute);margin-bottom:10px">Altri progetti</div>

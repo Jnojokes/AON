@@ -838,6 +838,18 @@
             position: absolute; left: 0; right: 0; bottom: -28px;
             display: flex; justify-content: center; gap: 6px;
         }
+        /* Crediti sotto il titolo: etichetta grigia, valore bianco, mono, come
+           le vecchie righe LOCATION / YEAR / FORMAT. Le etichette sono libere
+           (dal pannello), quindi i valori si allineano in colonna; un'etichetta
+           lunghissima va a capo invece di schiacciare i valori. */
+        .post-credits {
+            display: grid;
+            grid-template-columns: fit-content(50%) minmax(0, 1fr);
+            column-gap: 16px;
+            row-gap: 4px;
+            font-size: 10px;
+        }
+        .post-credits dt { color: var(--mute); }
 
         /* Story viewer */
         .story-viewer {

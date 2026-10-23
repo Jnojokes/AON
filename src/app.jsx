@@ -75,7 +75,7 @@ import * as ReactDOM from 'react-dom/client';
                 empty: 'NESSUN MEDIA IN {SECTION} — aggiungilo da /admin-edits',
             },
             post: {
-                location: 'LOCATION',
+                // Etichette usate solo dai post senza crediti (vedi PostCredits).
                 year: 'YEAR',
                 format: 'FORMAT',
                 prev: '← POST PREC.',
@@ -274,7 +274,29 @@ import * as ReactDOM from 'react-dom/client';
         };
         const firstImageOf = (slides) => (slides.find(s => s.image) || {}).image || '';
         const firstVideoOf = (slides) => (slides.find(s => s.video) || {}).video || '';
-        const altOf = (p) => [p.title, p.film, p.location || p.loc, p.year].filter(Boolean).join(' — ');
+        // Crediti di un post: coppie etichetta/valore libere, dal pannello (card
+        // del feed), nell'ordine scelto da Andrea. Le voci col valore vuoto non
+        // si mostrano. null = il post non ha crediti (post creati prima dei
+        // crediti): chi lo usa ricade su anno e formato.
+        const creditsOf = (p) => (p && Array.isArray(p.credits))
+            ? p.credits.filter((c) => c && String(c.value || '').trim())
+            : null;
+        // Valore di una voce dei crediti cercata per etichetta (CLIENT, YEAR…).
+        const creditValue = (p, label) => {
+            const hit = (creditsOf(p) || []).find((c) => String(c.label || '').trim().toUpperCase() === label);
+            return hit ? String(hit.value).trim() : '';
+        };
+        // Il cliente (voce CLIENT), se il titolo non lo dice gia': "YPSUM" con
+        // cliente Ypsum non ha bisogno di ripeterlo.
+        const brandOf = (p) => {
+            const client = creditValue(p, 'CLIENT');
+            return client && !String(p.title || '').toLowerCase().includes(client.toLowerCase()) ? client : '';
+        };
+        // Dalla versione con i crediti il titolo e' il nome del video ("BACK TO
+        // OFFICE"): il cliente entra nell'alt subito dopo, cosi' "Santoni" resta
+        // leggibile per la ricerca immagini e per chi usa uno screen reader.
+        // Deve restare identico ad altOf in scripts/prerender.mjs.
+        const altOf = (p) => [p.title, brandOf(p), p.film, p.location || p.loc, p.year].filter(Boolean).join(' — ');
 
         // Alt completo per le immagini: aggiunge l'autore. È la singola modifica
         // più utile agli alt per la ricerca immagini e per come i modelli
@@ -933,14 +955,13 @@ import * as ReactDOM from 'react-dom/client';
                             </div>
                             <GridMedia image={firstImageOf(slides)} video={firstVideoOf(slides)} alt={altOf(img)} />
                             {nVideo > 0 && <PlayBadge />}
+                            {/* In hover: titolo a sinistra, cliente a destra (senza
+                                cliente, o se il titolo lo dice gia', l'anno).
+                                Niente luogo. */}
                             <div className="feed-meta">
-                                <div>
-                                    <div style={{ color: 'var(--mute)', fontSize: '9px', marginBottom: '3px' }}>{img.film}</div>
-                                    <div style={{ fontSize: '11px' }}>{img.title}</div>
-                                </div>
+                                <div style={{ fontSize: '11px' }}>{img.title}</div>
                                 <div style={{ textAlign: 'right', color: 'var(--mute)' }}>
-                                    <div>{img.loc}</div>
-                                    <div>{img.year}</div>
+                                    {brandOf(img) || creditValue(img, 'YEAR') || img.year}
                                 </div>
                             </div>
                         </div>
@@ -1123,6 +1144,28 @@ import * as ReactDOM from 'react-dom/client';
             );
         };
 
+        // Crediti sotto il titolo della scheda: etichetta grigia, valore bianco,
+        // mono, i valori in colonna (.post-credits in index.html). Un post senza
+        // crediti mostra anno e formato dai suoi campi, come prima ma senza il
+        // luogo.
+        const PostCredits = ({ post }) => {
+            const rows = creditsOf(post) || [
+                { label: S().post.year, value: post.year },
+                { label: S().post.format, value: post.film },
+            ].filter((r) => String(r.value || '').trim());
+            if (!rows.length) return null;
+            return (
+                <dl className="post-credits mono uline">
+                    {rows.map((r, i) => (
+                        <React.Fragment key={i}>
+                            <dt>{r.label}</dt>
+                            <dd>{r.value}</dd>
+                        </React.Fragment>
+                    ))}
+                </dl>
+            );
+        };
+
         // Modal post — carosello di foto E video all'interno di un singolo post
         const PostModal = ({ idx, images, onClose, onNext, onPrev }) => {
             const [formAperto, setFormAperto] = useState(false);
@@ -1191,11 +1234,7 @@ import * as ReactDOM from 'react-dom/client';
                             {/* Dicitura "Contenuto Enhanced con AI": compare solo
                                 se la spunta è attiva sul post nel pannello. */}
                             {post.ai && <p className="ai-tag">{S().post.aiLabel}</p>}
-                            <div className="mono uline space-y-1" style={{ fontSize: '10px' }}>
-                                <p><span style={{ color: 'var(--mute)' }}>{S().post.location}&nbsp;&nbsp;</span>{post.location || post.loc || '—'}</p>
-                                <p><span style={{ color: 'var(--mute)' }}>{S().post.year}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>{post.year || '—'}</p>
-                                <p><span style={{ color: 'var(--mute)' }}>{S().post.format}&nbsp;&nbsp;&nbsp;&nbsp;</span>{post.film || '—'}</p>
-                            </div>
+                            <PostCredits post={post} />
                             <div className="flex gap-6 pt-4">
                                 <button onClick={onPrev} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>{S().post.prev}</button>
                                 <button onClick={onNext} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>{S().post.next}</button>

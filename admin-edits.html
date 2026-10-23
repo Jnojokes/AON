@@ -149,6 +149,11 @@
   .row-mq{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) auto;gap:8px;align-items:center;}
   .row-mq + .row-mq{margin-top:8px;}
   @media (max-width:640px){ .row-mq{grid-template-columns:1fr;} }
+  /* Crediti dei post: come le righe del marquee, ma etichetta e valore alla
+     pari, perche' le etichette sono lunghe (ART DIRECTION, PRODUCTION…). */
+  .row-cr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center;}
+  .row-cr + .row-cr{margin-top:8px;}
+  @media (max-width:640px){ .row-cr{grid-template-columns:1fr;} }
 
   @keyframes spin{to{transform:rotate(360deg);}}
   .spin{animation:spin .8s linear infinite;}

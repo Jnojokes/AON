@@ -297,16 +297,21 @@ function move(arr, from, to){
   return copy;
 }
 
+// Voci dei crediti con cui nasce un post nuovo. Sono vuote, quindi sul sito non
+// si vedono finché non le compili.
+const DEFAULT_CREDITS = () =>
+  ["CLIENT", "YEAR", "FORMAT", "ART DIRECTION", "PRODUCTION"].map(label => ({ label, value:"" }));
+
 // Default empty shapes per section
 const BLANKS = {
-  feed:   () => ({ url:"", images:[], title:"NUOVO", year:"2025", loc:"", film:"" }),
+  feed:   () => ({ url:"", images:[], title:"NUOVO", year:"2025", loc:"", film:"", credits: DEFAULT_CREDITS() }),
   motion: () => "",
   series: () => ({ id:"nuovo", label:"NUOVA SERIE", image:"", images:[] }),
   index:  () => ({ num:"00", title:"NUOVO", location:"", year:"2025", image:"" }),
 };
 
 const SECTIONS = [
-  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). Trascina le foto per creare un carosello; la 1ª è la copertina. Con “+ Link video” aggiungi un film ospitato su Jumpshare dentro il post." },
+  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). Trascina le foto per creare un carosello; la 1ª è la copertina. Con “+ Link video” aggiungi un film ospitato su Jumpshare dentro il post. Il titolo è il nome del video; sotto, nella scheda, compaiono i Crediti: etichetta e valore liberi, nell'ordine che scegli, e le voci vuote non si vedono. Il valore di CLIENT compare anche passando col mouse sulla griglia. Anno, luogo e formato non si vedono nella scheda: servono a Google e alle pagine dei progetti." },
   { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link al video su Jumpshare: il video parte solo al click, quindi la griglia resta veloce." },
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
@@ -376,9 +381,8 @@ const SETTINGS_SCHEMA = [
     title: "Scheda del progetto",
     hint: "Le etichette dentro la finestra che si apre cliccando una foto.",
     fields: [
-      ["location", "Etichetta luogo"],
-      ["year",     "Etichetta anno"],
-      ["format",   "Etichetta formato"],
+      ["year",     "Etichetta anno (post senza crediti)"],
+      ["format",   "Etichetta formato (post senza crediti)"],
       ["prev",     "Pulsante precedente"],
       ["next",     "Pulsante successivo"],
       ["inquire",  "Pulsante contatto"],
@@ -859,6 +863,45 @@ function MarqueeEditor({ items, onChange }){
   );
 }
 
+// ── Crediti di un post del feed ─────────────────────────────────────────────
+// Coppie etichetta/valore libere, nell'ordine scelto: sul sito compaiono sotto
+// il titolo, nella scheda del progetto. Stessa logica della barra scorrevole.
+// Una voce col valore vuoto resta qui, pronta da compilare, ma non si vede.
+function CreditsEditor({ items, onChange }){
+  const list = Array.isArray(items) ? items : [];
+  const set = (i, k, v) => onChange(list.map((it, j) => j === i ? { ...it, [k]: v } : it));
+  return (
+    <div>
+      <label className="lbl">Crediti · nella scheda, sotto il titolo · le voci vuote non si vedono</label>
+      {!Array.isArray(items) && (
+        <p className="mono" style={{fontSize:10,color:"var(--mute)",margin:"2px 0 8px",lineHeight:1.6}}>
+          Nessun credito: la scheda mostra anno e formato presi dai campi qui sotto.
+        </p>
+      )}
+      {list.map((it, i) => (
+        <div className="row-cr" key={i}>
+          <input className="field sm mono" value={(it && it.label) || ""} placeholder="ETICHETTA"
+            onChange={e => set(i, "label", e.target.value)} />
+          <input className="field sm" value={(it && it.value) || ""} placeholder="Valore"
+            onChange={e => set(i, "value", e.target.value)} />
+          <div style={{display:"flex",gap:4}}>
+            <button className="btn btn-ghost btn-xs" onClick={() => onChange(move(list, i, i-1))} disabled={i===0} title="Su">↑</button>
+            <button className="btn btn-ghost btn-xs" onClick={() => onChange(move(list, i, i+1))} disabled={i===list.length-1} title="Giù">↓</button>
+            <button className="btn btn-ghost btn-xs" style={{color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}}
+              onClick={() => onChange(list.filter((_, j) => j !== i))} title="Elimina">✕</button>
+          </div>
+        </div>
+      ))}
+      <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
+        <button className="btn btn-ghost btn-xs" onClick={() => onChange(list.concat([{ label:"", value:"" }]))}>+ Aggiungi voce</button>
+        {list.length === 0 && (
+          <button className="btn btn-ghost btn-xs" onClick={() => onChange(DEFAULT_CREDITS())}>Usa le voci predefinite</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Gruppo di campi testuali ────────────────────────────────────────────────
 function TextGroup({ group, values, onChange }){
   const v = values || {};
@@ -990,7 +1033,7 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
   const set = (k, v) => onChange({ ...item, [k]: v });
 
   const fieldsFor = {
-    feed:   [["title","Titolo"],["year","Anno"],["loc","Luogo"],["film","Pellicola / Formato"]],
+    feed:   [["title","Titolo · nome del video"],["year","Anno · per Google"],["loc","Luogo · per Google"],["film","Pellicola / Formato · per Google"]],
     series: [["label","Etichetta"],["id","ID (slug)"]],
     index:  [["num","N."],["title","Titolo"],["location","Luogo"],["year","Anno"]],
   }[section] || [];
@@ -1031,10 +1074,16 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
         <ImageField value={item.image} password={password} onChange={(v)=>set("image",v)} onStatus={onStatus} allowUrl />
       )}
       {fieldsFor.map(([k,lbl]) => (
-        <div key={k}>
-          <label className="lbl">{lbl}</label>
-          <input className="field" value={item[k] || ""} onChange={e=>set(k,e.target.value)} />
-        </div>
+        <React.Fragment key={k}>
+          <div>
+            <label className="lbl">{lbl}</label>
+            <input className="field" value={item[k] || ""} onChange={e=>set(k,e.target.value)} />
+          </div>
+          {/* I crediti stanno subito sotto il titolo, come nella scheda sul sito. */}
+          {section === "feed" && k === "title" && (
+            <CreditsEditor items={item.credits} onChange={(v)=>set("credits", v)} />
+          )}
+        </React.Fragment>
       ))}
       {/* Descrizione del progetto. Alimenta la pagina dedicata /work/<progetto>,
           che e' l'unico posto del sito con testo abbastanza lungo da poter
