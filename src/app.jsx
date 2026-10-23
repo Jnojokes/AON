@@ -273,6 +273,11 @@ import * as ReactDOM from 'react-dom/client';
             return slides;
         };
         const firstImageOf = (slides) => (slides.find(s => s.image) || {}).image || '';
+        // Prima FOTO del carosello: una slide video non conta, anche se ha la sua
+        // copertina (la miniatura del video). E' l'immagine della cella quando
+        // il post non ha una Copertina propria; un post fatto solo di video
+        // ricade sulla copertina del video.
+        const firstPhotoOf = (slides) => (slides.find(s => s.image && !s.video) || {}).image || firstImageOf(slides);
         const firstVideoOf = (slides) => (slides.find(s => s.video) || {}).video || '';
         // Crediti di un post: coppie etichetta/valore libere, dal pannello (card
         // del feed), nell'ordine scelto da Andrea. Le voci col valore vuoto non
@@ -896,6 +901,40 @@ import * as ReactDOM from 'react-dom/client';
                     : <div style={{ width: '100%', height: '100%', background: '#0d0d0d' }} />
         );
 
+        // Copertina della cella (campo "Copertina" del pannello), separata dal
+        // carosello: spesso una WebP animata lo-fi piccola (272×340). Quando il
+        // browser deve ingrandirla prende la classe .pixel, cioe' pixel netti
+        // invece della sfocatura; una foto grande, che viene rimpicciolita,
+        // resta morbida. Il confronto e' in pixel reali dello schermo, quindi
+        // vale anche su un telefono che a 375px ha tre pixel per punto.
+        // Chi ha chiesto al sistema meno movimento vede il fermo immagine
+        // (coverPoster), se c'e'.
+        const CoverImg = ({ src, still, alt }) => {
+            const ref = useRef(null);
+            const [pixel, setPixel] = useState(false);
+            const misura = () => {
+                const el = ref.current;
+                if (!el || !el.naturalWidth || !el.clientWidth) return;
+                const scala = Math.max(el.clientWidth / el.naturalWidth, el.clientHeight / el.naturalHeight)
+                    * (window.devicePixelRatio || 1);
+                setPixel(scala > 1);
+            };
+            useEffect(() => {
+                const el = ref.current;
+                if (!el || typeof ResizeObserver === 'undefined') return;
+                const ro = new ResizeObserver(misura);
+                ro.observe(el);
+                return () => ro.disconnect();
+            }, []);
+            return (
+                <picture>
+                    {still && <source media="(prefers-reduced-motion: reduce)" srcSet={still} />}
+                    <img ref={ref} src={src} alt={alt} className={pixel ? 'pixel' : undefined}
+                        loading="lazy" decoding="async" onLoad={misura} />
+                </picture>
+            );
+        };
+
         // Showreel in testa al Feed: video a tutta larghezza, muto, in loop
         // (settings.feedReel, dal pannello). Serve un file video diretto: un
         // link Jumpshare e' una pagina da incorporare e un <video> non sa
@@ -944,19 +983,24 @@ import * as ReactDOM from 'react-dom/client';
                         const slides = slidesOf(img);
                         return (
                         <div key={i} className="feed-item" style={{ aspectRatio: '4 / 5' }} role="button" tabIndex={0} aria-label={altOf(img)} onClick={() => onClick(i, images)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(i, images); } }}>
-                            <div className="cell-badges">
-                                {slides.length > 1 && (
-                                    <span className="carousel-badge" title={slides.length + ' media'}>
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"><rect x="8" y="3" width="13" height="13" rx="1.5"></rect><path d="M3 8v11a2 2 0 0 0 2 2h11"></path></svg>
-                                    </span>
-                                )}
-                                {img.ai && <span className="ai-mark">{S().post.aiShort}</span>}
-                            </div>
-                            {/* Niente simbolo play sulle celle del feed: le copertine
-                                sono disegnate (logo del brand sopra) e il simbolo le
-                                coprirebbe. Che il post contenga un video lo dice la
-                                scheda ("▶ VIDEO"). Nella tab Motion il simbolo resta. */}
-                            <GridMedia image={firstImageOf(slides)} video={firstVideoOf(slides)} alt={altOf(img)} />
+                            {/* Celle pulite: niente simbolo play ne' icona del
+                                carosello, le copertine sono disegnate e le
+                                coprirebbero. Che il post abbia piu' slide o un
+                                video lo dice la scheda. Resta solo il marchio AI,
+                                che e' una dichiarazione. Nella tab Motion il
+                                simbolo play resta. */}
+                            {img.ai && (
+                                <div className="cell-badges">
+                                    <span className="ai-mark">{S().post.aiShort}</span>
+                                </div>
+                            )}
+                            {img.cover
+                                ? <CoverImg src={img.cover} still={img.coverPoster} alt={altOf(img)} />
+                                : <GridMedia image={firstPhotoOf(slides)} video={firstVideoOf(slides)} alt={altOf(img)} />}
+                            {/* Logo del brand sopra la copertina: decorativo per chi
+                                usa uno screen reader, il cliente e' gia' nell'etichetta
+                                della cella. */}
+                            {img.logo && <img className="feed-logo" src={img.logo} alt="" loading="lazy" decoding="async" />}
                             {/* In hover: titolo a sinistra, cliente a destra (senza
                                 cliente, o se il titolo lo dice gia', l'anno).
                                 Niente luogo. */}
@@ -1346,9 +1390,10 @@ import * as ReactDOM from 'react-dom/client';
 
         // Showreel — autoplay cross-fade reel, opens from avatar
         const ShowreelModal = ({ onClose }) => {
-            // Solo copertine: lo showreel è un cross-fade di immagini, non di video.
+            // Solo foto: lo showreel è un cross-fade di immagini, non di video
+            // (ne' delle copertine lo-fi della griglia, troppo piccole qui).
             const slides = (M().feed && M().feed.length)
-                ? M().feed.map(f => firstImageOf(slidesOf(f))).filter(Boolean).slice(0, 6)
+                ? M().feed.map(f => firstPhotoOf(slidesOf(f))).filter(Boolean).slice(0, 6)
                 : [];
             const [cur, setCur] = useState(0);
             const [progress, setProgress] = useState(0);

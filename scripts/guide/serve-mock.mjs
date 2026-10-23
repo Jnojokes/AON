@@ -43,6 +43,8 @@ const TYPES = {
 
 // Le immagini caricate durante la cattura restano qui, in memoria: il punto e'
 // che il pannello si comporti in modo realistico, non che il file sopravviva.
+// Il server le serve al loro percorso, cosi' l'anteprima del pannello mostra
+// il file vero (una WebP animata resta animata) e su disco non si scrive nulla.
 const uploads = new Map();
 
 function readBody(req) {
@@ -112,7 +114,10 @@ const server = http.createServer(async (req, res) => {
     if (body.password !== DEMO_PASSWORD) { res.writeHead(401).end(JSON.stringify({ error: "Non autorizzato" })); return; }
     if (body.action === "upload") {
       const name = `media/demo-${uploads.size + 1}-${String(body.filename || "foto.jpg").replace(/[^a-z0-9.]+/gi, "-").toLowerCase()}`;
-      uploads.set(name, true);
+      let b64 = String(body.contentBase64 || "");
+      const comma = b64.indexOf(",");
+      if (b64.startsWith("data:") && comma >= 0) b64 = b64.slice(comma + 1);
+      uploads.set(name, Buffer.from(b64, "base64"));
       res.writeHead(200).end(JSON.stringify({ ok: true, path: name })); return;
     }
     if (body.action === "save") { res.writeHead(200).end(JSON.stringify({ ok: true })); return; }
@@ -126,6 +131,17 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { "Content-Type": TYPES[".json"], "Cache-Control": "no-store" });
       res.end(fs.readFileSync(fx)); return;
     }
+  }
+
+  const caricato = uploads.get(pathname.replace(/^\/+/, ""));
+  if (caricato) {
+    res.writeHead(200, {
+      "Content-Type": TYPES[path.extname(pathname).toLowerCase()] || "application/octet-stream",
+      "Cache-Control": "no-store",
+      "Content-Length": caricato.length,
+    });
+    res.end(caricato);
+    return;
   }
 
   if (rewrites.has(pathname)) pathname = rewrites.get(pathname);

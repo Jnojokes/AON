@@ -154,6 +154,17 @@
   .row-cr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center;}
   .row-cr + .row-cr{margin-top:8px;}
   @media (max-width:640px){ .row-cr{grid-template-columns:1fr;} }
+  /* Copertina e logo dei post del feed: anteprima della cella com'e' sul
+     sito (4:5, fondo della cella, logo centrato al 40% e mai oltre il 30%
+     dell'altezza). Stessi valori di .feed-item .feed-logo in index.html. */
+  .cell-prev{position:relative;aspect-ratio:4/5;background:#1E1E1E;overflow:hidden;}
+  .cell-prev .cell-cover{width:100%;height:100%;object-fit:cover;display:block;}
+  .cell-prev .cell-logo{position:absolute;inset:0;margin:auto;width:40%;height:30%;object-fit:contain;filter:drop-shadow(0 2px 12px rgba(0,0,0,.35));}
+  .cell-idle{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    padding:8px;text-align:center;border:1px dashed var(--line-strong);
+    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;
+  }
 
   @keyframes spin{to{transform:rotate(360deg);}}
   .spin{animation:spin .8s linear infinite;}

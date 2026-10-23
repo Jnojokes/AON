@@ -87,6 +87,14 @@ const firstImage = (arr) => {
   for (const it of (arr || [])) { const m = normMedia(it); if (m.image) return m.image; }
   return "";
 };
+// Prima FOTO del carosello: una slide video non conta, anche se ha la sua
+// copertina. E' l'immagine della cella quando il post non ha una Copertina
+// propria, e quella che Google associa al progetto (campo url). Come
+// firstPhotoOf in src/app.jsx.
+const firstPhoto = (arr) => {
+  for (const it of (arr || [])) { const m = normMedia(it); if (m.image && !m.video) return m.image; }
+  return firstImage(arr);
+};
 const srcOf = (v) => v ? (v.startsWith("http") ? v : "/" + v.replace(/^\/+/, "")) : "";
 const fmtMB = (b) => (b / 1048576).toFixed(1) + " MB";
 const fmtDur = (s) => {
@@ -173,6 +181,38 @@ async function uploadImage(file, password){
 async function uploadDataUrl(dataUrl, filename, password){
   const j = await apiPost({ action:"upload", password, filename, contentBase64:dataUrl });
   return j.path;
+}
+
+// Vero se il file e' una WebP o una GIF animata. Si leggono solo i primi byte:
+// la WebP lo dichiara nell'intestazione (blocco VP8X, flag animazione), la GIF
+// che va in loop contiene l'estensione NETSCAPE2.0 prima del primo fotogramma.
+async function isAnimated(file){
+  const head = new Uint8Array(await file.slice(0, 4096).arrayBuffer());
+  const str = (a, b) => String.fromCharCode(...head.subarray(a, b));
+  if (str(0, 4) === "RIFF" && str(8, 12) === "WEBP") return str(12, 16) === "VP8X" && (head[20] & 0x02) !== 0;
+  if (str(0, 3) === "GIF") return str(0, head.length).includes("NETSCAPE2.0");
+  return false;
+}
+
+// Primo fotogramma di un'immagine (anche animata) come JPEG, alla sua misura:
+// disegnata su un canvas, un'immagine animata da' il fotogramma di partenza.
+// Serve solo per il fermo immagine: la copertina vera si carica cosi' com'e'.
+function firstFrame(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const cv = document.createElement("canvas");
+        cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+        cv.getContext("2d").drawImage(img, 0, 0);
+        resolve(cv.toDataURL("image/jpeg", 0.92));
+      } catch (e) { reject(e); }
+      finally { URL.revokeObjectURL(url); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("immagine non leggibile")); };
+    img.src = url;
+  });
 }
 
 // Valida la password contro il server senza modificare api/save.js:
@@ -311,7 +351,7 @@ const BLANKS = {
 };
 
 const SECTIONS = [
-  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). Trascina le foto per creare un carosello; la 1ª è la copertina. Con “+ Link video” aggiungi un film ospitato su Jumpshare dentro il post. Il titolo è il nome del video; sotto, nella scheda, compaiono i Crediti: etichetta e valore liberi, nell'ordine che scegli, e le voci vuote non si vedono. Il valore di CLIENT compare anche passando col mouse sulla griglia. Anno, luogo e formato non si vedono nella scheda: servono a Google e alle pagine dei progetti." },
+  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). La Copertina è l'immagine della cella e si vede solo nella griglia: può essere una WebP o GIF animata, si carica così com'è (max 3 MB) e, se è piccola, il sito la ingrandisce a pixel netti. Senza Copertina la cella mostra la prima foto del carosello. Il Logo (PNG o SVG trasparente) compare centrato sopra la copertina. Il carosello è quello che si sfoglia aprendo il post: trascina le foto e, con “+ Link video”, aggiungi un film ospitato su Jumpshare. Il titolo è il nome del video; sotto, nella scheda, compaiono i Crediti: etichetta e valore liberi, nell'ordine che scegli, e le voci vuote non si vedono. Il valore di CLIENT compare anche passando col mouse sulla griglia. Anno, luogo e formato non si vedono nella scheda: servono a Google e alle pagine dei progetti." },
   { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link al video su Jumpshare: il video parte solo al click, quindi la griglia resta veloce." },
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
@@ -599,6 +639,94 @@ function ImageField({ value, password, onChange, onStatus, aspect, allowUrl }){
   );
 }
 
+// ── Copertina e logo di un post del feed ────────────────────────────────────
+// Due riquadri accanto, con l'anteprima della cella com'è sul sito.
+//   Copertina: si vede solo nella griglia, non nel carosello. Puo' essere una
+//              WebP o GIF animata, quindi il file si carica cosi' com'e' (nessuna
+//              ricompressione, che fermerebbe l'animazione). Per un file
+//              animato si carica anche un fermo immagine, il primo fotogramma,
+//              che il sito mostra a chi ha chiesto al sistema meno animazioni.
+//   Logo:      PNG o SVG trasparente, centrato sopra la copertina.
+function CellAssetField({ kind, item, password, onPatch, onStatus }){
+  const inputRef = useRef(null);
+  const [busy, setBusy] = useState(false);
+  const isCover = kind === "cover";
+  const value = isCover ? item.cover : item.logo;
+  // L'upload dura qualche secondo: alla fine si applica la modifica al post
+  // com'e' in quel momento, non com'era quando e' partito, cosi' un titolo
+  // scritto nel frattempo non va perso.
+  const patchRef = useRef(onPatch);
+  patchRef.current = onPatch;
+
+  const upload = async (file) => {
+    setBusy(true);
+    onStatus && onStatus("Carico " + file.name + "…", "info");
+    try {
+      const path = await uploadImage(file, password);
+      if (!isCover) {
+        patchRef.current({ logo: path });
+        onStatus && onStatus("Logo caricato: " + path, "ok");
+        return;
+      }
+      let fermo;
+      if (await isAnimated(file)) {
+        try {
+          fermo = await uploadDataUrl(await firstFrame(file), file.name.replace(/\.[^.]+$/, "") + "-poster.jpg", password);
+        } catch (e) { fermo = undefined; }
+      }
+      patchRef.current({ cover: path, coverPoster: fermo });
+      onStatus && onStatus("Copertina caricata: " + path + (fermo ? " · con fermo immagine" : ""), "ok");
+    } catch (err) {
+      onStatus && onStatus("Upload fallito: " + err.message, "err");
+    } finally { setBusy(false); }
+  };
+
+  const onFile = (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (file) upload(file);
+  };
+
+  const [over, dropHandlers] = useDrop((files) => {
+    const { imgs, vids } = splitFiles(files);
+    if (!imgs.length && vids.length){ onStatus && onStatus(VIDEO_DROP_MSG(vids[0].name), "err"); return; }
+    if (!imgs.length){ onStatus && onStatus(isCover ? "Trascina un'immagine: WebP o GIF animata, jpg, png." : "Trascina il logo: PNG o SVG trasparente.", "err"); return; }
+    upload(imgs[0]);
+  });
+
+  const remove = () => onPatch(isCover ? { cover: undefined, coverPoster: undefined } : { logo: undefined });
+  // Nel riquadro Copertina il logo si vede sopra, come sulla cella; nel
+  // riquadro Logo si vede da solo, sullo sfondo scuro della cella vuota.
+  const showLogo = item.logo && (isCover ? item.cover : true);
+
+  return (
+    <div>
+      <div className={"drop cell-prev" + (over ? " over" : "")} data-hint={isCover ? "Rilascia la copertina" : "Rilascia il logo"} {...dropHandlers}>
+        {isCover && item.cover && <img className="cell-cover" src={srcOf(item.cover)} alt="" />}
+        {showLogo && <img className="cell-logo" src={srcOf(item.logo)} alt="" />}
+        {!value && (
+          <div className="cell-idle">
+            <span>Trascina qui</span>
+            <span style={{color:"#3d3d3d"}}>{isCover ? "webp/gif animata o foto" : "png o svg trasparente"}</span>
+          </div>
+        )}
+        {busy && (
+          <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,0.6)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:5}}>
+            <div className="spin" style={{width:22,height:22,border:"2px solid #444",borderTopColor:"var(--accent)",borderRadius:"50%"}} />
+          </div>
+        )}
+      </div>
+      <input ref={inputRef} type="file" accept="image/*" onChange={onFile} style={{display:"none"}} />
+      <div style={{display:"flex",gap:6,marginTop:6}}>
+        <button className="btn btn-ghost" style={{flex:1}} onClick={()=>inputRef.current && inputRef.current.click()} disabled={busy}>
+          {busy ? "Carico…" : (value ? "Sostituisci" : "Scegli")}
+        </button>
+        {value && <button className="btn btn-ghost btn-xs" onClick={remove} title={isCover ? "Rimuovi copertina" : "Rimuovi logo"}>✕</button>}
+      </div>
+    </div>
+  );
+}
+
 // ── Campo link video esterno (Jumpshare) + verifica + poster automatico ─────
 function VideoLinkField({ value, poster, password, onChange, onPoster, onStatus, compact }){
   const [state, setState] = useState(null); // {kind:'ok'|'err', msg}
@@ -720,7 +848,9 @@ function SlideEditor({ item, password, onChange, onStatus, onDone, aspect }){
 }
 
 // ── Galleria: foto (drag&drop multiplo) + slide video ───────────────────────
-function GalleryField({ images, password, onChange, onStatus, aspect }){
+// coverIndex: la slide da segnare COVER, cioe' quella che la cella del feed
+// mostra quando il post non ha una Copertina propria (-1 = nessuna).
+function GalleryField({ images, password, onChange, onStatus, aspect, coverIndex = 0 }){
   const inputRef = useRef(null);
   const [busy, setBusy] = useState(false);
   const [edit, setEdit] = useState(-1);
@@ -782,7 +912,7 @@ function GalleryField({ images, password, onChange, onStatus, aspect }){
                     : <div style={{width:"100%",aspectRatio:aspect||"4/5",background:"#111",display:"flex",alignItems:"center",justifyContent:"center"}}>
                         <span className="mono" style={{fontSize:8,color:"#555"}}>{m.video ? "VIDEO" : "VUOTO"}</span>
                       </div>}
-                  {i === 0 && <span className="mono" style={{position:"absolute",top:2,left:2,background:"var(--accent)",color:"#000",fontSize:7,padding:"1px 3px",letterSpacing:"0.1em",zIndex:3}}>COVER</span>}
+                  {i === coverIndex && <span className="mono" style={{position:"absolute",top:2,left:2,background:"var(--accent)",color:"#000",fontSize:7,padding:"1px 3px",letterSpacing:"0.1em",zIndex:3}}>COVER</span>}
                   {m.video && <span className="vbadge">▶</span>}
                   <div style={{position:"absolute",bottom:2,left:2,right:2,display:"flex",justifyContent:"space-between",gap:2,zIndex:3}}>
                     <button className="btn btn-ghost" style={{padding:"1px 4px",fontSize:9}} onClick={()=>moveImg(i,i-1)} disabled={i===0} title="Sposta a sinistra">←</button>
@@ -1048,16 +1178,39 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
           <button className="btn btn-ghost" style={{padding:"5px 9px",color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>onDelete(idx)} title="Elimina">✕</button>
         </div>
       </div>
-      {section === "feed" && (
-        <div>
-          <label className="lbl">Media del post · la 1ª è la copertina · ⋯ per il link video</label>
-          <GalleryField
-            images={(item.images && item.images.length) ? item.images : (item.url ? [item.url] : [])}
-            password={password}
-            onChange={(arr)=>onChange({ ...item, images: arr, url: firstImage(arr) })}
-            onStatus={onStatus} />
-        </div>
-      )}
+      {section === "feed" && (() => {
+        const slides = (item.images && item.images.length) ? item.images : (item.url ? [item.url] : []);
+        // Senza Copertina la cella usa la prima foto del carosello (o, in un
+        // post di soli video, la prima copertina di video): e' quella che si
+        // segna COVER. Con la Copertina il segno sparisce.
+        const foto = slides.findIndex(s => { const m = normMedia(s); return m.image && !m.video; });
+        const coverIdx = item.cover ? -1 : (foto >= 0 ? foto : slides.findIndex(s => normMedia(s).image));
+        return (
+          <>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              <div style={{minWidth:0}}>
+                <label className="lbl">Copertina · solo griglia</label>
+                <CellAssetField kind="cover" item={item} password={password} onStatus={onStatus}
+                  onPatch={(p)=>onChange({ ...item, ...p })} />
+              </div>
+              <div style={{minWidth:0}}>
+                <label className="lbl">Logo · sopra la copertina</label>
+                <CellAssetField kind="logo" item={item} password={password} onStatus={onStatus}
+                  onPatch={(p)=>onChange({ ...item, ...p })} />
+              </div>
+            </div>
+            <div>
+              <label className="lbl">Carosello della scheda · foto e video · ⋯ per il link video</label>
+              <GalleryField
+                images={slides}
+                password={password}
+                coverIndex={coverIdx}
+                onChange={(arr)=>onChange({ ...item, images: arr, url: firstPhoto(arr) })}
+                onStatus={onStatus} />
+            </div>
+          </>
+        );
+      })()}
       {section === "series" && (
         <>
           <div>

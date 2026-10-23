@@ -590,13 +590,8 @@
             .btn-primary, .btn-secondary { padding: 9px 18px; font-size: 10px; }
         }
 
-        /* Carousel — grid badge (multi-photo posts) + in-modal arrows.
-           Il badge non si posiziona da sé: sta nel contenitore .cell-badges
-           insieme all'eventuale marchio AI, che li allinea in fila. */
-        .carousel-badge {
-            display: flex; color: #fff; line-height: 0;
-            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.65)); pointer-events: none;
-        }
+        /* Carousel — frecce nella scheda. Sulle celle del feed l'icona del
+           carosello non c'è più: le copertine sono disegnate e la coprirebbe. */
         .carousel-arrow {
             position: absolute; top: 50%; transform: translateY(-50%);
             width: 38px; height: 38px; z-index: 5;
@@ -644,6 +639,23 @@
         .feed-item img {
             width: 100%; height: 100%;
             object-fit: cover;
+        }
+        /* Copertina del post (campo "Copertina" del pannello, CoverImg in
+           src/app.jsx). Il <picture> deve riempire la cella come l'<img>.
+           .pixel = il browser la sta ingrandendo: pixel netti invece della
+           sfocatura. Le copertine lo-fi sono 272×340 e vanno viste così; le
+           foto grandi vengono rimpicciolite e la classe non la prendono. */
+        .feed-item picture { display: block; width: 100%; height: 100%; }
+        .feed-item img.pixel { image-rendering: pixelated; }
+        /* Logo del brand sopra la copertina: centrato, largo circa il 40% della
+           cella e mai più alto del 30%. Resta nitido (niente .pixel): il
+           contrasto tra logo pulito e copertina sporca è voluto. */
+        .feed-item .feed-logo {
+            position: absolute; inset: 0; margin: auto;
+            width: 40%; height: 30%;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 12px rgba(0,0,0,.35));
+            pointer-events: none;
         }
         .feed-meta {
             position: absolute;
@@ -921,6 +933,7 @@
            Dichiarazione, non decorazione: deve leggersi senza rubare la scena
            alla foto. Hairline, monospace, opacità bassa che sale in hover.
            ───────────────────────────────────────────────────────────────── */
+        /* Contenitore in alto a destra della cella: oggi ospita solo il marchio AI. */
         .cell-badges {
             position: absolute; top: 10px; right: 10px; z-index: 4;
             display: flex; align-items: center; gap: 8px;

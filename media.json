@@ -2,6 +2,8 @@
   "feed": [
     {
       "url": "media/greta-01.webp",
+      "cover": "media/covers/greta-boldini.webp",
+      "coverPoster": "media/covers/greta-boldini-poster.jpg",
       "images": [
         {
           "poster": "",
@@ -42,6 +44,8 @@
     },
     {
       "url": "media/santoni-bto-4-1-1-mqunjfp4.webp",
+      "cover": "media/covers/santoni.webp",
+      "coverPoster": "media/covers/santoni-poster.jpg",
       "images": [
         "media/santoni-bto-4-1-1-mqunjfp4.webp",
         {
@@ -83,6 +87,8 @@
     },
     {
       "url": "media/fabiana-01.webp",
+      "cover": "media/covers/fabiana-filippi.webp",
+      "coverPoster": "media/covers/fabiana-filippi-poster.jpg",
       "images": [
         "media/fabiana-01.webp",
         "media/fabiana-02.webp",
@@ -161,6 +167,8 @@
     },
     {
       "url": "media/ypsum-01.webp",
+      "cover": "media/covers/ypsum.webp",
+      "coverPoster": "media/covers/ypsum-poster.jpg",
       "images": [
         "media/ypsum-01.webp",
         "media/ypsum-02.webp",
@@ -199,6 +207,8 @@
     },
     {
       "url": "media/mugshot-backstage.webp",
+      "cover": "media/covers/mugshot.webp",
+      "coverPoster": "media/covers/mugshot-poster.jpg",
       "title": "IL CASO EST RADIO",
       "year": "2025",
       "loc": "MILANO",
@@ -228,6 +238,8 @@
     },
     {
       "url": "media/santoni-09.webp",
+      "cover": "media/covers/santoni.webp",
+      "coverPoster": "media/covers/santoni-poster.jpg",
       "images": [
         "media/santoni-09.webp",
         "media/santoni-10.webp",
@@ -267,6 +279,8 @@
     },
     {
       "url": "media/greta-05.webp",
+      "cover": "media/covers/greta-boldini.webp",
+      "coverPoster": "media/covers/greta-boldini-poster.jpg",
       "images": [
         "media/greta-05.webp",
         "media/greta-06.webp",
@@ -335,6 +349,8 @@
     },
     {
       "url": "media/fabiana-03.webp",
+      "cover": "media/covers/fabiana-filippi.webp",
+      "coverPoster": "media/covers/fabiana-filippi-poster.jpg",
       "title": "VETRINA",
       "year": "2025",
       "loc": "MILANO",
@@ -364,6 +380,8 @@
     },
     {
       "url": "media/santoni-14.webp",
+      "cover": "media/covers/santoni.webp",
+      "coverPoster": "media/covers/santoni-poster.jpg",
       "images": [
         "media/santoni-14.webp",
         "media/santoni-15.webp",
