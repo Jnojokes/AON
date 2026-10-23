@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andrea Onori — Filmmaker, Milan</title>
+<meta name="description" content="Andrea Onori, filmmaker based in Milan. New site in progress.">
+<!-- Pagina temporanea: non va indicizzata al posto del sito vero. -->
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/archivo-black-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/fonts.css">
+<!--
+  WORK IN PROGRESS — pagina d'attesa di andreaonori.com
+  Stesso linguaggio del sito (versione bold/nera): Archivo Black, JetBrains
+  Mono, nero/bianco + accento arancio. Nessun JavaScript, nessun cookie, nessun
+  servizio esterno: solo HTML + CSS, così non serve il banner cookie.
+  Si attiva con un redirect temporaneo in vercel.json (vedi istruzioni a parte);
+  index.html e il pannello admin restano intatti.
+-->
+<style>
+    :root {
+        --bg: #000; --fg: #fff; --mute: #707070;
+        --line: rgba(255,255,255,0.14); --line-strong: rgba(255,255,255,0.32);
+        --accent: #FF3D00;
+        --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--fg); }
+    body {
+        font-family: 'Bricolage Grotesque', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+        min-height: 100vh;
+        display: flex; flex-direction: column;
+    }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--fg); color: var(--bg); }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .uline { letter-spacing: 0.18em; text-transform: uppercase; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; width: 100%; }
+
+    /* ── Barra in alto ── */
+    .topbar { border-bottom: 1px solid var(--line); }
+    .topbar .wrap { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; padding-bottom: 12px; }
+
+    /* ── Intestazione ── */
+    header.profile { display: flex; gap: 48px; align-items: flex-start; padding: 64px 0 56px; }
+    .avatar {
+        width: 160px; height: 160px; flex-shrink: 0; position: relative;
+    }
+    .avatar img {
+        width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+        border: 1px solid rgba(255,255,255,0.25);
+    }
+    .eyebrow { color: var(--mute); font-size: 10px; margin-bottom: 12px; }
+    h1 {
+        font-family: 'Archivo Black', sans-serif; font-weight: 400;
+        font-size: clamp(48px, 8vw, 96px); line-height: 0.92;
+        letter-spacing: -0.025em; text-transform: uppercase;
+    }
+    .handle { color: var(--mute); font-size: 11px; margin: 14px 0 26px; }
+    .ctas { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-primary, .btn-secondary {
+        font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        padding: 10px 18px; display: inline-flex; align-items: center; gap: 10px;
+        transition: background .35s var(--ease-out), color .35s var(--ease-out), border-color .35s var(--ease-out);
+    }
+    .btn-primary { background: var(--fg); color: var(--bg); }
+    .btn-primary:hover { background: var(--accent); color: var(--fg); }
+    .btn-secondary { border: 1px solid var(--line-strong); }
+    .btn-secondary:hover { border-color: var(--fg); }
+
+    /* ── Tab (inattive) ── */
+    .tabs { display: flex; border-bottom: 1px solid var(--line); position: relative; }
+    .tab {
+        flex: 1; text-align: center; padding: 18px 0;
+        font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+        letter-spacing: 0.22em; text-transform: uppercase; color: var(--mute);
+        position: relative;
+    }
+    .tab.active { color: var(--fg); }
+    .tab.active::after {
+        content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--fg);
+    }
+
+    /* ── Feed in lavorazione ── */
+    .wip { position: relative; margin: 40px 0 0; }
+    .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+    .tile {
+        aspect-ratio: 4 / 5; background: #0a0a0a; position: relative; overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.04);
+    }
+    /* Riflesso lento che attraversa le celle: "si sta caricando" */
+    .tile::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.045) 50%, transparent 65%);
+        transform: translateX(-100%);
+        animation: sweep 3.2s var(--ease-out) infinite;
+    }
+    .tile:nth-child(2)::after { animation-delay: .25s; }
+    .tile:nth-child(3)::after { animation-delay: .5s; }
+    .tile:nth-child(4)::after { animation-delay: .75s; }
+    .tile:nth-child(5)::after { animation-delay: 1s; }
+    .tile:nth-child(6)::after { animation-delay: 1.25s; }
+    @keyframes sweep { to { transform: translateX(100%); } }
+
+    .wip-label {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; text-align: center; padding: 24px;
+        pointer-events: none;
+    }
+    .wip-label .kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 10px; color: var(--mute); margin-bottom: 18px; }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: blink 1.4s ease-in-out infinite; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+    .wip-label h2 {
+        font-family: 'Archivo Black', sans-serif; font-weight: 400;
+        font-size: clamp(34px, 7vw, 84px); line-height: 0.92;
+        letter-spacing: -0.025em; text-transform: uppercase;
+    }
+    .wip-label h2 .soft { color: var(--mute); }
+    .wip-label p { margin-top: 18px; font-size: 11px; color: var(--mute); }
+    /* Link al profilo: sul telefono il link https apre direttamente l'app
+       Instagram se installata (universal link), altrimenti il profilo web. */
+    .ig-link {
+        pointer-events: auto; color: var(--fg);
+        border-bottom: 1px solid var(--fg); padding-bottom: 2px;
+        transition: color .3s var(--ease-out), border-color .3s var(--ease-out);
+    }
+    .ig-link:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ── Footer ── */
+    footer { border-top: 1px solid var(--line); margin-top: 80px; padding: 28px 0; }
+    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 10px; color: var(--mute); }
+    footer a { border-bottom: 1px solid transparent; transition: border-color .3s; }
+    footer a:hover { color: var(--fg); border-color: var(--fg); }
+    footer .links { display: flex; gap: 18px; flex-wrap: wrap; }
+
+    @media (max-width: 768px) {
+        header.profile { flex-direction: column; gap: 28px; padding: 40px 0 40px; }
+        .avatar { width: 120px; height: 120px; }
+        .tab { font-size: 9px; letter-spacing: 0.16em; }
+        .wip-label .kicker, .wip-label p { font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .tile::after, .live-dot { animation: none !important; }
+    }
+</style>
+</head>
+<body>
+
+
+    <div class="topbar">
+        <div class="wrap">
+            <div class="mono uline" style="font-size:10px">andrea__onori</div>
+            <div class="mono uline" style="font-size:9px; color:var(--mute)">ARCHIVE / 26 · VOLUME 01</div>
+        </div>
+    </div>
+
+    <main class="wrap">
+        <header class="profile">
+            <div class="avatar">
+                <img src="/andrea.jpg" alt="Andrea Onori, filmmaker" width="160" height="160">
+            </div>
+            <div>
+                <div class="eyebrow mono uline">◌ Filmmaker · Based in Milan</div>
+                <h1>Andrea Onori</h1>
+                <p class="handle mono uline">@andrea__onori · Established MMXVIII</p>
+                <div class="ctas">
+                    <a class="btn-primary" href="mailto:video@andreaonori.com?subject=Production%20enquiry">Get in touch <span aria-hidden="true">→</span></a>
+                    <a class="btn-secondary" href="https://www.instagram.com/andrea__onori" rel="noopener">Instagram ↗</a>
+                </div>
+            </div>
+        </header>
+
+        <nav class="tabs" aria-label="Sezioni (in arrivo)">
+            <span class="tab active">Feed</span>
+            <span class="tab">Motion</span>
+            <span class="tab">Index</span>
+        </nav>
+
+        <section class="wip" aria-labelledby="wip-title">
+            <div class="tiles" aria-hidden="true">
+                <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+                <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+            </div>
+            <div class="wip-label">
+                <div class="kicker mono uline"><i class="live-dot"></i>New site loading</div>
+                <h2 id="wip-title">Feed<br><span class="soft">Work in progress</span></h2>
+                <p class="mono uline">Back soon · <a class="ig-link" href="https://www.instagram.com/andrea__onori" rel="noopener">Meanwhile on Instagram ↗</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="wrap mono uline">
+            <span>© 2026 Andrea Onori — Milan, Italy · P. IVA 02491850448</span>
+            <span class="links">
+                <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>
+                <a href="https://www.instagram.com/andrea__onori" rel="noopener">@andrea__onori</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/note-legali">Note legali</a>
+            </span>
+        </div>
+    </footer>
+
+</body>
+</html>

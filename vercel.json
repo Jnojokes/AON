@@ -4,6 +4,44 @@
   "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "andreaonori.com" }],
+      "destination": "/work-in-progress",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.andreaonori.com" }],
+      "destination": "/work-in-progress",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "aon-three.vercel.app" }],
+      "destination": "/work-in-progress",
+      "permanent": false
+    },
+    {
+      "source": "/work/:path*",
+      "has": [{ "type": "host", "value": "andreaonori.com" }],
+      "destination": "/work-in-progress",
+      "permanent": false
+    },
+    {
+      "source": "/work/:path*",
+      "has": [{ "type": "host", "value": "www.andreaonori.com" }],
+      "destination": "/work-in-progress",
+      "permanent": false
+    },
+    {
+      "source": "/work/:path*",
+      "has": [{ "type": "host", "value": "aon-three.vercel.app" }],
+      "destination": "/work-in-progress",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/admin-edits",
