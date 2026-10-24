@@ -10,6 +10,9 @@ asset/
 # Unica eccezione: lo showreel segnaposto in testa al Feed (8 MB). Resta nel
 # repo finché i video non passano a uno storage esterno (Bunny Stream).
 !media/showreel-segnaposto.mp4
+# Il video segnaposto della pagina About (1,4 MB). Quelli caricati dal
+# pannello passano dall'API di GitHub, che questo file non filtra.
+!media/about/*.mp4
 
 # macOS
 .DS_Store

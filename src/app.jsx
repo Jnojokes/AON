@@ -1377,7 +1377,7 @@ import * as ReactDOM from 'react-dom/client';
             const paras = bio.split(/\n+/).map(t => t.trim()).filter(Boolean);
             if (!paras.length) return null;
             return (
-                <section id="about" aria-label="About" style={{ margin: '72px 0 8px' }}>
+                <section id="bio" aria-label="About" style={{ margin: '72px 0 8px' }}>
                     <div className="reveal-on-scroll delay-1" style={{ maxWidth: '68ch' }}>
                         {paras.map((t, i) => (
                             <p key={i} style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--mute)', marginBottom: '10px' }}>{t}</p>
@@ -1440,6 +1440,136 @@ import * as ReactDOM from 'react-dom/client';
                 </div>
             </footer>
         );
+
+        // ── Pagina About ─────────────────────────────────────────────────────
+        // Si apre dalla storia "ABOUT ME" (serie con id "aboutme") come vista a
+        // tutto schermo dentro l'app, con l'indirizzo #about. Non e' una pagina
+        // statica perche' in produzione "/" porta alla pagina d'attesa: una
+        // /about separata si vedrebbe prima del lancio. Contenuti da media.json
+        // (chiave "about"), modificabili dal pannello.
+        const ABOUT_SERIES_ID = 'aboutme';
+        const aboutData = () => {
+            const a = M().about;
+            return a && typeof a === 'object' ? a : null;
+        };
+
+        const AboutView = ({ onClose }) => {
+            const a = aboutData() || {};
+            const video = String(a.video || '').trim();
+            const poster = String(a.poster || '').trim();
+            const photos = (Array.isArray(a.photos) ? a.photos : [])
+                .filter((p) => p && String(p.src || '').trim());
+            const righe = brLines(a.title).filter((r, i, all) => r.trim() || i < all.length - 1);
+            const paras = (s) => String(s || '').split(/\r?\n+/).map((t) => t.trim()).filter(Boolean);
+            const p = S().profile;
+            const social = S().footer.socialUrl;
+            const [formAperto, setFormAperto] = useState(false);
+            const ref = useRef(null);
+            const box = useRef(null);
+            const calmo = typeof window.matchMedia === 'function'
+                && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            useEffect(() => {
+                const overflow = document.body.style.overflow;
+                document.body.style.overflow = 'hidden';
+                if (box.current) box.current.focus({ preventScroll: true });
+                return () => { document.body.style.overflow = overflow; };
+            }, []);
+            // In cattura, prima del modulo di contatto: cosi' Esc con il modulo
+            // aperto chiude solo il modulo. Ascoltando dopo, il modulo si
+            // chiuderebbe per primo e questa vista vedrebbe gia' formAperto=false.
+            useEffect(() => {
+                const onKey = (e) => { if (e.key === 'Escape' && !formAperto) onClose(); };
+                document.addEventListener('keydown', onKey, true);
+                return () => document.removeEventListener('keydown', onKey, true);
+            }, [onClose, formAperto]);
+            useEffect(() => {
+                const v = ref.current;
+                if (!v || calmo) return;
+                // Come nel feed: Safari su iPhone concede l'autoplay solo con
+                // l'attributo muted, che React non scrive.
+                v.muted = true;
+                v.setAttribute('muted', '');
+                const pr = v.play();
+                if (pr && typeof pr.catch === 'function') pr.catch(() => {});
+            }, [video]);
+
+            // Senza video si mostra il poster; senza nessuno dei due la colonna
+            // sinistra sparisce e il testo prende tutta la larghezza.
+            const media = video && !calmo
+                ? <video ref={ref} src={video} poster={poster || undefined} autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
+                : (poster || video)
+                    ? (poster ? <img src={poster} alt="" /> : <video src={video} muted playsInline preload="metadata" aria-hidden="true" />)
+                    : null;
+
+            return (
+                <div className="about-view" role="dialog" aria-modal="true" aria-label="About" tabIndex={-1} ref={box}>
+                    <div className="about-top">
+                        <div className="about-wrap about-topbar mono">
+                            <a href="#" className="about-back" onClick={(e) => { e.preventDefault(); onClose(); }}>
+                                ← {[p.nameFirst, p.nameLast].filter(Boolean).map((s) => s.charAt(0) + s.slice(1).toLowerCase()).join(' ') || 'Andrea Onori'}
+                            </a>
+                            <span className="about-here">About</span>
+                        </div>
+                    </div>
+                    <main className={'about-wrap about-hero' + (media ? '' : ' no-media')}>
+                        {media && (
+                            <div className="about-vert">
+                                {media}
+                                {a.caption && <span className="about-caption mono">{a.caption}</span>}
+                            </div>
+                        )}
+                        <div className="about-side">
+                            {righe.length > 0 && (
+                                <h1 className="about-title">
+                                    {righe.map((r, i) => (
+                                        <React.Fragment key={i}>
+                                            {i > 0 && <br />}
+                                            <span className={i === 0 ? 'nw' : undefined}>{r}</span>
+                                        </React.Fragment>
+                                    ))}
+                                </h1>
+                            )}
+                            {paras(a.lead).map((t, i) => <p key={'l' + i} className="about-lead">{t}</p>)}
+                            {paras(a.body).map((t, i) => <p key={'b' + i} className="about-body">{t}</p>)}
+                            <div className="about-ctas">
+                                {p.ctaEmail && (
+                                    <button type="button" className="btn-primary"
+                                        onClick={() => { track('contact_click', { method: 'form', location: 'about' }); setFormAperto(true); }}>
+                                        <span>{p.ctaPrimary || "Let's roll"}</span> <span className="arrow">→</span>
+                                    </button>
+                                )}
+                                {social && (
+                                    <a className="btn-secondary" href={social} target="_blank" rel="me noopener"
+                                        onClick={() => track('outbound_click', { link_domain: 'instagram.com', location: 'about' })}>
+                                        Instagram ↗
+                                    </a>
+                                )}
+                            </div>
+                            {photos.length > 0 && (
+                                <div className={'about-photos' + (photos.length === 1 ? ' one' : '')}>
+                                    {photos.slice(0, 2).map((ph, i) => (
+                                        <figure key={i}>
+                                            <div className="about-photo"><img src={ph.src} alt={ph.caption || 'Andrea Onori'} loading="lazy" decoding="async" /></div>
+                                            {ph.caption && <figcaption className="mono">{ph.caption}</figcaption>}
+                                        </figure>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </main>
+                    <footer className="about-foot">
+                        <div className="about-wrap mono">
+                            <span>© {new Date().getFullYear()} {S().footer.name || 'Andrea Onori'} — Milan, Italy</span>
+                            <span>{[S().footer.emailValue, S().footer.socialValue].filter(Boolean).join(' · ')}</span>
+                        </div>
+                    </footer>
+                    {formAperto && <ContactModal
+                        email={p.ctaEmail} oggetto={p.ctaSubject} origine="about"
+                        onClose={() => setFormAperto(false)} />}
+                </div>
+            );
+        };
 
         // Showreel — autoplay cross-fade reel, opens from avatar
         const ShowreelModal = ({ onClose }) => {
@@ -1591,8 +1721,40 @@ import * as ReactDOM from 'react-dom/client';
             const [selectedSeries, setSelectedSeries] = useState(null);
             const [showreelOpen, setShowreelOpen] = useState(false);
             const [selectedMotion, setSelectedMotion] = useState(null);
+            // La pagina About vive sull'hash #about: si apre anche da un link
+            // diretto (/versione1#about) e il tasto indietro la chiude.
+            const isAboutHash = () => window.location.hash === '#about' && !!aboutData();
+            const [aboutOpen, setAboutOpen] = useState(isAboutHash);
+            const aboutPushed = useRef(false);
 
             const open = (i, list) => { setSelectedImg(i); setImgs(list); };
+
+            useEffect(() => {
+                const sync = () => { const on = isAboutHash(); if (!on) aboutPushed.current = false; setAboutOpen(on); };
+                window.addEventListener('popstate', sync);
+                window.addEventListener('hashchange', sync);
+                return () => { window.removeEventListener('popstate', sync); window.removeEventListener('hashchange', sync); };
+            }, []);
+            const openAbout = () => {
+                if (window.location.hash !== '#about') {
+                    window.history.pushState({ aonAbout: true }, '', '#about');
+                    aboutPushed.current = true;
+                }
+                setAboutOpen(true);
+            };
+            const closeAbout = () => {
+                // Aperta da qui: si torna indietro, cosi' la cronologia resta pulita.
+                // Aperta da un link diretto: si toglie l'hash senza uscire dal sito.
+                if (aboutPushed.current) { aboutPushed.current = false; window.history.back(); }
+                else window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                setAboutOpen(false);
+            };
+            const onSeries = (s) => {
+                if (s && s.id === ABOUT_SERIES_ID && aboutData()) {
+                    track('series_open', { series_label: s.label || s.id });
+                    openAbout();
+                } else setSelectedSeries(s);
+            };
 
             // ── Analytics ────────────────────────────────────────────────────
             // Tutto lo stato di interazione vive qui, quindi gli eventi si
@@ -1691,7 +1853,7 @@ import * as ReactDOM from 'react-dom/client';
 
                     <main className="max-w-[1100px] mx-auto px-6 py-16">
                         <ProfileHeader onAvatarClick={() => setShowreelOpen(true)} />
-                        <Series onClick={setSelectedSeries} />
+                        <Series onClick={onSeries} />
                         <Tabs active={active} setActive={setActive} />
                         <div key={active} className="tab-panel">
                             {active === 'FEED' && <FeedGrid onClick={open} />}
@@ -1713,6 +1875,7 @@ import * as ReactDOM from 'react-dom/client';
                     {selectedSeries && <StoryViewer series={selectedSeries} onClose={() => setSelectedSeries(null)} />}
                     {showreelOpen && <ShowreelModal onClose={() => setShowreelOpen(false)} />}
                     {selectedMotion && <MotionViewer item={selectedMotion} onClose={() => setSelectedMotion(null)} />}
+                    {aboutOpen && <AboutView onClose={closeAbout} />}
                 </div>
             );
         };

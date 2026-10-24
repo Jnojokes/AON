@@ -2,8 +2,8 @@
   "feed": [
     {
       "url": "media/greta-01.webp",
-      "cover": "media/covers/greta-boldini.webp",
-      "coverPoster": "media/covers/greta-boldini-poster.jpg",
+      "cover": "media/covers/greta-boldini-m2.webp",
+      "coverPoster": "media/covers/greta-boldini-m2-poster.jpg",
       "logo": "media/logos/greta-boldini.png",
       "images": [
         {
@@ -51,8 +51,8 @@
     },
     {
       "url": "media/mugshot-backstage.webp",
-      "cover": "media/covers/mugshot.webp",
-      "coverPoster": "media/covers/mugshot-poster.jpg",
+      "cover": "media/covers/mugshot-m2.webp",
+      "coverPoster": "media/covers/mugshot-m2-poster.jpg",
       "images": [
         {
           "poster": "https://vz-13c73ffe-e6a.b-cdn.net/30bfd0d5-18a0-4de3-a7e4-111c0d9e2839/thumbnail.jpg",
@@ -92,8 +92,8 @@
     },
     {
       "url": "https://vz-13c73ffe-e6a.b-cdn.net/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6/thumbnail.jpg",
-      "cover": "media/covers/prada.webp",
-      "coverPoster": "media/covers/prada-poster.jpg",
+      "cover": "media/covers/prada-m2.webp",
+      "coverPoster": "media/covers/prada-m2-poster.jpg",
       "logo": "media/logos/prada.svg",
       "images": [
         {
@@ -128,8 +128,8 @@
     },
     {
       "url": "media/fabiana-01.webp",
-      "cover": "media/covers/fabiana-filippi.webp",
-      "coverPoster": "media/covers/fabiana-filippi-poster.jpg",
+      "cover": "media/covers/fabiana-filippi-m2.webp",
+      "coverPoster": "media/covers/fabiana-filippi-m2-poster.jpg",
       "logo": "media/logos/fabiana-filippi.svg",
       "images": [
         {
@@ -171,8 +171,8 @@
     },
     {
       "url": "media/santoni-02.webp",
-      "cover": "media/covers/santoni.webp",
-      "coverPoster": "media/covers/santoni-poster.jpg",
+      "cover": "media/covers/santoni-m2.webp",
+      "coverPoster": "media/covers/santoni-m2-poster.jpg",
       "logo": "media/logos/santoni.svg",
       "images": [
         {
@@ -218,8 +218,8 @@
     },
     {
       "url": "media/ypsum-01.webp",
-      "cover": "media/covers/ypsum.webp",
-      "coverPoster": "media/covers/ypsum-poster.jpg",
+      "cover": "media/covers/ypsum-m2.webp",
+      "coverPoster": "media/covers/ypsum-m2-poster.jpg",
       "logo": "media/logos/ypsum.svg",
       "images": [
         {
@@ -268,8 +268,8 @@
     },
     {
       "url": "https://vz-13c73ffe-e6a.b-cdn.net/184be4a6-a60e-497a-b876-605f27b004df/thumbnail.jpg",
-      "cover": "media/covers/closer.webp",
-      "coverPoster": "media/covers/closer-poster.jpg",
+      "cover": "media/covers/closer-m2.webp",
+      "coverPoster": "media/covers/closer-m2-poster.jpg",
       "logo": "media/logos/the-cold-magazine.svg",
       "images": [
         {
@@ -312,8 +312,8 @@
     },
     {
       "url": "https://vz-13c73ffe-e6a.b-cdn.net/a23ce765-4772-4ee3-974b-56ed150dd914/thumbnail.jpg",
-      "cover": "media/covers/audemars-piguet.webp",
-      "coverPoster": "media/covers/audemars-piguet-poster.jpg",
+      "cover": "media/covers/audemars-piguet-m2.webp",
+      "coverPoster": "media/covers/audemars-piguet-m2-poster.jpg",
       "logo": "media/logos/audemars-piguet.svg",
       "images": [
         {
@@ -366,8 +366,8 @@
     },
     {
       "url": "media/okgiorgio-01.webp",
-      "cover": "media/covers/ok-giorgio.webp",
-      "coverPoster": "media/covers/ok-giorgio-poster.jpg",
+      "cover": "media/covers/ok-giorgio-m2.webp",
+      "coverPoster": "media/covers/ok-giorgio-m2-poster.jpg",
       "images": [
         {
           "poster": "https://vz-13c73ffe-e6a.b-cdn.net/fb9ee58f-2737-4150-b147-798b03e833f9/thumbnail.jpg",
@@ -412,8 +412,8 @@
     },
     {
       "url": "https://vz-13c73ffe-e6a.b-cdn.net/1ba07f8f-8f02-461d-94f2-7d81950f154f/thumbnail.jpg",
-      "cover": "media/covers/mosaiq-group.webp",
-      "coverPoster": "media/covers/mosaiq-group-poster.jpg",
+      "cover": "media/covers/mosaiq-group-m2.webp",
+      "coverPoster": "media/covers/mosaiq-group-m2-poster.jpg",
       "logo": "media/logos/mosaiq-group.svg",
       "images": [
         {
@@ -448,8 +448,8 @@
     },
     {
       "url": "https://vz-13c73ffe-e6a.b-cdn.net/f783c346-cdcd-46b1-b5ee-c95c4fc33ca8/thumbnail.jpg",
-      "cover": "media/covers/mandarina-duck.webp",
-      "coverPoster": "media/covers/mandarina-duck-poster.jpg",
+      "cover": "media/covers/mandarina-duck-m2.webp",
+      "coverPoster": "media/covers/mandarina-duck-m2-poster.jpg",
       "logo": "media/logos/mandarina-duck.png",
       "images": [
         {
@@ -488,8 +488,8 @@
     },
     {
       "url": "https://vz-13c73ffe-e6a.b-cdn.net/e6d9e8f8-7f27-41a8-9e47-286c49b09c7b/thumbnail.jpg",
-      "cover": "media/covers/fragile.webp",
-      "coverPoster": "media/covers/fragile-poster.jpg",
+      "cover": "media/covers/fragile-m2.webp",
+      "coverPoster": "media/covers/fragile-m2-poster.jpg",
       "logo": "media/logos/d-la-repubblica.svg",
       "images": [
         {
@@ -539,6 +539,41 @@
         {
           "label": "PRODUCTION",
           "value": "Take Off Production"
+        }
+      ]
+    },
+    {
+      "url": "https://vz-13c73ffe-e6a.b-cdn.net/4264cbcf-6db9-4e15-b8aa-dd0e0326156a/thumbnail.jpg",
+      "cover": "media/covers/neit-yapa.webp",
+      "coverPoster": "media/covers/neit-yapa-poster.jpg",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/4264cbcf-6db9-4e15-b8aa-dd0e0326156a/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/4264cbcf-6db9-4e15-b8aa-dd0e0326156a",
+          "title": "",
+          "ratio": "4/5"
+        }
+      ],
+      "title": "NEIT X YAPA — ANTIPAROS",
+      "year": "2026",
+      "loc": "ANTIPAROS",
+      "film": "",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "NEIT"
+        },
+        {
+          "label": "YEAR",
+          "value": "2026"
+        },
+        {
+          "label": "FORMAT",
+          "value": ""
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "Bravò Studio"
         }
       ]
     }
@@ -710,6 +745,13 @@
       "location": "",
       "year": "2026",
       "image": "https://vz-13c73ffe-e6a.b-cdn.net/e6d9e8f8-7f27-41a8-9e47-286c49b09c7b/thumbnail.jpg"
+    },
+    {
+      "num": "13",
+      "title": "NEIT X YAPA — ANTIPAROS",
+      "location": "ANTIPAROS",
+      "year": "2026",
+      "image": "https://vz-13c73ffe-e6a.b-cdn.net/4264cbcf-6db9-4e15-b8aa-dd0e0326156a/thumbnail.jpg"
     }
   ],
   "settings": {
@@ -806,6 +848,24 @@
       "avatarAlt": "Andrea Onori, filmmaker based in Milan, working on fashion and adv",
       "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2022.\nHe is available for commissions and can be reached at video@andreaonori.com."
     }
+  },
+  "about": {
+    "video": "media/about/super8-about.mp4",
+    "poster": "media/about/super8-about-poster.jpg",
+    "caption": "Super 8 · Stromboli, 2025",
+    "title": "I'm Andrea —\nfilmmaker.",
+    "lead": "Raised catching Marche light, now based in Milan, shooting fashion and commercial.",
+    "body": "I shoot and edit my own films: fashion, campaigns, the odd documentary. Some on digital, some on Super 8, all chasing the same light.",
+    "photos": [
+      {
+        "src": "media/about/bts-1.jpg",
+        "caption": "Portrait"
+      },
+      {
+        "src": "media/about/bts-2.jpg",
+        "caption": "On set · Milan"
+      }
+    ]
   },
   "updatedAt": "2026-10-24T13:28:13.610Z"
 }

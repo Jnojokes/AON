@@ -2,8 +2,8 @@
   "feed": [
     {
       "url": "media/santoni-01.webp",
-      "cover": "media/covers/ypsum.webp",
-      "coverPoster": "media/covers/ypsum-poster.jpg",
+      "cover": "media/covers/ypsum-m2.webp",
+      "coverPoster": "media/covers/ypsum-m2-poster.jpg",
       "logo": "scripts/guide/fixtures/logo-esempio.svg",
       "images": [
         {
