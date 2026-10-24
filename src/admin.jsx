@@ -411,6 +411,7 @@ const SECTIONS = [
   { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link Embed del video su Bunny Stream: il video parte solo al click, quindi la griglia resta veloce. Se la copertina manca, il pannello mette la miniatura di Bunny." },
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
+  { key:"about", label:"ABOUT", single:true, help:"Si apre cliccando la storia ABOUT ME: una pagina a tutto schermo con il video verticale a sinistra e, a destra, titolo, testi, i bottoni LET'S ROLL e INSTAGRAM e due foto. La copertina rotonda della storia si cambia nella sezione SERIES." },
   { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel sopra il Feed e la descrizione per Google e i motori AI." },
 ];
 
@@ -1251,6 +1252,157 @@ function FeedReelEditor({ value, password, onChange, onStatus }){
   );
 }
 
+// ── Pagina About ────────────────────────────────────────────────────────────
+// media.json → "about". Il sito la apre cliccando la storia ABOUT ME.
+// Il video e' un file MP4 diretto (un <video> in loop non sa riprodurre il
+// player di Bunny): o un link, o un file caricato dal pannello (max 3 MB).
+const ABOUT_BLANK = () => ({ video:"", poster:"", caption:"", title:"", lead:"", body:"", photos:[{ src:"", caption:"" }, { src:"", caption:"" }] });
+
+function AboutVideoField({ value, password, onChange, onStatus }){
+  const inputRef = useRef(null);
+  const [busy, setBusy] = useState(false);
+  const [nota, setNota] = useState("");
+  const video = String(value || "").trim();
+
+  const onLink = (raw) => {
+    const b = bunnyInfo(estraiSrc(raw.trim()));
+    if (b && b.cdn) {
+      onChange(b.mp4(720));
+      setNota("Link Bunny convertito nel file MP4 diretto a 720p.");
+      return;
+    }
+    setNota("");
+    onChange(raw.trim());
+  };
+  const upload = async (file) => {
+    if (!/^video\/mp4$/i.test(file.type) && !/\.mp4$/i.test(file.name)) {
+      onStatus && onStatus('"' + file.name + '" non è un MP4: qui serve un file .mp4 (oppure incolla un link).', "err");
+      return;
+    }
+    if (file.size > MAX_UPLOAD) {
+      onStatus && onStatus('"' + file.name + '" pesa ' + fmtMB(file.size) + ": il limite dal pannello è 3 MB. Accorcialo o esportalo più leggero, oppure caricalo su Bunny e incolla qui il link.", "err");
+      return;
+    }
+    setBusy(true);
+    onStatus && onStatus("Carico " + file.name + "…", "info");
+    try {
+      const path = await uploadDataUrl(await fileToBase64(file), file.name, password);
+      onChange(path);
+      setNota("");
+      onStatus && onStatus("Video caricato: " + path, "ok");
+    } catch (err) {
+      onStatus && onStatus("Upload fallito: " + err.message, "err");
+    } finally { setBusy(false); }
+  };
+  const [over, dropHandlers] = useDrop((files) => { if (files[0]) upload(files[0]); });
+  const embed = Boolean(video) && (/\/embed\//i.test(video) || /<iframe/i.test(video));
+  const file = Boolean(video) && !embed && VIDEO_RE.test(video);
+  const avviso = { marginTop:6, fontSize:10, lineHeight:1.5, color:"var(--accent)" };
+
+  return (
+    <div>
+      <div className={"drop" + (over ? " over" : "")} data-hint="Rilascia l'MP4" {...dropHandlers} style={{ position:"relative" }}>
+        {file
+          ? <video key={video} src={srcOf(video)} controls muted playsInline preload="metadata"
+              style={{ width:"100%", aspectRatio:"9/16", objectFit:"cover", background:"#000", display:"block" }} />
+          : <div className="thumb mono" style={{ aspectRatio:"9/16", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:4, fontSize:9, color:"#555", letterSpacing:"0.14em" }}>
+              <span>TRASCINA QUI L'MP4</span>
+              <span style={{ fontSize:8, color:"#3d3d3d" }}>max 3 MB · oppure incolla un link</span>
+            </div>}
+        {busy && (
+          <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:5 }}>
+            <div className="spin" style={{ width:22, height:22, border:"2px solid #444", borderTopColor:"var(--accent)", borderRadius:"50%" }} />
+          </div>
+        )}
+      </div>
+      <input ref={inputRef} type="file" accept="video/mp4,.mp4" style={{ display:"none" }}
+        onChange={(e) => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) upload(f); }} />
+      <div style={{ display:"flex", gap:6, marginTop:6 }}>
+        <button className="btn btn-ghost" style={{ flex:1 }} onClick={() => inputRef.current && inputRef.current.click()} disabled={busy}>
+          {busy ? "Carico…" : (video ? "Sostituisci MP4" : "Carica MP4")}
+        </button>
+        {video && <button className="btn btn-ghost btn-xs" onClick={() => { onChange(""); setNota(""); }} title="Rimuovi video">✕</button>}
+      </div>
+      <input className="field sm mono" style={{ marginTop:6 }} value={video}
+        placeholder="https://vz-…b-cdn.net/{guid}/play_720p.mp4"
+        onChange={(e) => onLink(e.target.value)} />
+      {nota && <div className="mono" style={{ ...avviso, color:"var(--ok)" }}>✓ {nota}</div>}
+      {embed && <div className="mono" style={avviso}>✕ Questo è un link da incorporare: qui serve il file .mp4 diretto. Il link Embed di Bunny viene convertito da solo; un altro player no.</div>}
+    </div>
+  );
+}
+
+function AboutEditor({ value, password, onChange, onStatus }){
+  const v = { ...ABOUT_BLANK(), ...(value || {}) };
+  const photos = [0, 1].map((i) => ({ src:"", caption:"", ...((v.photos || [])[i] || {}) }));
+  const set = (k, x) => onChange({ ...v, [k]: x });
+  const setPhoto = (i, patch) => set("photos", photos.map((p, j) => j === i ? { ...p, ...patch } : p));
+  const text = (k, lbl, area, hint, minH) => (
+    <div style={area ? { gridColumn:"1 / -1" } : null}>
+      <label className="lbl">{lbl}</label>
+      {area
+        ? <textarea className="field" style={{ minHeight: minH || 70 }} value={v[k] || ""} onChange={(e) => set(k, e.target.value)} />
+        : <input className="field" value={v[k] || ""} onChange={(e) => set(k, e.target.value)} />}
+      {hint && <p className="mono" style={{ fontSize:10, color:"#555", marginTop:6 }}>{hint}</p>}
+    </div>
+  );
+
+  return (
+    <div>
+      <div className="set-group">
+        <h3>Video</h3>
+        <p className="hint">
+          Il video verticale a sinistra: parte da solo, muto, e gira in loop. Meglio un montaggio
+          verticale 9:16; un video orizzontale viene tagliato al centro. Carica un MP4 (max 3 MB)
+          oppure incolla il link diretto di Bunny, per esempio
+          https://vz-13c73ffe-e6a.b-cdn.net/&#123;guid&#125;/play_720p.mp4 (anche il link Embed
+          viene convertito da solo). Da telefono si vede in 4:5. Senza video compare la copertina;
+          senza nessuno dei due, il testo prende tutta la larghezza.
+        </p>
+        <div className="set-grid">
+          <div>
+            <label className="lbl">Video (.mp4)</label>
+            <AboutVideoField value={v.video} password={password} onStatus={onStatus} onChange={(x) => set("video", x)} />
+          </div>
+          <div>
+            <label className="lbl">Copertina · si vede finché il video carica</label>
+            <ImageField value={v.poster || ""} password={password} aspect="9/16" allowUrl
+              onChange={(x) => set("poster", x)} onStatus={onStatus} />
+            <label className="lbl" style={{ marginTop:12 }}>Scritta sul video (una riga)</label>
+            <input className="field" value={v.caption || ""} placeholder="Super 8 · Stromboli, 2025"
+              onChange={(e) => set("caption", e.target.value)} />
+          </div>
+        </div>
+      </div>
+
+      <div className="set-group">
+        <h3>Testi</h3>
+        <div className="set-grid">
+          {text("title", "Titolo", true, "Vai a capo dove vuoi spezzare il titolo: la prima riga non va mai a capo da sola.", 60)}
+          {text("lead", "Lead (testo grande)", true)}
+          {text("body", "Testo", true, "Una riga vuota o un a capo separa i paragrafi.", 100)}
+        </div>
+      </div>
+
+      <div className="set-group">
+        <h3>Foto</h3>
+        <p className="hint">Due foto 4:5 affiancate sotto i bottoni, con una didascalia corta. Si caricano così come sono (max 3 MB). Se ne togli una, l'altra prende tutta la larghezza.</p>
+        <div className="set-grid">
+          {photos.map((p, i) => (
+            <div key={i}>
+              <label className="lbl">Foto {i + 1}</label>
+              <ImageField value={p.src} password={password} aspect="4/5"
+                onChange={(x) => setPhoto(i, { src: x })} onStatus={onStatus} />
+              <label className="lbl" style={{ marginTop:12 }}>Didascalia</label>
+              <input className="field" value={p.caption || ""} onChange={(e) => setPhoto(i, { caption: e.target.value })} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Pannello "Impostazioni generali" ────────────────────────────────────────
 function SettingsEditor({ settings, password, onChange, onStatus }){
   const s = settings || {};
@@ -1568,7 +1720,7 @@ function CMS({ password }){
 
       {/* Body */}
       <main style={{maxWidth:1160,margin:"0 auto",padding:"24px"}}>
-        {tab !== "settings" && <HelpBox />}
+        {!meta.single && <HelpBox />}
 
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",gap:16,marginBottom:18,flexWrap:"wrap"}}>
           <div>
@@ -1581,7 +1733,10 @@ function CMS({ password }){
           </div>
         </div>
 
-        {meta.single ? (
+        {tab === "about" ? (
+          <AboutEditor value={media.about} password={password} onStatus={status}
+            onChange={(v)=>update("about", v)} />
+        ) : meta.single ? (
           <SettingsEditor settings={media.settings} password={password} onStatus={status}
             onChange={(v)=>update("settings", v)} />
         ) : list.length === 0 ? (

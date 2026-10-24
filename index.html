@@ -1043,6 +1043,61 @@
         .colofone-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--mute); margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
         .colofone-value { font-size: 13px; color: var(--fg); font-family: 'JetBrains Mono', monospace; }
 
+        /* ─────────────────────────────────────────────────────────────────
+           PAGINA ABOUT (#about) — variante C3 approvata. Vista a tutto schermo
+           sopra il sito, con il suo scorrimento: il video verticale resta
+           fermo (sticky) accanto al testo.
+           ───────────────────────────────────────────────────────────────── */
+        .about-view {
+            position: fixed; inset: 0; z-index: 10000;
+            background: var(--bg); color: var(--fg);
+            overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+            animation: modalIn .25s ease; outline: none;
+        }
+        .about-wrap { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+        .about-top { border-bottom: 1px solid var(--line); }
+        .about-topbar { display: flex; justify-content: space-between; align-items: center; height: 52px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+        .about-back { color: inherit; text-decoration: none; transition: color .3s var(--ease-out); }
+        .about-back:hover, .about-back:focus-visible { color: var(--accent); }
+        .about-here { color: var(--mute); }
+        .about-hero { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 64px; align-items: start; padding-top: 40px; padding-bottom: 120px; }
+        .about-hero.no-media { grid-template-columns: minmax(0, 1fr); }
+        /* Il video si dimensiona sull'ALTEZZA dello schermo e resta 9:16: su
+           schermi bassi diventa piu' stretto e il testo si allarga. */
+        .about-vert {
+            position: sticky; top: 24px;
+            height: min(calc(100vh - 48px), 880px); height: min(calc(100svh - 48px), 880px);
+            width: auto; aspect-ratio: 9 / 16; overflow: hidden; background: #0c0c0c;
+        }
+        .about-vert video, .about-vert img { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .about-caption { position: absolute; left: 16px; bottom: 16px; z-index: 2; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--fg); text-shadow: 0 1px 12px rgba(0,0,0,.5); }
+        .about-side { container-type: inline-size; min-width: 0; }
+        .about-title {
+            font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase;
+            margin-top: 8px; font-size: 48px; font-size: clamp(34px, 12.5cqi, 92px);
+            line-height: .92; letter-spacing: -.03em;
+        }
+        .about-title .nw { white-space: nowrap; }
+        .about-lead { margin-top: 28px; font-weight: 300; font-size: clamp(22px, 2vw, 28px); line-height: 1.3; max-width: 22ch; }
+        .about-body { margin-top: 24px; font-size: 18px; line-height: 1.55; color: #c4c4c4; max-width: 38ch; }
+        .about-ctas { margin-top: 40px; display: flex; gap: 8px; flex-wrap: wrap; }
+        .about-ctas .btn-primary, .about-ctas .btn-secondary { min-height: 44px; text-decoration: none; }
+        .about-photos { margin-top: 72px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .about-photos.one { grid-template-columns: 1fr; }
+        .about-photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--cell); }
+        .about-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .about-photos figcaption { margin-top: 12px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8a8a8a; }
+        .about-foot { border-top: 1px solid var(--line); padding: 28px 0; }
+        .about-foot .about-wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--mute); }
+        @media (max-width: 860px) {
+            .about-wrap { padding: 0 20px; }
+            .about-hero { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-top: 20px; padding-bottom: 80px; }
+            /* Da mobile il video va a tutta larghezza in 4:5: 9:16 sarebbe troppo alto. */
+            .about-vert { position: relative; top: 0; height: auto; width: 100%; aspect-ratio: 4 / 5; }
+            .about-lead { max-width: none; }
+            .about-photos { gap: 6px; margin-top: 48px; }
+        }
+
         /* Respect reduced-motion: kill marquee/auto-animations and shorten transitions */
         @media (prefers-reduced-motion: reduce) {
             .marquee-track { animation: none !important; }
@@ -1198,7 +1253,7 @@
             border-top: 1px solid var(--line);
         }
     </style>
-    <link rel="stylesheet" href="/assets/tailwind.css?v=f4f2d1ad">
+    <link rel="stylesheet" href="/assets/tailwind.css?v=4aa88911">
 </head>
 <body>
     <!-- Il contenuto statico qui sotto è generato da scripts/prerender.mjs a ogni
@@ -1419,7 +1474,7 @@
 
     <!-- Il sorgente di questo bundle e' src/app.jsx. Non modificare
          assets/app.js a mano: si rigenera con `npm run build`. -->
-    <script src="/assets/app.js?v=3ad52448" defer></script>
+    <script src="/assets/app.js?v=1af2ad10" defer></script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
          BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:

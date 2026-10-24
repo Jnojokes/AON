@@ -849,5 +849,23 @@
       "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2022.\nHe is available for commissions and can be reached at video@andreaonori.com."
     }
   },
+  "about": {
+    "video": "media/about/super8-about.mp4",
+    "poster": "media/about/super8-about-poster.jpg",
+    "caption": "Super 8 · Stromboli, 2025",
+    "title": "I'm Andrea —\nfilmmaker.",
+    "lead": "Raised catching Marche light, now based in Milan, shooting fashion and commercial.",
+    "body": "I shoot and edit my own films: fashion, campaigns, the odd documentary. Some on digital, some on Super 8, all chasing the same light.",
+    "photos": [
+      {
+        "src": "media/about/bts-1.jpg",
+        "caption": "Portrait"
+      },
+      {
+        "src": "media/about/bts-2.jpg",
+        "caption": "On set · Milan"
+      }
+    ]
+  },
   "updatedAt": "2026-10-24T13:28:13.610Z"
 }
