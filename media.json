@@ -4,6 +4,7 @@
       "url": "media/greta-01.webp",
       "cover": "media/covers/greta-boldini.webp",
       "coverPoster": "media/covers/greta-boldini-poster.jpg",
+      "logo": "media/logos/greta-boldini.png",
       "images": [
         {
           "poster": "https://vz-13c73ffe-e6a.b-cdn.net/591d9dd1-4c05-466d-9e2c-5cf7202c5539/thumbnail.jpg",
@@ -14,7 +15,12 @@
         "media/greta-01.webp",
         "media/greta-02.webp",
         "media/greta-03.webp",
-        "media/greta-04.webp"
+        "media/greta-04.webp",
+        "media/greta-05.webp",
+        "media/greta-06.webp",
+        "media/greta-07.webp",
+        "media/greta-08.webp",
+        "media/greta-carousel.webp"
       ],
       "title": "GRETA'S GARDEN",
       "year": "2025",
@@ -44,9 +50,130 @@
       ]
     },
     {
-      "url": "media/santoni-bto-4-1-1-mqunjfp4.webp",
+      "url": "media/mugshot-backstage.webp",
+      "cover": "media/covers/mugshot.webp",
+      "coverPoster": "media/covers/mugshot-poster.jpg",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/30bfd0d5-18a0-4de3-a7e4-111c0d9e2839/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/30bfd0d5-18a0-4de3-a7e4-111c0d9e2839",
+          "title": "",
+          "ratio": "16/9"
+        },
+        "media/mugshot-backstage.webp",
+        "media/mugshot-carousel.webp"
+      ],
+      "title": "IL CASO EST RADIO",
+      "year": "2025",
+      "loc": "MILANO",
+      "film": "CAMPAIGN",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Est Radio"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Campaign"
+        },
+        {
+          "label": "WRITTEN BY",
+          "value": "Carlo Sabatucci & Andrea Scotto Di Carlo"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "Bianca Rovati, Viola Cecconello, Enrico Sorbini"
+        }
+      ]
+    },
+    {
+      "url": "https://vz-13c73ffe-e6a.b-cdn.net/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6/thumbnail.jpg",
+      "cover": "media/covers/prada.webp",
+      "coverPoster": "media/covers/prada-poster.jpg",
+      "logo": "media/logos/prada.svg",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6",
+          "title": "",
+          "ratio": "9/16"
+        }
+      ],
+      "title": "FW26 INVITATION",
+      "year": "2026",
+      "loc": "MILANO",
+      "film": "ADV — INVITATION",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Prada"
+        },
+        {
+          "label": "YEAR",
+          "value": "2026"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Invitation teaser"
+        },
+        {
+          "label": "ART DIRECTION & PRODUCTION",
+          "value": "Culted"
+        }
+      ]
+    },
+    {
+      "url": "media/fabiana-01.webp",
+      "cover": "media/covers/fabiana-filippi.webp",
+      "coverPoster": "media/covers/fabiana-filippi-poster.jpg",
+      "logo": "media/logos/fabiana-filippi.svg",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6",
+          "title": "",
+          "ratio": "4/5"
+        },
+        "media/fabiana-01.webp",
+        "media/fabiana-02.webp",
+        "media/fabiana-03.webp"
+      ],
+      "title": "VETRINA",
+      "year": "2025",
+      "loc": "MILANO",
+      "film": "LOOKBOOK",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Fabiana Filippi"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Lookbook"
+        },
+        {
+          "label": "ART DIRECTION",
+          "value": "SocialRise"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "BlackFrog"
+        }
+      ]
+    },
+    {
+      "url": "media/santoni-02.webp",
       "cover": "media/covers/santoni.webp",
       "coverPoster": "media/covers/santoni-poster.jpg",
+      "logo": "media/logos/santoni.svg",
       "images": [
         {
           "poster": "https://vz-13c73ffe-e6a.b-cdn.net/b5536c8a-6f38-476a-b58c-e1744e59b024/thumbnail.jpg",
@@ -54,12 +181,14 @@
           "title": "",
           "ratio": "16/9"
         },
-        "media/santoni-bto-4-1-1-mqunjfp4.webp"
+        "media/santoni-02.webp",
+        "media/santoni-07.webp",
+        "media/santoni-carousel.webp"
       ],
       "title": "BACK TO OFFICE",
       "year": "2025",
       "loc": "MILANO",
-      "film": "",
+      "film": "CAMPAIGN",
       "credits": [
         {
           "label": "CLIENT",
@@ -88,91 +217,10 @@
       ]
     },
     {
-      "url": "media/fabiana-01.webp",
-      "cover": "media/covers/fabiana-filippi.webp",
-      "coverPoster": "media/covers/fabiana-filippi-poster.jpg",
-      "images": [
-        {
-          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6/thumbnail.jpg",
-          "video": "https://player.mediadelivery.net/embed/788231/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6",
-          "title": "",
-          "ratio": "4/5"
-        },
-        "media/fabiana-01.webp",
-        "media/fabiana-02.webp",
-        "media/fabiana-03.webp"
-      ],
-      "title": "VETRINA",
-      "year": "2025",
-      "loc": "MILANO",
-      "film": "VETRINA — DW",
-      "credits": [
-        {
-          "label": "CLIENT",
-          "value": "Fabiana Filippi"
-        },
-        {
-          "label": "YEAR",
-          "value": "2025"
-        },
-        {
-          "label": "FORMAT",
-          "value": "Lookbook"
-        },
-        {
-          "label": "ART DIRECTION",
-          "value": "SocialRise"
-        },
-        {
-          "label": "PRODUCTION",
-          "value": "BlackFrog"
-        }
-      ]
-    },
-    {
-      "url": "media/okgiorgio-01.webp",
-      "images": [
-        {
-          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/fb9ee58f-2737-4150-b147-798b03e833f9/thumbnail.jpg",
-          "video": "https://player.mediadelivery.net/embed/788231/fb9ee58f-2737-4150-b147-798b03e833f9",
-          "title": "",
-          "ratio": "16/9"
-        },
-        "media/okgiorgio-01.webp",
-        "media/okgiorgio-02.webp",
-        "media/okgiorgio-03.webp"
-      ],
-      "title": "OK GIORGIO — DJ SET",
-      "year": "2025",
-      "loc": "GINOSTRA",
-      "film": "DOC — LIVE",
-      "credits": [
-        {
-          "label": "CLIENT",
-          "value": "Est Radio"
-        },
-        {
-          "label": "YEAR",
-          "value": "2025"
-        },
-        {
-          "label": "FORMAT",
-          "value": "Documentary"
-        },
-        {
-          "label": "WRITTEN BY",
-          "value": "Carlo Sabatucci"
-        },
-        {
-          "label": "SOUND",
-          "value": "Francesco Ciccarelli"
-        }
-      ]
-    },
-    {
       "url": "media/ypsum-01.webp",
       "cover": "media/covers/ypsum.webp",
       "coverPoster": "media/covers/ypsum-poster.jpg",
+      "logo": "media/logos/ypsum.svg",
       "images": [
         {
           "poster": "https://vz-13c73ffe-e6a.b-cdn.net/7e5db36d-da9c-4170-a359-76df08b5d4d9/thumbnail.jpg",
@@ -182,7 +230,10 @@
         },
         "media/ypsum-01.webp",
         "media/ypsum-02.webp",
-        "media/ypsum-03.webp"
+        "media/ypsum-03.webp",
+        "media/ypsum-04.webp",
+        "media/ypsum-05.webp",
+        "media/ypsum-carousel.webp"
       ],
       "title": "YPSUM",
       "year": "2025",
@@ -216,263 +267,107 @@
       ]
     },
     {
-      "url": "media/mugshot-backstage.webp",
-      "cover": "media/covers/mugshot.webp",
-      "coverPoster": "media/covers/mugshot-poster.jpg",
+      "url": "https://vz-13c73ffe-e6a.b-cdn.net/184be4a6-a60e-497a-b876-605f27b004df/thumbnail.jpg",
+      "cover": "media/covers/closer.webp",
+      "coverPoster": "media/covers/closer-poster.jpg",
+      "logo": "media/logos/the-cold-magazine.svg",
       "images": [
         {
-          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/30bfd0d5-18a0-4de3-a7e4-111c0d9e2839/thumbnail.jpg",
-          "video": "https://player.mediadelivery.net/embed/788231/30bfd0d5-18a0-4de3-a7e4-111c0d9e2839",
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/184be4a6-a60e-497a-b876-605f27b004df/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/184be4a6-a60e-497a-b876-605f27b004df",
           "title": "",
-          "ratio": "16/9"
-        },
-        "media/mugshot-backstage.webp"
+          "ratio": "699/512"
+        }
       ],
-      "title": "IL CASO EST RADIO",
-      "year": "2025",
-      "loc": "MILANO",
-      "film": "BACKSTAGE — 35MM",
+      "title": "CUM CLOSER",
+      "year": "2026",
+      "loc": "",
+      "film": "EDITORIAL",
       "credits": [
         {
           "label": "CLIENT",
-          "value": "Est Radio"
+          "value": "The Cold Magazine"
         },
         {
           "label": "YEAR",
-          "value": "2025"
+          "value": "2026"
         },
         {
           "label": "FORMAT",
-          "value": "Campaign"
+          "value": "Editorial"
         },
         {
-          "label": "WRITTEN BY",
-          "value": "Carlo Sabatucci & Andrea Scotto Di Carlo"
+          "label": "ART DIRECTOR & STYLIST",
+          "value": "Giorgia Presicce"
         },
         {
-          "label": "PRODUCTION",
-          "value": "Bianca Rovati, Viola Cecconello, Enrico Sorbini"
+          "label": "MAKE-UP & HAIR",
+          "value": "Domenico Milone, Aicha Seck"
+        },
+        {
+          "label": "TALENTS",
+          "value": "Michele Arrabito, Camomilla Pecchiari"
         }
       ]
     },
     {
-      "url": "media/santoni-09.webp",
-      "cover": "media/covers/santoni.webp",
-      "coverPoster": "media/covers/santoni-poster.jpg",
+      "url": "https://vz-13c73ffe-e6a.b-cdn.net/a23ce765-4772-4ee3-974b-56ed150dd914/thumbnail.jpg",
+      "cover": "media/covers/audemars-piguet.webp",
+      "coverPoster": "media/covers/audemars-piguet-poster.jpg",
+      "logo": "media/logos/audemars-piguet.svg",
       "images": [
         {
-          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/b5536c8a-6f38-476a-b58c-e1744e59b024/thumbnail.jpg",
-          "video": "https://player.mediadelivery.net/embed/788231/b5536c8a-6f38-476a-b58c-e1744e59b024",
-          "title": "",
-          "ratio": "16/9"
-        },
-        "media/santoni-09.webp",
-        "media/santoni-10.webp",
-        "media/santoni-11.webp",
-        "media/santoni-12.webp"
-      ],
-      "title": "BACK TO OFFICE",
-      "year": "2025",
-      "loc": "MILANO",
-      "film": "DIGITAL — STUDIO",
-      "credits": [
-        {
-          "label": "CLIENT",
-          "value": "Santoni"
-        },
-        {
-          "label": "YEAR",
-          "value": "2025"
-        },
-        {
-          "label": "FORMAT",
-          "value": "Campaign"
-        },
-        {
-          "label": "ART DIRECTION",
-          "value": "Paolo Santosuosso // Socialrise"
-        },
-        {
-          "label": "PRODUCTION",
-          "value": "Silvia Gesuelli // BlackFrog"
-        },
-        {
-          "label": "1AC",
-          "value": "@paq"
-        }
-      ]
-    },
-    {
-      "url": "media/greta-05.webp",
-      "cover": "media/covers/greta-boldini.webp",
-      "coverPoster": "media/covers/greta-boldini-poster.jpg",
-      "images": [
-        {
-          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/591d9dd1-4c05-466d-9e2c-5cf7202c5539/thumbnail.jpg",
-          "video": "https://player.mediadelivery.net/embed/788231/591d9dd1-4c05-466d-9e2c-5cf7202c5539",
-          "title": "",
-          "ratio": "4/3"
-        },
-        "media/greta-05.webp",
-        "media/greta-06.webp",
-        "media/greta-07.webp",
-        "media/greta-08.webp"
-      ],
-      "title": "GRETA'S GARDEN",
-      "year": "2025",
-      "loc": "MILANO",
-      "film": "EDITORIAL — PORTRAIT",
-      "credits": [
-        {
-          "label": "CLIENT",
-          "value": "Greta Boldini"
-        },
-        {
-          "label": "YEAR",
-          "value": "2025"
-        },
-        {
-          "label": "FORMAT",
-          "value": ""
-        },
-        {
-          "label": "DIRECTION",
-          "value": "Raffaele Cerulo & Jasmine Jessica De Pretto"
-        },
-        {
-          "label": "SET DESIGN",
-          "value": "Alexander Flagella"
-        }
-      ]
-    },
-    {
-      "url": "media/okgiorgio-06.webp",
-      "images": [
-        {
-          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/fb9ee58f-2737-4150-b147-798b03e833f9/thumbnail.jpg",
-          "video": "https://player.mediadelivery.net/embed/788231/fb9ee58f-2737-4150-b147-798b03e833f9",
-          "title": "",
-          "ratio": "16/9"
-        },
-        "media/okgiorgio-06.webp",
-        "media/okgiorgio-07.webp"
-      ],
-      "title": "OK GIORGIO — GROTTA",
-      "year": "2025",
-      "loc": "STROMBOLI",
-      "film": "DOC — LIVE",
-      "credits": [
-        {
-          "label": "CLIENT",
-          "value": "Est Radio"
-        },
-        {
-          "label": "YEAR",
-          "value": "2025"
-        },
-        {
-          "label": "FORMAT",
-          "value": "Documentary"
-        },
-        {
-          "label": "WRITTEN BY",
-          "value": "Carlo Sabatucci"
-        },
-        {
-          "label": "SOUND",
-          "value": "Francesco Ciccarelli"
-        }
-      ]
-    },
-    {
-      "url": "media/fabiana-03.webp",
-      "cover": "media/covers/fabiana-filippi.webp",
-      "coverPoster": "media/covers/fabiana-filippi-poster.jpg",
-      "images": [
-        {
-          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6/thumbnail.jpg",
-          "video": "https://player.mediadelivery.net/embed/788231/e671c38b-7ff8-41b2-bc52-70c42f0bd9b6",
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/a23ce765-4772-4ee3-974b-56ed150dd914/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/a23ce765-4772-4ee3-974b-56ed150dd914",
           "title": "",
           "ratio": "4/5"
         },
-        "media/fabiana-03.webp"
-      ],
-      "title": "VETRINA",
-      "year": "2025",
-      "loc": "MILANO",
-      "film": "VETRINA — DW",
-      "credits": [
         {
-          "label": "CLIENT",
-          "value": "Fabiana Filippi"
-        },
-        {
-          "label": "YEAR",
-          "value": "2025"
-        },
-        {
-          "label": "FORMAT",
-          "value": "Lookbook"
-        },
-        {
-          "label": "ART DIRECTION",
-          "value": "SocialRise"
-        },
-        {
-          "label": "PRODUCTION",
-          "value": "BlackFrog"
-        }
-      ]
-    },
-    {
-      "url": "media/santoni-14.webp",
-      "cover": "media/covers/santoni.webp",
-      "coverPoster": "media/covers/santoni-poster.jpg",
-      "images": [
-        {
-          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/b5536c8a-6f38-476a-b58c-e1744e59b024/thumbnail.jpg",
-          "video": "https://player.mediadelivery.net/embed/788231/b5536c8a-6f38-476a-b58c-e1744e59b024",
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/2ec5d2f5-a03e-4728-affc-73484e1cd21f/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/2ec5d2f5-a03e-4728-affc-73484e1cd21f",
           "title": "",
-          "ratio": "16/9"
+          "ratio": "4/5"
         },
-        "media/santoni-14.webp",
-        "media/santoni-15.webp",
-        "media/santoni-16.webp",
-        "media/santoni-17.webp"
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/be6c3f54-90e0-477d-b05a-663b07d2dce3/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/be6c3f54-90e0-477d-b05a-663b07d2dce3",
+          "title": "",
+          "ratio": "4/5"
+        },
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/7724a7a2-36b2-4483-85bb-d3768de51913/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/7724a7a2-36b2-4483-85bb-d3768de51913",
+          "title": "",
+          "ratio": "4/5"
+        }
       ],
-      "title": "BACK TO OFFICE",
-      "year": "2025",
-      "loc": "MILANO",
-      "film": "DIGITAL — DETAIL",
+      "title": "AUDEMARS PIGUET",
+      "year": "2024",
+      "loc": "",
+      "film": "ADV",
       "credits": [
         {
           "label": "CLIENT",
-          "value": "Santoni"
+          "value": "Audemars Piguet"
         },
         {
           "label": "YEAR",
-          "value": "2025"
+          "value": "2024"
         },
         {
           "label": "FORMAT",
-          "value": "Campaign"
-        },
-        {
-          "label": "ART DIRECTION",
-          "value": "Paolo Santosuosso // Socialrise"
+          "value": "ADV"
         },
         {
           "label": "PRODUCTION",
-          "value": "Silvia Gesuelli // BlackFrog"
-        },
-        {
-          "label": "1AC",
-          "value": "@paq"
+          "value": "Orlandofilm"
         }
       ]
     },
     {
-      "url": "media/okgiorgio-07.webp",
+      "url": "media/okgiorgio-01.webp",
+      "cover": "media/covers/ok-giorgio.webp",
+      "coverPoster": "media/covers/ok-giorgio-poster.jpg",
       "images": [
         {
           "poster": "https://vz-13c73ffe-e6a.b-cdn.net/fb9ee58f-2737-4150-b147-798b03e833f9/thumbnail.jpg",
@@ -480,9 +375,15 @@
           "title": "",
           "ratio": "16/9"
         },
+        "media/okgiorgio-01.webp",
+        "media/okgiorgio-02.webp",
+        "media/okgiorgio-03.webp",
+        "media/okgiorgio-04.webp",
+        "media/okgiorgio-05.webp",
+        "media/okgiorgio-06.webp",
         "media/okgiorgio-07.webp"
       ],
-      "title": "OK GIORGIO — VULCANO",
+      "title": "IN VACANZA A STROMBOLI CON OKGIORGIO",
       "year": "2025",
       "loc": "STROMBOLI",
       "film": "DOC — LIVE",
@@ -506,6 +407,138 @@
         {
           "label": "SOUND",
           "value": "Francesco Ciccarelli"
+        }
+      ]
+    },
+    {
+      "url": "https://vz-13c73ffe-e6a.b-cdn.net/1ba07f8f-8f02-461d-94f2-7d81950f154f/thumbnail.jpg",
+      "cover": "media/covers/mosaiq-group.webp",
+      "coverPoster": "media/covers/mosaiq-group-poster.jpg",
+      "logo": "media/logos/mosaiq-group.svg",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/1ba07f8f-8f02-461d-94f2-7d81950f154f/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/1ba07f8f-8f02-461d-94f2-7d81950f154f",
+          "title": "",
+          "ratio": "16/9"
+        }
+      ],
+      "title": "MOSAIQ GROUP",
+      "year": "2024",
+      "loc": "",
+      "film": "CAMPAIGN — INDUSTRIAL",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Mosaiq Group"
+        },
+        {
+          "label": "YEAR",
+          "value": "2024"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Industrial video"
+        },
+        {
+          "label": "PRODUCTION & CREATIVITY",
+          "value": "Socialrise"
+        }
+      ]
+    },
+    {
+      "url": "https://vz-13c73ffe-e6a.b-cdn.net/f783c346-cdcd-46b1-b5ee-c95c4fc33ca8/thumbnail.jpg",
+      "cover": "media/covers/mandarina-duck.webp",
+      "coverPoster": "media/covers/mandarina-duck-poster.jpg",
+      "logo": "media/logos/mandarina-duck.png",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/f783c346-cdcd-46b1-b5ee-c95c4fc33ca8/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/f783c346-cdcd-46b1-b5ee-c95c4fc33ca8",
+          "title": "",
+          "ratio": "16/9"
+        }
+      ],
+      "title": "MANDARINA DUCK",
+      "year": "2025",
+      "loc": "",
+      "film": "CAMPAIGN",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "Mandarina Duck"
+        },
+        {
+          "label": "YEAR",
+          "value": "2025"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Campaign"
+        },
+        {
+          "label": "ART DIRECTION",
+          "value": "Paolo Santosuosso // Socialrise"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "Silvia Gesuelli // BlackFrog"
+        }
+      ]
+    },
+    {
+      "url": "https://vz-13c73ffe-e6a.b-cdn.net/e6d9e8f8-7f27-41a8-9e47-286c49b09c7b/thumbnail.jpg",
+      "cover": "media/covers/fragile.webp",
+      "coverPoster": "media/covers/fragile-poster.jpg",
+      "logo": "media/logos/d-la-repubblica.svg",
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/e6d9e8f8-7f27-41a8-9e47-286c49b09c7b/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/e6d9e8f8-7f27-41a8-9e47-286c49b09c7b",
+          "title": "",
+          "ratio": "4/5"
+        }
+      ],
+      "title": "FRAGILE",
+      "year": "2026",
+      "loc": "",
+      "film": "EDITORIAL",
+      "credits": [
+        {
+          "label": "CLIENT",
+          "value": "D la Repubblica"
+        },
+        {
+          "label": "YEAR",
+          "value": "2026"
+        },
+        {
+          "label": "FORMAT",
+          "value": "Editorial"
+        },
+        {
+          "label": "PHOTOGRAPHY",
+          "value": "Guglielmo Profeti"
+        },
+        {
+          "label": "STYLING",
+          "value": "Francesca Ottaviani"
+        },
+        {
+          "label": "SET DESIGN",
+          "value": "Alina Totaro Studio"
+        },
+        {
+          "label": "HAIR & MAKE-UP",
+          "value": "Daniela Magginetti @ Blend Management"
+        },
+        {
+          "label": "MODEL",
+          "value": "Christie Munezero @ Special Management"
+        },
+        {
+          "label": "PRODUCTION",
+          "value": "Take Off Production"
         }
       ]
     }
@@ -596,59 +629,87 @@
   "index": [
     {
       "num": "01",
-      "title": "SANTONI BTO",
-      "location": "MILANO",
-      "year": "2025",
-      "image": "media/santoni-01.webp"
-    },
-    {
-      "num": "02",
-      "title": "GRETA BOLDINI",
+      "title": "GRETA'S GARDEN",
       "location": "MILANO",
       "year": "2025",
       "image": "media/greta-01.webp"
     },
     {
+      "num": "02",
+      "title": "IL CASO EST RADIO",
+      "location": "MILANO",
+      "year": "2025",
+      "image": "media/mugshot-backstage.webp"
+    },
+    {
       "num": "03",
-      "title": "FABIANA FILIPPI",
+      "title": "FW26 INVITATION",
+      "location": "MILANO",
+      "year": "2026",
+      "image": "https://vz-13c73ffe-e6a.b-cdn.net/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6/thumbnail.jpg"
+    },
+    {
+      "num": "04",
+      "title": "VETRINA",
       "location": "MILANO",
       "year": "2025",
       "image": "media/fabiana-01.webp"
     },
     {
-      "num": "04",
-      "title": "OK GIORGIO — DJ SET",
-      "location": "GINOSTRA",
+      "num": "05",
+      "title": "BACK TO OFFICE",
+      "location": "MILANO",
       "year": "2025",
-      "image": "media/okgiorgio-01.webp"
+      "image": "media/santoni-02.webp"
     },
     {
-      "num": "05",
+      "num": "06",
       "title": "YPSUM",
       "location": "MILANO",
       "year": "2025",
       "image": "media/ypsum-01.webp"
     },
     {
-      "num": "06",
-      "title": "MUGSHOT",
-      "location": "MILANO",
-      "year": "2025",
-      "image": "media/mugshot-backstage.webp"
-    },
-    {
       "num": "07",
-      "title": "OK GIORGIO — GROTTA",
-      "location": "STROMBOLI",
-      "year": "2025",
-      "image": "media/okgiorgio-06.webp"
+      "title": "CUM CLOSER",
+      "location": "",
+      "year": "2026",
+      "image": "https://vz-13c73ffe-e6a.b-cdn.net/184be4a6-a60e-497a-b876-605f27b004df/thumbnail.jpg"
     },
     {
       "num": "08",
-      "title": "SANTONI BTO — STUDIO",
-      "location": "MILANO",
+      "title": "AUDEMARS PIGUET",
+      "location": "",
+      "year": "2024",
+      "image": "https://vz-13c73ffe-e6a.b-cdn.net/a23ce765-4772-4ee3-974b-56ed150dd914/thumbnail.jpg"
+    },
+    {
+      "num": "09",
+      "title": "IN VACANZA A STROMBOLI CON OKGIORGIO",
+      "location": "STROMBOLI",
       "year": "2025",
-      "image": "media/santoni-09.webp"
+      "image": "media/okgiorgio-01.webp"
+    },
+    {
+      "num": "10",
+      "title": "MOSAIQ GROUP",
+      "location": "",
+      "year": "2024",
+      "image": "https://vz-13c73ffe-e6a.b-cdn.net/1ba07f8f-8f02-461d-94f2-7d81950f154f/thumbnail.jpg"
+    },
+    {
+      "num": "11",
+      "title": "MANDARINA DUCK",
+      "location": "",
+      "year": "2025",
+      "image": "https://vz-13c73ffe-e6a.b-cdn.net/f783c346-cdcd-46b1-b5ee-c95c4fc33ca8/thumbnail.jpg"
+    },
+    {
+      "num": "12",
+      "title": "FRAGILE",
+      "location": "",
+      "year": "2026",
+      "image": "https://vz-13c73ffe-e6a.b-cdn.net/e6d9e8f8-7f27-41a8-9e47-286c49b09c7b/thumbnail.jpg"
     }
   ],
   "settings": {
