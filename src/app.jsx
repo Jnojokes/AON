@@ -843,10 +843,11 @@ import * as ReactDOM from 'react-dom/client';
         // Tabs
         // Le chiavi ('FEED'/'MOTION'/'INDEX') restano interne: rinominare una
         // tab dal pannello cambia l'etichetta, non la logica né gli eventi GA4.
-        // INDEX non si mostra dalla versione 1 (decisione di Andrea, ottobre
-        // 2026). IndexView e i dati restano: per riattivarla basta rimettere
-        // 'INDEX' in questa lista.
-        const TAB_KEYS = ['FEED', 'MOTION'];
+        // INDEX non si mostra dalla versione 1 e MOTION dal 25/10/2026
+        // (decisioni di Andrea). IndexView, MotionGrid e i dati restano: per
+        // riattivarle basta rimetterle in questa lista. Con una tab sola la
+        // barra delle tab non compare e il feed parte subito.
+        const TAB_KEYS = ['FEED'];
         const tabLabel = (k) => ({
             FEED: S().sections.tabFeed,
             MOTION: S().sections.tabMotion,
@@ -1813,7 +1814,7 @@ import * as ReactDOM from 'react-dom/client';
                     {reel && <div className="hero-gap" aria-hidden="true"></div>}
 
                     <main ref={panelRef} className="home-panel page-x">
-                        <Tabs active={active} setActive={setActive} />
+                        {TAB_KEYS.length > 1 && <Tabs active={active} setActive={setActive} />}
                         <div key={active} className="tab-panel">
                             {active === 'FEED' && <FeedGrid onClick={open} />}
                             {active === 'MOTION' && <MotionGrid onClick={setSelectedMotion} />}
