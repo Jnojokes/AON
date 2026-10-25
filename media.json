@@ -183,7 +183,7 @@
         },
         "media/santoni-02.webp",
         "media/santoni-07.webp",
-        "media/santoni-carousel.webp"
+        "media/santoni-carousel-v2.webp"
       ],
       "title": "BACK TO OFFICE",
       "year": "2025",
@@ -365,23 +365,33 @@
       ]
     },
     {
-      "url": "media/okgiorgio-01.webp",
-      "cover": "media/covers/ok-giorgio-m2.webp",
-      "coverPoster": "media/covers/ok-giorgio-m2-poster.jpg",
+      "url": "media/okgiorgio-dj-ginostra.webp",
+      "cover": "media/covers/ok-giorgio-v4.webp",
+      "coverPoster": "media/covers/ok-giorgio-v4-poster.jpg",
       "images": [
         {
-          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/fb9ee58f-2737-4150-b147-798b03e833f9/thumbnail.jpg",
-          "video": "https://player.mediadelivery.net/embed/788231/fb9ee58f-2737-4150-b147-798b03e833f9",
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/684bbd6f-606e-486b-a756-18568a4868e3/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/684bbd6f-606e-486b-a756-18568a4868e3",
           "title": "",
-          "ratio": "16/9"
+          "ratio": "9/16",
+          "link": "https://www.youtube.com/watch?v=-UNv7p5TM7s",
+          "linkLabel": "Watch the full film on YouTube ↗"
         },
-        "media/okgiorgio-01.webp",
-        "media/okgiorgio-02.webp",
-        "media/okgiorgio-03.webp",
-        "media/okgiorgio-04.webp",
-        "media/okgiorgio-05.webp",
-        "media/okgiorgio-06.webp",
-        "media/okgiorgio-07.webp"
+        {
+          "image": "media/okgiorgio-dj-ginostra.webp",
+          "link": "https://www.youtube.com/watch?v=Egb2h3WOFfM",
+          "linkLabel": "DJ set · Ginostra ↗"
+        },
+        {
+          "image": "media/okgiorgio-dj-grotta.webp",
+          "link": "https://www.youtube.com/watch?v=6yoG1MdSbLA",
+          "linkLabel": "DJ set · Grotta ↗"
+        },
+        {
+          "image": "media/okgiorgio-dj-vulcano.webp",
+          "link": "https://www.youtube.com/watch?v=dYiPDAR14F0",
+          "linkLabel": "DJ set · Vulcano ↗"
+        }
       ],
       "title": "IN VACANZA A STROMBOLI CON OKGIORGIO",
       "year": "2025",
@@ -575,7 +585,8 @@
           "label": "PRODUCTION",
           "value": "Bravò Studio"
         }
-      ]
+      ],
+      "logo": "media/logos/neit.svg"
     }
   ],
   "motion": [
@@ -583,19 +594,22 @@
       "poster": "https://vz-13c73ffe-e6a.b-cdn.net/65cd8d52-dd38-428d-bd4f-a695cafcd65a/thumbnail.jpg",
       "video": "https://player.mediadelivery.net/embed/788231/65cd8d52-dd38-428d-bd4f-a695cafcd65a",
       "title": "SANTONI - Back To Office",
-      "ratio": "9/16"
+      "ratio": "9/16",
+      "logo": "media/logos/santoni.svg"
     },
     {
       "poster": "media/screenshot-2026-09-07-alle-11-46-39-mtr23fcy.png",
       "video": "https://player.mediadelivery.net/embed/788231/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6",
       "title": "PRADA - SHOW INVITATION",
-      "ratio": "9/16"
+      "ratio": "9/16",
+      "logo": "media/logos/prada.svg"
     },
     {
       "poster": "https://vz-13c73ffe-e6a.b-cdn.net/665f251a-1226-4ce9-84f3-2871054616ef/thumbnail.jpg",
       "video": "https://player.mediadelivery.net/embed/788231/665f251a-1226-4ce9-84f3-2871054616ef",
       "title": "FABIANA FILIPPI - VETRINA",
-      "ratio": "9/16"
+      "ratio": "9/16",
+      "logo": "media/logos/fabiana-filippi.svg"
     },
     {
       "poster": "https://vz-13c73ffe-e6a.b-cdn.net/684bbd6f-606e-486b-a756-18568a4868e3/thumbnail.jpg",
@@ -607,43 +621,53 @@
       "poster": "https://vz-13c73ffe-e6a.b-cdn.net/2a38efe0-f8f0-4c23-b340-bd0b6bd18155/thumbnail.jpg",
       "video": "https://player.mediadelivery.net/embed/788231/2a38efe0-f8f0-4c23-b340-bd0b6bd18155",
       "title": "YPSUM",
-      "ratio": "9/16"
+      "ratio": "9/16",
+      "logo": "media/logos/ypsum.svg"
     },
     {
       "poster": "https://vz-13c73ffe-e6a.b-cdn.net/759ae4a9-b1c2-43f4-9382-49ea54c8bea8/thumbnail.jpg",
       "video": "https://player.mediadelivery.net/embed/788231/759ae4a9-b1c2-43f4-9382-49ea54c8bea8",
       "title": "MOSAIQ GROUP - LUXURY PACKAGING",
-      "ratio": "9/16"
+      "ratio": "9/16",
+      "logo": "media/logos/mosaiq-group.svg"
     },
     {
       "poster": "https://vz-13c73ffe-e6a.b-cdn.net/45a8e060-7e73-4c2d-9ce2-e023cdff7881/thumbnail.jpg",
       "video": "https://player.mediadelivery.net/embed/788231/45a8e060-7e73-4c2d-9ce2-e023cdff7881",
       "title": "MANDARINA DUCK - ROTTERDAM",
-      "ratio": "9/16"
+      "ratio": "9/16",
+      "logo": "media/logos/mandarina-duck.png"
     }
   ],
   "series": [
     {
       "id": "aboutme",
       "label": "ABOUT ME",
-      "image": "media/santoni-01.webp",
+      "image": "media/story-aboutme-bn.webp",
       "images": []
     },
     {
       "id": "super8",
       "label": "SUPER8",
       "image": "media/greta-01.webp",
-      "images": []
+      "images": [
+        {
+          "poster": "https://vz-13c73ffe-e6a.b-cdn.net/69138668-3ab1-4d23-a1a7-60cdebe06066/thumbnail.jpg",
+          "video": "https://player.mediadelivery.net/embed/788231/69138668-3ab1-4d23-a1a7-60cdebe06066",
+          "title": "",
+          "ratio": "9/16"
+        }
+      ]
     },
     {
       "id": "storyboard",
       "label": "STORYBOARD",
-      "image": "media/santoni-storyboard-story1-mqunxs15.webp",
+      "image": "media/santoni-storyboard-story1-mqunxs15-v2.webp",
       "images": [
         "media/greta-storyboard-story-final-mqunwp71.webp",
         "media/ypsum-storyboard-story-mqunwqfo.webp",
-        "media/santoni-storyboard-story2-mqunwrkt.webp",
-        "media/santoni-storyboard-story1-mqunwt2t.webp",
+        "media/santoni-storyboard-story2-mqunwrkt-v2.webp",
+        "media/santoni-storyboard-story1-mqunwt2t-v2.webp",
         "media/mugshot-storyboard-story2-mqunwuc9.webp",
         "media/mugshot-storyboard-story1-mqunwvx6.webp"
       ]
@@ -723,7 +747,7 @@
       "title": "IN VACANZA A STROMBOLI CON OKGIORGIO",
       "location": "STROMBOLI",
       "year": "2025",
-      "image": "media/okgiorgio-01.webp"
+      "image": "media/okgiorgio-dj-ginostra.webp"
     },
     {
       "num": "10",
@@ -773,7 +797,7 @@
       "disciplines": "EDITORIAL · WORKS · PERSONAL PROJECTS",
       "siteLabel": "",
       "siteUrl": "",
-      "ctaPrimary": "LET'S ROLL",
+      "ctaPrimary": "LET'S FILM",
       "ctaEmail": "video@andreaonori.com",
       "ctaSubject": "Production enquiry",
       "ctaSecondary": ""
@@ -802,7 +826,7 @@
       "format": "FORMAT",
       "prev": "← POST PREC.",
       "next": "POST SUCC. →",
-      "inquire": "LET'S ROLL",
+      "inquire": "LET'S FILM",
       "inquireSubject": "Inquiry — {TITLE}",
       "carousel": "CAROUSEL",
       "video": "▶ VIDEO",
