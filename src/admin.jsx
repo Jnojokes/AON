@@ -409,143 +409,84 @@ function move(arr, from, to){
 const DEFAULT_CREDITS = () =>
   ["CLIENT", "YEAR", "FORMAT", "ART DIRECTION", "PRODUCTION"].map(label => ({ label, value:"" }));
 
-// Default empty shapes per section
+// Forma vuota di un progetto nuovo.
 const BLANKS = {
-  feed:   () => ({ url:"", images:[], title:"NUOVO", year:"2025", loc:"", film:"", credits: DEFAULT_CREDITS() }),
-  motion: () => "",
-  series: () => ({ id:"nuovo", label:"NUOVA SERIE", image:"", images:[] }),
-  index:  () => ({ num:"00", title:"NUOVO", location:"", year:"2025", image:"" }),
+  feed: () => ({ url:"", images:[], title:"NUOVO", year:"2025", loc:"", film:"", credits: DEFAULT_CREDITS() }),
 };
 
+// Le quattro sezioni del pannello. MOTION, SERIES e INDEX non ci sono piu':
+// il sito non le mostra. I loro dati restano in media.json, intatti.
 const SECTIONS = [
-  { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). La Copertina è l'immagine della cella e si vede solo nella griglia: può essere una WebP o GIF animata, si carica così com'è (max 3 MB) e, se è piccola, il sito la ingrandisce a pixel netti. Senza Copertina la cella mostra la prima foto del carosello. Il Logo (PNG o SVG trasparente) compare centrato sopra la copertina. Il carosello è quello che si sfoglia aprendo il post: trascina le foto e, con “+ Link video”, aggiungi un film ospitato su Bunny Stream: incolla il link Embed e proporzioni e copertina si compilano da sole. Il titolo è il nome del video; sotto, nella scheda, compaiono i Crediti: etichetta e valore liberi, nell'ordine che scegli, e le voci vuote non si vedono. Il valore di CLIENT compare anche passando col mouse sulla griglia. Anno, luogo e formato non si vedono nella scheda: servono a Google e alle pagine dei progetti." },
-  { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link Embed del video su Bunny Stream: il video parte solo al click, quindi la griglia resta veloce. Se la copertina manca, il pannello mette la miniatura di Bunny." },
-  { key:"series", label:"SERIES", help:"Storie in evidenza. Dalla home H8 il sito mostra solo la serie ABOUT ME (id aboutme), come rettangolo accanto a CONTACT ME: la sua etichetta è la scritta del bottone. Le altre serie restano qui ma non si vedono." },
-  { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
-  { key:"about", label:"ABOUT", single:true, help:"Si apre dal rettangolo ABOUT ME in home: una pagina a tutto schermo con il video come sfondo, al centro titolo, lead e i bottoni CONTACT ME e INSTAGRAM; scorrendo, la bio e due foto. La scritta ABOUT ME è l'etichetta della serie aboutme, nella sezione SERIES." },
-  { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel sullo sfondo della home e la descrizione per Google e i motori AI." },
+  { key:"feed", label:"Progetti", help:"La griglia della home. Ogni progetto ha una copertina (solo griglia), un logo facoltativo, il carosello che si sfoglia aprendolo e i crediti. Trascina le foto; per un video usa “+ Link video” e incolla il link Embed di Bunny. Anno, luogo e formato non si vedono: servono a Google." },
+  { key:"home", label:"Home", single:true, help:"La prima schermata del sito: lo showreel sullo sfondo, il nome, i due rettangoli ABOUT ME e CONTACT ME e la barra in alto." },
+  { key:"about", label:"About", single:true, help:"La pagina che si apre da ABOUT ME: video a tutto schermo, titolo, bio e due foto. La bio è anche il testo che leggono Google e gli assistenti AI." },
+  { key:"settings", label:"Testi", single:true, help:"Le scritte piccole: la scheda del progetto, il piè di pagina, il banner dei cookie e l'autore citato nelle immagini." },
 ];
 
-// ── Schema dei testi del sito ───────────────────────────────────────────────
-// Deve restare allineato a TEXT_DEFAULTS in src/app.jsx: là ci sono i valori di
-// default, qui le etichette con cui il pannello li presenta. Un campo assente
-// qui esiste comunque nel sito, semplicemente non è modificabile da qui.
-// Aggiungere una voce = aggiungerla in entrambi i file.
-const SETTINGS_SCHEMA = [
-  {
-    key: "profile",
-    title: "Intestazione — nome e presentazione",
-    hint: "Il blocco in cima alla pagina, accanto alla foto profilo. Sotto il nome ci sono tre righe, nell'ordine qui sotto. Un campo lasciato vuoto non compare sul sito.",
-    fields: [
-      ["nameFirst",   "Nome (1ª riga del titolo)"],
-      ["nameLast",    "Cognome (2ª riga del titolo)"],
-      ["eyebrow",     "1ª riga sotto il nome"],
-      ["handle",      "2ª riga sotto il nome"],
-      ["disciplines", "3ª riga sotto il nome (discipline)"],
-      ["badge",       "Etichetta sulla foto profilo"],
-      ["siteLabel",   "Testo del link al sito"],
-      ["siteUrl",     "Indirizzo del link al sito"],
-      ["ctaPrimary",  "Pulsante principale (riga in alto, es. CONTACT ME)"],
-      ["ctaIdle",     "Pulsante · riga sotto, a riposo (es. STAND BY)"],
-      ["ctaHover",    "Pulsante · riga sotto, col mouse sopra (es. REC)"],
-      ["ctaPlay",     "Rettangolo ABOUT ME · riga sotto, fa partire lo showreel (es. PLAY)"],
-      ["ctaEmail",    "Email di contatto"],
-      ["ctaSubject",  "Oggetto dell'email"],
-      ["ctaSecondary","Pulsante secondario"],
-    ],
-  },
-  {
-    key: "contact",
-    title: "Modulo di contatto",
-    hint: "Con un ID Tally il pulsante apre quel modulo e le richieste finiscono anche nel cruscotto Tally. Lasciando il campo vuoto si usa il modulo interno, che invia per email.",
-    fields: [
-      ["tallyId", "ID del modulo Tally (es. wA1bC2)"],
-    ],
-  },
-  {
-    key: "topbar",
-    title: "Barra sotto il marquee",
-    hint: "La riga sottile con handle a sinistra e volume a destra.",
-    fields: [["left", "Testo a sinistra"], ["right", "Testo a destra"]],
-  },
-  {
-    key: "sections",
-    title: "Sezioni e tab",
-    hint: "Nomi delle tab e intestazioni delle liste. Rinominare una tab cambia solo l'etichetta: la sezione resta la stessa. Con titolo e unità delle serie vuoti, la riga sopra i cerchi non compare.",
-    fields: [
-      ["tabFeed",       "Tab 1"],
-      ["tabMotion",     "Tab 2"],
-      ["tabIndex",      "Tab 3 — INDEX (ora nascosta)"],
-      ["seriesTitle",   "Titolo blocco serie"],
-      ["seriesUnit",    "Unità di misura serie"],
-      ["indexNo",       "Colonna indice — N."],
-      ["indexTitle",    "Colonna indice — titolo"],
-      ["indexLocation", "Colonna indice — luogo"],
-      ["indexYear",     "Colonna indice — anno"],
-      ["motionPrefix",  "Prefisso reel senza titolo"],
-      ["motionYear",    "Anno mostrato sui reel senza video"],
-      ["empty",         "Messaggio sezione vuota ({SECTION})"],
-    ],
-  },
-  {
-    key: "post",
-    title: "Scheda del progetto",
-    hint: "Le etichette dentro la finestra che si apre cliccando una foto.",
-    fields: [
-      ["year",     "Etichetta anno (post senza crediti)"],
-      ["format",   "Etichetta formato (post senza crediti)"],
-      ["prev",     "Pulsante precedente"],
-      ["next",     "Pulsante successivo"],
-      ["inquire",  "Pulsante contatto"],
-      ["inquireSubject", "Oggetto dell'email di richiesta ({TITLE})"],
-      ["carousel", "Dicitura carosello"],
-      ["video",    "Dicitura video"],
-      ["play",     "Dicitura play sui reel"],
-      ["aiShort",  "Marchio AI sulla griglia"],
-      ["aiLabel",  "Dicitura AI nella scheda"],
-    ],
-  },
-  {
-    key: "footer",
-    title: "Piè di pagina",
-    hint: "L'anno del copyright è automatico.",
-    fields: [
-      ["name",        "Nome"],
-      ["studioLabel", "Etichetta città"],
-      ["studioValue", "Città"],
-      ["emailLabel",  "Etichetta email"],
-      ["emailValue",  "Email"],
-      ["socialLabel", "Etichetta social"],
-      ["socialValue", "Handle social"],
-      ["socialUrl",   "Link al profilo social"],
-      ["release",     "Riga finale a sinistra"],
-      ["vat",         "Partita IVA (mostrata nel footer)"],
-      ["privacy",     "Link privacy"],
-      ["legal",       "Link note legali"],
-      ["cookie",      "Link cookie"],
-      ["edition",     "Riga finale a destra"],
-    ],
-  },
-  {
-    key: "consent",
-    title: "Banner cookie",
-    hint: "Testo informativo mostrato al primo accesso. È un obbligo di legge: cambiare le parole va bene, toglierle no.",
-    fields: [
-      ["text",   "Testo", "area"],
-      ["link",   "Testo del link all'informativa"],
-      ["accept", "Pulsante accetta"],
-      ["reject", "Pulsante rifiuta"],
-    ],
-  },
-  {
-    key: "seo",
-    title: "SEO",
-    hint: "Testi che i visitatori non vedono ma che descrivono le immagini a Google.",
-    fields: [
-      ["author",    "Autore citato negli alt delle foto"],
-      ["avatarAlt", "Descrizione della foto profilo"],
-    ],
-  },
+// Campi di testo del sito, come [percorso in settings, etichetta, tipo].
+// Devono restare allineati a TEXT_DEFAULTS in src/app.jsx: la' i valori di
+// default, qui come il pannello li presenta.
+const HOME_GROUPS = [
+  { title:"Nome", fields:[
+      ["profile.nameFirst", "Nome"],
+      ["profile.nameLast", "Cognome"],
+      ["profile.eyebrow", "Scritta sotto il nome"],
+  ]},
+  { title:"Rettangoli", hint:"Ognuno ha due righe: quella in alto (bianca) e quella in basso.", fields:[
+      ["@aboutLabel", "ABOUT ME · riga in alto, apre la pagina About"],
+      ["profile.ctaPlay", "ABOUT ME · riga in basso, fa partire lo showreel"],
+      ["profile.ctaPrimary", "CONTACT ME · riga in alto"],
+      ["profile.ctaIdle", "CONTACT ME · riga in basso, a riposo"],
+      ["profile.ctaHover", "CONTACT ME · riga in basso, col mouse sopra"],
+  ]},
+  { title:"Contatto", hint:"Con un ID Tally, CONTACT ME apre quel modulo. Vuoto: si usa il modulo interno, che manda un'email all'indirizzo qui sotto.", fields:[
+      ["contact.tallyId", "ID del modulo Tally"],
+      ["profile.ctaEmail", "Email di contatto"],
+      ["profile.ctaSubject", "Oggetto dell'email"],
+  ]},
+  { title:"Barra in alto", fields:[
+      ["topbar.left", "A sinistra"],
+      ["topbar.right", "A destra"],
+  ]},
+];
+const TEXT_GROUPS = [
+  { title:"Scheda del progetto", hint:"Le scritte nella finestra che si apre cliccando un progetto.", fields:[
+      ["post.inquire", "Bottone di contatto"],
+      ["post.inquireSubject", "Oggetto dell'email ({TITLE} = nome del progetto)"],
+      ["post.prev", "Progetto precedente"],
+      ["post.next", "Progetto successivo"],
+      ["post.carousel", "Scritta del carosello"],
+      ["post.video", "Scritta dei video"],
+      ["post.aiShort", "Marchio AI sulla griglia"],
+      ["post.aiLabel", "Dicitura AI nella scheda"],
+      ["post.year", "Etichetta anno (progetti senza crediti)"],
+      ["post.format", "Etichetta formato (progetti senza crediti)"],
+  ]},
+  { title:"Piè di pagina", hint:"L'anno del copyright è automatico.", fields:[
+      ["footer.name", "Nome"],
+      ["footer.studioLabel", "Etichetta città"],
+      ["footer.studioValue", "Città"],
+      ["footer.emailLabel", "Etichetta email"],
+      ["footer.emailValue", "Email"],
+      ["footer.socialLabel", "Etichetta social"],
+      ["footer.socialValue", "Nome del profilo"],
+      ["footer.socialUrl", "Link al profilo"],
+      ["footer.release", "Riga finale a sinistra"],
+      ["footer.vat", "Partita IVA"],
+      ["footer.privacy", "Link privacy"],
+      ["footer.legal", "Link note legali"],
+      ["footer.cookie", "Link cookie"],
+      ["footer.edition", "Riga finale a destra"],
+  ]},
+  { title:"Banner dei cookie", hint:"È un obbligo di legge: cambiare le parole va bene, toglierle no.", fields:[
+      ["consent.text", "Testo", "area"],
+      ["consent.link", "Link all'informativa"],
+      ["consent.accept", "Bottone accetta"],
+      ["consent.reject", "Bottone rifiuta"],
+  ]},
+  { title:"Google", hint:"Non si vede sul sito: è il nome che accompagna le immagini nelle ricerche.", fields:[
+      ["seo.author", "Autore delle immagini"],
+  ]},
 ];
 
 // ── Drag & drop hook ────────────────────────────────────────────────────────
@@ -604,9 +545,9 @@ function Login({ onAuth }){
   return (
     <div className="fade" style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
       <div style={{width:"100%",maxWidth:360}}>
-        <div className="mono uline" style={{fontSize:10,color:"var(--accent)",marginBottom:16}}>AON · CMS</div>
-        <h1 className="display" style={{fontSize:38,marginBottom:6}}>ADMIN<br/>EDITS</h1>
-        <p className="mono" style={{fontSize:11,color:"var(--mute)",marginBottom:28}}>Accesso riservato alla gestione dei contenuti.</p>
+        <div className="mono uline" style={{fontSize:10,color:"var(--mute)",marginBottom:16}}>Pannello</div>
+        <h1 className="display" style={{fontSize:44,marginBottom:10}}>Andrea Onori</h1>
+        <p style={{fontSize:14,fontWeight:300,color:"var(--soft)",marginBottom:28}}>Accesso riservato alla gestione dei contenuti del sito.</p>
         <form onSubmit={submit}>
           <div style={{marginBottom:14}}>
             <label className="lbl">Utente</label>
@@ -617,9 +558,9 @@ function Login({ onAuth }){
             <input className="field mono" type="password" value={p} onChange={e=>setP(e.target.value)} placeholder="••••••" />
           </div>
           {err && <div className="mono" style={{fontSize:11,color:"var(--accent)",marginBottom:16,lineHeight:1.5}}>{err}</div>}
-          <button className="btn btn-accent" style={{width:"100%"}} type="submit" disabled={busy}>{busy ? "Verifico…" : "Entra"}</button>
+          <button className="btn btn-primary" style={{width:"100%"}} type="submit" disabled={busy}>{busy ? "Verifico…" : "Entra"}</button>
         </form>
-        <a href="/" className="mono" style={{display:"inline-block",marginTop:22,fontSize:10,color:"var(--mute)",textDecoration:"none"}}>← Torna al sito</a>
+        <a href="/versione1" className="mono" style={{display:"inline-block",marginTop:22,fontSize:10,color:"var(--mute)",textDecoration:"none"}}>← Torna al sito</a>
       </div>
     </div>
   );
@@ -1106,52 +1047,9 @@ function GalleryField({ images, password, onChange, onStatus, aspect, coverIndex
 // ── Barra scorrevole (marquee) ──────────────────────────────────────────────
 // Ogni voce è una coppia etichetta/valore: l'etichetta è la parola grigia, il
 // valore quella bianca. Svuotare la lista fa sparire la barra dal sito.
-function MarqueeEditor({ items, onChange }){
-  const list = Array.isArray(items) ? items : [];
-  const set = (i, k, v) => onChange(list.map((it, j) => j === i ? { ...it, [k]: v } : it));
-  return (
-    <div className="set-group">
-      <h3>Barra scorrevole in cima al sito</h3>
-      <p className="hint">
-        Il nastro che scorre sopra all'intestazione. Ogni riga è una voce: a sinistra
-        l'etichetta grigia, a destra il testo bianco. L'ordine è quello di scorrimento.
-        Senza voci la barra non compare.
-      </p>
-      {/* Lista assente e lista vuota non sono la stessa cosa: senza la chiave
-          il sito mostra la barra di default, con la lista vuota la nasconde. */}
-      {list.length === 0 && (
-        <p className="mono" style={{fontSize:11,color:"var(--mute)",marginBottom:10,lineHeight:1.6}}>
-          {Array.isArray(items)
-            ? "Barra disattivata: senza voci il nastro non compare sul sito."
-            : "Nessuna barra personalizzata: il sito mostra le voci predefinite. Aggiungine una per sostituirle."}
-        </p>
-      )}
-      {list.map((it, i) => (
-        <div className="row-mq" key={i}>
-          <input className="field sm mono" value={(it && it.label) || ""} placeholder="ETICHETTA"
-            onChange={e => set(i, "label", e.target.value)} />
-          <input className="field sm mono" value={(it && it.value) || ""} placeholder="Testo"
-            onChange={e => set(i, "value", e.target.value)} />
-          <div style={{display:"flex",gap:4}}>
-            <button className="btn btn-ghost btn-xs" onClick={() => onChange(move(list, i, i-1))} disabled={i===0} title="Su">↑</button>
-            <button className="btn btn-ghost btn-xs" onClick={() => onChange(move(list, i, i+1))} disabled={i===list.length-1} title="Giù">↓</button>
-            <button className="btn btn-ghost btn-xs" style={{color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}}
-              onClick={() => onChange(list.filter((_, j) => j !== i))} title="Elimina">✕</button>
-          </div>
-        </div>
-      ))}
-      <button className="btn btn-ghost" style={{marginTop:10}}
-        onClick={() => onChange(list.concat([{ label:"NUOVA", value:"" }]))}>+ Aggiungi voce</button>
-    </div>
-  );
-}
-
-// ── Crediti di un post del feed ─────────────────────────────────────────────
-// Coppie etichetta/valore libere, nell'ordine scelto: sul sito compaiono sotto
-// il titolo, nella scheda del progetto. Stessa logica della barra scorrevole.
-// Una voce col valore vuoto resta qui, pronta da compilare, ma non si vede.
 function CreditsEditor({ items, onChange }){
   const list = Array.isArray(items) ? items : [];
+  const [aperti, setAperti] = useState({});
   const set = (i, k, v) => onChange(list.map((it, j) => j === i ? { ...it, [k]: v } : it));
   return (
     <div>
@@ -1168,15 +1066,21 @@ function CreditsEditor({ items, onChange }){
           <input className="field sm" value={(it && it.value) || ""} placeholder="Valore"
             onChange={e => set(i, "value", e.target.value)} />
           <div style={{display:"flex",gap:4}}>
+            <button className={"btn btn-ghost btn-xs" + ((it && it.link) ? " on" : "")} title="Collega una parte del testo (es. Instagram)"
+              onClick={() => setAperti(a => ({ ...a, [i]: !a[i] }))}>↗</button>
             <button className="btn btn-ghost btn-xs" onClick={() => onChange(move(list, i, i-1))} disabled={i===0} title="Su">↑</button>
             <button className="btn btn-ghost btn-xs" onClick={() => onChange(move(list, i, i+1))} disabled={i===list.length-1} title="Giù">↓</button>
             <button className="btn btn-ghost btn-xs" style={{color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}}
               onClick={() => onChange(list.filter((_, j) => j !== i))} title="Elimina">✕</button>
           </div>
-          <input className="field sm" value={(it && it.link) || ""} placeholder="Link (facoltativo, es. https://instagram.com/nome)"
-            onChange={e => set(i, "link", e.target.value)} />
-          <input className="field sm" value={(it && it.linkText) || ""} placeholder="Parte da collegare (vuoto = tutto)"
-            onChange={e => set(i, "linkText", e.target.value)} />
+          {(aperti[i] || (it && it.link)) && (
+            <div className="cr-link">
+              <input className="field sm" value={(it && it.link) || ""} placeholder="https://instagram.com/nome"
+                onChange={e => set(i, "link", e.target.value)} />
+              <input className="field sm" value={(it && it.linkText) || ""} placeholder="Parte da collegare (vuoto = tutto)"
+                onChange={e => set(i, "linkText", e.target.value)} />
+            </div>
+          )}
         </div>
       ))}
       <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>
@@ -1189,9 +1093,9 @@ function CreditsEditor({ items, onChange }){
   );
 }
 
-// ── Gruppo di campi testuali ────────────────────────────────────────────────
-function TextGroup({ group, values, onChange }){
-  const v = values || {};
+// ── Gruppo di campi di testo ───────────────────────────────────────────────
+// get(path) / set(path, value): il chiamante decide dove leggere e scrivere.
+function FieldGroup({ group, get, set }){
   return (
     <div className="set-group">
       <h3>{group.title}</h3>
@@ -1201,10 +1105,8 @@ function TextGroup({ group, values, onChange }){
           <div key={k} style={ kind === "area" ? { gridColumn:"1 / -1" } : null }>
             <label className="lbl">{lbl}</label>
             {kind === "area"
-              ? <textarea className="field" style={{minHeight:70}} value={v[k] != null ? v[k] : ""}
-                  onChange={e => onChange({ ...v, [k]: e.target.value })} />
-              : <input className="field" value={v[k] != null ? v[k] : ""}
-                  onChange={e => onChange({ ...v, [k]: e.target.value })} />}
+              ? <textarea className="field" value={get(k)} onChange={e => set(k, e.target.value)} />
+              : <input className="field" value={get(k)} onChange={e => set(k, e.target.value)} />}
           </div>
         ))}
       </div>
@@ -1212,13 +1114,6 @@ function TextGroup({ group, values, onChange }){
   );
 }
 
-// ── Showreel: sfondo a tutto schermo della home ─────────────────────────────
-// settings.feedReel. video/poster: la versione orizzontale, che vale ovunque;
-// videoVertical/posterVertical (opzionali): la versione per i telefoni e gli
-// schermi verticali. Serve un file video diretto: un <video> in loop non sa
-// riprodurre il player di Bunny, che funziona solo dentro un iframe. Se si
-// incolla il link Embed di Bunny, il pannello lo converte nell'MP4 diretto
-// dello stesso video (1080p) e, se manca, mette la miniatura come copertina.
 function ReelSource({ v, onChange, kVideo, kPoster, aspect, labelVideo, labelPoster, password, onStatus, children }){
   const [nota, setNota] = useState("");
   const onVideo = (raw) => {
@@ -1281,12 +1176,9 @@ function FeedReelEditor({ value, password, onChange, onStatus }){
     <div className="set-group">
       <h3>Showreel · sfondo della home</h3>
       <p className="hint">
-        Sfondo a tutto schermo della home. Video orizzontale; da telefono viene tagliato al centro se non c'è la versione verticale.
-        Parte da solo, muto, e gira in loop; scorrendo, il feed sale e lo copre.
-        Serve l'indirizzo di un file video diretto (.mp4): un file del sito come
-        media/showreel.mp4, oppure l'MP4 di un video su Bunny Stream. Puoi incollare
-        anche il link Embed di Bunny: il pannello lo converte da solo nell'MP4 a 1080p
-        (per un file più leggero cambia 1080 in 720). Con il campo video vuoto la home non ha lo sfondo e parte dal nome.
+        Lo sfondo a tutto schermo della home: parte da solo, muto, in loop, e PLAY lo fa ripartire con l'audio.
+        Incolla il link Embed di Bunny (diventa da solo l'MP4 a 1080p) oppure l'indirizzo di un file .mp4.
+        Campo vuoto = niente showreel.
       </p>
       <ReelSource v={v} onChange={patch} kVideo="video" kPoster="poster" aspect="16/9"
         labelVideo="Video (.mp4)" labelPoster="Copertina · si vede finché il video carica"
@@ -1295,14 +1187,11 @@ function FeedReelEditor({ value, password, onChange, onStatus }){
         <input className="field" value={v.label != null ? v.label : ""} placeholder="SHOWREEL"
           onChange={e => patch({ label: e.target.value })} />
       </ReelSource>
-      <h3 style={{ marginTop:24 }}>Showreel verticale (telefono) · opzionale</h3>
-      <p className="hint">
-        La stessa cosa in verticale (9:16): la usano i telefoni e gli schermi più alti che larghi.
-        Vuoto = si usa l'orizzontale, tagliato al centro.
-      </p>
-      <ReelSource v={v} onChange={patch} kVideo="videoVertical" kPoster="posterVertical" aspect="9/16"
+      <h3 style={{ marginTop:32 }}>Versione verticale per il telefono · facoltativa</h3>
+      <p className="hint">Vuota = da telefono si usa l'orizzontale, tagliato al centro.</p>
+      <div className="reel-tall"><ReelSource v={v} onChange={patch} kVideo="videoVertical" kPoster="posterVertical" aspect="9/16"
         labelVideo="Video verticale (.mp4)" labelPoster="Copertina verticale"
-        password={password} onStatus={onStatus} />
+        password={password} onStatus={onStatus} /></div>
     </div>
   );
 }
@@ -1387,6 +1276,115 @@ function AboutVideoField({ value, password, onChange, onStatus, aspect = "9/16" 
   );
 }
 
+// ── Editor della bio ────────────────────────────────────────────────────────
+// Formattazione leggera dentro il testo: **grassetto**, *corsivo* e
+// [testo](https://…). Il sito la trasforma (inlineMd in src/app.jsx), Google e
+// llms.txt ricevono il testo pulito (stripMd in scripts/prerender.mjs).
+const MD_RE = /\*\*(.+?)\*\*|\*(.+?)\*|\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^\s)]+)\)/g;
+function inlineMd(t){
+  const str = String(t || ""), out = [];
+  let last = 0, m, k = 0;
+  MD_RE.lastIndex = 0;
+  while ((m = MD_RE.exec(str))) {
+    if (m.index > last) out.push(str.slice(last, m.index));
+    if (m[1] != null) out.push(<strong key={k++}>{m[1]}</strong>);
+    else if (m[2] != null) out.push(<em key={k++}>{m[2]}</em>);
+    else out.push(<a key={k++} href={m[4]} target="_blank" rel="noopener">{m[3]}</a>);
+    last = MD_RE.lastIndex;
+  }
+  if (last < str.length) out.push(str.slice(last));
+  return out;
+}
+const stripMd = (t) => String(t || "")
+  .replace(/\[([^\]]+)\]\((?:https?:\/\/|mailto:)[^\s)]+\)/g, "$1")
+  .replace(/\*\*(.+?)\*\*/g, "$1")
+  .replace(/\*(.+?)\*/g, "$1");
+
+function RichTextField({ value, onChange, minHeight = 160 }){
+  const ref = useRef(null);
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [url, setUrl] = useState("");
+  const sel = useRef([0, 0]);
+  const v = String(value || "");
+  const paras = v.split(/\r?\n+/).map(x => x.trim()).filter(Boolean);
+
+  const restore = (a, b) => requestAnimationFrame(() => {
+    const el = ref.current; if (!el) return;
+    el.focus(); el.setSelectionRange(a, b);
+  });
+  const range = () => {
+    const el = ref.current;
+    return el ? [el.selectionStart, el.selectionEnd] : [v.length, v.length];
+  };
+  // Mette o toglie i segni attorno alla selezione (senza selezione: "testo").
+  const wrap = (mark) => {
+    const [a, b] = range();
+    const n = mark.length;
+    if (v.slice(a - n, a) === mark && v.slice(b, b + n) === mark && !(mark === "*" && (v[a - n - 1] === "*" || v[b + n] === "*"))) {
+      onChange(v.slice(0, a - n) + v.slice(a, b) + v.slice(b + n)); restore(a - n, b - n); return;
+    }
+    const inner = v.slice(a, b);
+    if (inner.length > 2 * n && inner.startsWith(mark) && inner.endsWith(mark) && !(mark === "*" && inner.startsWith("**"))) {
+      onChange(v.slice(0, a) + inner.slice(n, -n) + v.slice(b)); restore(a, b - 2 * n); return;
+    }
+    const t = inner || "testo";
+    onChange(v.slice(0, a) + mark + t + mark + v.slice(b)); restore(a + n, a + n + t.length);
+  };
+  const openLink = () => { sel.current = range(); setUrl(""); setLinkOpen(true); };
+  const applyLink = () => {
+    let u = url.trim();
+    if (!u) { setLinkOpen(false); return; }
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(u)) u = "mailto:" + u;
+    else if (!/^(https?:\/\/|mailto:)/i.test(u)) u = "https://" + u.replace(/^\/+/, "");
+    const [a, b] = sel.current;
+    const t = v.slice(a, b) || "link";
+    const ins = "[" + t + "](" + u + ")";
+    onChange(v.slice(0, a) + ins + v.slice(b)); setLinkOpen(false); restore(a + 1, a + 1 + t.length);
+  };
+  const clean = () => {
+    const [a, b] = range();
+    if (a === b) { onChange(stripMd(v)); return; }
+    const t = stripMd(v.slice(a, b));
+    onChange(v.slice(0, a) + t + v.slice(b)); restore(a, a + t.length);
+  };
+  const onKey = (e) => {
+    if (!(e.metaKey || e.ctrlKey)) return;
+    const k = e.key.toLowerCase();
+    if (k === "b") { e.preventDefault(); wrap("**"); }
+    else if (k === "i") { e.preventDefault(); wrap("*"); }
+    else if (k === "k") { e.preventDefault(); openLink(); }
+  };
+
+  return (
+    <div className="rte">
+      <div className="rte-bar">
+        <button type="button" className="rte-btn" title="Grassetto (⌘B)" onMouseDown={e => e.preventDefault()} onClick={() => wrap("**")}><b>B</b></button>
+        <button type="button" className="rte-btn" title="Corsivo (⌘I)" onMouseDown={e => e.preventDefault()} onClick={() => wrap("*")}><i>I</i></button>
+        <button type="button" className="rte-btn" title="Link (⌘K)" onMouseDown={e => e.preventDefault()} onClick={openLink}>Link</button>
+        <button type="button" className="rte-btn" title="Togli la formattazione dal testo selezionato (o da tutto)" onMouseDown={e => e.preventDefault()} onClick={clean}>Pulisci</button>
+        <span className="rte-tip mono">Seleziona una parola e premi un bottone. A capo = nuovo paragrafo.</span>
+      </div>
+      {linkOpen && (
+        <div className="rte-link">
+          <input className="field" autoFocus value={url} placeholder="instagram.com/nome, https://… o un'email"
+            onChange={e => setUrl(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); applyLink(); } if (e.key === "Escape") setLinkOpen(false); }} />
+          <button type="button" className="btn btn-primary btn-xs" onClick={applyLink}>Inserisci</button>
+          <button type="button" className="btn btn-ghost btn-xs" onClick={() => setLinkOpen(false)}>Annulla</button>
+        </div>
+      )}
+      <textarea ref={ref} className="field rte-area" style={{ minHeight }} value={v}
+        onChange={e => onChange(e.target.value)} onKeyDown={onKey} />
+      <div className="rte-prev">
+        <span className="lbl">Anteprima · com'è sul sito</span>
+        {paras.length
+          ? <div className="rte-prev-body">{paras.map((t, i) => <p key={i}>{inlineMd(t)}</p>)}</div>
+          : <p className="mono" style={{ fontSize:10, color:"#555" }}>Nessun testo.</p>}
+      </div>
+    </div>
+  );
+}
+
 function AboutEditor({ value, password, onChange, onStatus }){
   const v = { ...ABOUT_BLANK(), ...(value || {}) };
   const photos = [0, 1].map((i) => ({ src:"", caption:"", ...((v.photos || [])[i] || {}) }));
@@ -1407,44 +1405,55 @@ function AboutEditor({ value, password, onChange, onStatus }){
       <div className="set-group">
         <h3>Video</h3>
         <p className="hint">
-          Da computer si vede il video orizzontale, da telefono il verticale. Se ce n'è uno solo, si usa quello, tagliato al centro.
-          È lo sfondo a tutto schermo della pagina: parte da solo, muto, e gira in loop.
-          Carica un MP4 (max 3 MB) oppure incolla il link diretto di Bunny, per esempio
-          https://vz-13c73ffe-e6a.b-cdn.net/&#123;guid&#125;/play_720p.mp4 (anche il link Embed
-          viene convertito da solo). Senza nessun video la pagina non ha lo sfondo.
+          Lo sfondo della pagina: parte da solo, muto, in loop. Da computer si vede l'orizzontale, da telefono il verticale;
+          se ce n'è uno solo si usa quello. Trascina un MP4 (max 3 MB) o incolla il link di Bunny: si converte da solo.
         </p>
-        <div className="set-grid">
-          <div>
-            <label className="lbl">Video orizzontale (computer)</label>
-            <AboutVideoField value={v.videoWide} password={password} onStatus={onStatus} aspect="16/9" onChange={(x) => set("videoWide", x)} />
+        <div className="vid-row">
+          <span className="vid-tag mono uline">Computer</span>
+          <div className="vid-grid wide">
+            <div>
+              <label className="lbl">Video orizzontale</label>
+              <AboutVideoField value={v.videoWide} password={password} onStatus={onStatus} aspect="16/9" onChange={(x) => set("videoWide", x)} />
+            </div>
+            <div>
+              <label className="lbl">Copertina · si vede finché il video carica</label>
+              <ImageField value={v.posterWide || ""} password={password} aspect="16/9" allowUrl
+                onChange={(x) => set("posterWide", x)} onStatus={onStatus} />
+            </div>
           </div>
-          <div>
-            <label className="lbl">Copertina orizzontale</label>
-            <ImageField value={v.posterWide || ""} password={password} aspect="16/9" allowUrl
-              onChange={(x) => set("posterWide", x)} onStatus={onStatus} />
+        </div>
+        <div className="vid-row">
+          <span className="vid-tag mono uline">Telefono</span>
+          <div className="vid-grid tall">
+            <div>
+              <label className="lbl">Video verticale</label>
+              <AboutVideoField value={v.video} password={password} onStatus={onStatus} onChange={(x) => set("video", x)} />
+            </div>
+            <div>
+              <label className="lbl">Copertina</label>
+              <ImageField value={v.poster || ""} password={password} aspect="9/16" allowUrl
+                onChange={(x) => set("poster", x)} onStatus={onStatus} />
+            </div>
           </div>
-          <div>
-            <label className="lbl">Video verticale (telefono)</label>
-            <AboutVideoField value={v.video} password={password} onStatus={onStatus} onChange={(x) => set("video", x)} />
-          </div>
-          <div>
-            <label className="lbl">Copertina verticale · si vede finché il video carica</label>
-            <ImageField value={v.poster || ""} password={password} aspect="9/16" allowUrl
-              onChange={(x) => set("poster", x)} onStatus={onStatus} />
-            <label className="lbl" style={{ marginTop:12 }}>Scritta sul video (una riga)</label>
-            <input className="field" value={v.caption || ""} placeholder="Super 8 · Stromboli, 2025"
-              onChange={(e) => set("caption", e.target.value)} />
-          </div>
+        </div>
+        <div style={{ maxWidth:420, marginTop:20 }}>
+          <label className="lbl">Scritta sul video (una riga, in basso)</label>
+          <input className="field" value={v.caption || ""} placeholder="Super 8 · Stromboli, 2025"
+            onChange={(e) => set("caption", e.target.value)} />
         </div>
       </div>
 
       <div className="set-group">
         <h3>Testi</h3>
         <div className="set-grid">
-          {text("title", "Titolo", true, "Vai a capo dove vuoi spezzare il titolo.", 60)}
-          {text("lead", "Lead (testo grande)", true)}
-          {text("body", "Testo", true, "Una riga vuota o un a capo separa i paragrafi.", 100)}
+          {text("title", "Titolo", false)}
+          {text("lead", "Frase sotto il titolo · facoltativa, vuota non compare", false)}
         </div>
+        <label className="lbl" style={{ marginTop:16 }}>Bio · sotto il titolo, sopra il video</label>
+        <RichTextField value={v.body} onChange={(x) => set("body", x)} />
+        <p className="hint" style={{ marginTop:10, marginBottom:0 }}>
+          La bio è anche la descrizione che leggono Google e gli assistenti AI (senza grassetti e link).
+        </p>
       </div>
 
       <div className="set-group">
@@ -1466,48 +1475,39 @@ function AboutEditor({ value, password, onChange, onStatus }){
   );
 }
 
-// ── Pannello "Impostazioni generali" ────────────────────────────────────────
-function SettingsEditor({ settings, password, onChange, onStatus }){
-  const s = settings || {};
-  const patch = (k, v) => onChange({ ...s, [k]: v });
-  const seo = s.seo || {};
+// ── Percorsi "chiave.campo" dentro settings ─────────────────────────────────
+const getPath = (obj, path) => { const [a, b] = path.split("."); const o = (obj || {})[a]; return (o && o[b] != null) ? String(o[b]) : ""; };
+const setPath = (obj, path, v) => { const [a, b] = path.split("."); return { ...obj, [a]: { ...((obj || {})[a] || {}), [b]: v } }; };
 
+// ── Sezione HOME ────────────────────────────────────────────────────────────
+// La scritta ABOUT ME e' l'etichetta della serie "aboutme" (media.series):
+// si modifica qui, il resto delle serie non si tocca.
+function HomeEditor({ settings, series, password, onChange, onSeries, onStatus }){
+  const s = settings || {};
+  const about = (series || []).find(x => x && x.id === "aboutme");
+  const get = (k) => k === "@aboutLabel" ? ((about && about.label) || "") : getPath(s, k);
+  const set = (k, v) => {
+    if (k === "@aboutLabel") { onSeries((series || []).map(x => x && x.id === "aboutme" ? { ...x, label: v } : x)); return; }
+    onChange(setPath(s, k, v));
+  };
   return (
     <div>
-      <MarqueeEditor items={s.marquee} onChange={(v) => patch("marquee", v)} />
-
-      {/* Bio SEO: il campo più importante di questa pagina, quindi sta in alto
-          e ha una spiegazione lunga. Non è un testo di facciata, è ciò che
-          Google e ChatGPT leggono per capire chi è Andrea. */}
-      <div className="set-group" style={{borderColor:"var(--accent)"}}>
-        <h3>Descrizione per SEO &amp; Motori AI</h3>
-        <p className="hint">
-          Questo testo <b>non compare sul sito</b>: nessun visitatore lo legge.
-          Finisce nei dati strutturati della pagina e in un blocco nascosto che
-          Google, Bing, ChatGPT, Claude e Perplexity leggono per capire chi sei,
-          cosa fai e dove lavori.<br /><br />
-          Scrivi <b>frasi brevi, complete e in terza persona</b> — “Andrea Onori è
-          un filmmaker…”, non “Sono un filmmaker…”: i modelli citano frammenti
-          isolati, e una frase che si regge da sola viene ripresa meglio.
-          Vai a capo per separare i concetti: ogni riga diventa un paragrafo.
-          Inserisci città, discipline, clienti e contatto.<br /><br />
-          <b>Se lasci vuoto</b>, la descrizione viene generata automaticamente
-          dai progetti presenti nel sito.
-        </p>
-        <textarea className="field" style={{minHeight:200}} value={seo.bio || ""}
-          onChange={e => patch("seo", { ...seo, bio: e.target.value })}
-          placeholder={"Andrea Onori è un filmmaker indipendente con base a Milano.\nLavora soprattutto tra moda, pubblicità e media.\n…"} />
-        <p className="mono" style={{fontSize:10,color:"#555",marginTop:8}}>
-          {(seo.bio || "").trim().split(/\s+/).filter(Boolean).length} parole ·{" "}
-          {(seo.bio || "").split(/\r?\n/).filter(l => l.trim()).length} paragrafi
-        </p>
-      </div>
-
       <FeedReelEditor value={s.feedReel} password={password} onStatus={onStatus}
-        onChange={(v) => patch("feedReel", v)} />
+        onChange={(v) => onChange({ ...s, feedReel: v })} />
+      {HOME_GROUPS.map(g => (
+        <FieldGroup key={g.title} group={g} get={get} set={set} />
+      ))}
+    </div>
+  );
+}
 
-      {SETTINGS_SCHEMA.map(g => (
-        <TextGroup key={g.key} group={g} values={s[g.key]} onChange={(v) => patch(g.key, v)} />
+// ── Sezione TESTI ───────────────────────────────────────────────────────────
+function TextsEditor({ settings, onChange }){
+  const s = settings || {};
+  return (
+    <div>
+      {TEXT_GROUPS.map(g => (
+        <FieldGroup key={g.title} group={g} get={(k) => getPath(s, k)} set={(k, v) => onChange(setPath(s, k, v))} />
       ))}
     </div>
   );
@@ -1517,11 +1517,9 @@ function SettingsEditor({ settings, password, onChange, onStatus }){
 function Card({ section, item, idx, total, password, onChange, onMove, onDelete, onStatus }){
   const set = (k, v) => onChange({ ...item, [k]: v });
 
-  const fieldsFor = {
-    feed:   [["title","Titolo · nome del video"],["year","Anno · per Google"],["loc","Luogo · per Google"],["film","Pellicola / Formato · per Google"]],
-    series: [["label","Etichetta"],["id","ID (slug)"]],
-    index:  [["num","N."],["title","Titolo"],["location","Luogo"],["year","Anno"]],
-  }[section] || [];
+  const fieldsFor = section === "feed"
+    ? [["title","Titolo · nome del video"],["year","Anno · per Google"],["loc","Luogo · per Google"],["film","Formato · per Google"]]
+    : [];
 
   return (
     <div className="card fade" style={{padding:12,display:"flex",flexDirection:"column",gap:10}}>
@@ -1530,7 +1528,7 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
         <div style={{display:"flex",gap:4}}>
           <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx-1)} disabled={idx===0} title="Su">↑</button>
           <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx+1)} disabled={idx===total-1} title="Giù">↓</button>
-          <button className="btn btn-ghost" style={{padding:"5px 9px",color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>onDelete(idx)} title="Elimina">✕</button>
+          <button className="btn btn-ghost" style={{padding:"5px 9px",color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>{ if (window.confirm('Eliminare "' + (item.title || "questo progetto") + '"? Diventa definitivo quando premi Salva tutto.')) onDelete(idx); }} title="Elimina">✕</button>
         </div>
       </div>
       {section === "feed" && (() => {
@@ -1566,21 +1564,6 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
           </>
         );
       })()}
-      {section === "series" && (
-        <>
-          <div>
-            <label className="lbl">Copertina (cerchio)</label>
-            <ImageField value={item.image} password={password} onChange={(v)=>set("image",v)} onStatus={onStatus} allowUrl />
-          </div>
-          <div>
-            <label className="lbl">Slide della cartella · foto o video (⋯)</label>
-            <GalleryField images={item.images || []} password={password} onChange={(arr)=>set("images",arr)} onStatus={onStatus} aspect="9/16" wide />
-          </div>
-        </>
-      )}
-      {section === "index" && (
-        <ImageField value={item.image} password={password} onChange={(v)=>set("image",v)} onStatus={onStatus} allowUrl />
-      )}
       {fieldsFor.map(([k,lbl]) => (
         <React.Fragment key={k}>
           <div>
@@ -1622,7 +1605,7 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
       {/* Dichiarazione di contenuto generato o ritoccato con AI. Sul sito
           diventa un marchio discreto sulla cella e una dicitura nella scheda
           del progetto. */}
-      {(section === "feed" || section === "index") && (
+      {section === "feed" && (
         <label className={"check" + (item.ai ? " on" : "")}>
           <input type="checkbox" checked={!!item.ai}
             onChange={e => set("ai", e.target.checked ? true : undefined)} />
@@ -1633,57 +1616,11 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
   );
 }
 
-// ── Motion card: copertina + link al video su Bunny Stream ──────────────────
-function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, onStatus }){
-  const m = normMedia(item);
-  const logo = item && typeof item === "object" ? item.logo : undefined;
-  // Il logo non fa parte della slide: si rimette accanto a ogni modifica, cosi'
-  // cambiare titolo o video non lo cancella.
-  const withLogo = (raw, lg) => {
-    if (!lg) return raw;
-    return typeof raw === "string" ? { image: raw, logo: lg } : { ...raw, logo: lg };
-  };
-  const patch = (p) => onChange(withLogo(toRaw({ ...m, ...p }), logo));
-  const patchLogo = (p) => onChange(withLogo(toRaw(m), p.logo));
-  return (
-    <div className="card fade" style={{padding:12,display:"flex",flexDirection:"column",gap:10}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <span className="mono" style={{fontSize:10,color:"var(--mute)"}}>#{String(idx+1).padStart(2,"0")}</span>
-        <div style={{display:"flex",gap:4,alignItems:"center"}}>
-          {m.video && <span className="chip err" style={{borderColor:"var(--accent)"}}>▶ video</span>}
-          <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx-1)} disabled={idx===0}>↑</button>
-          <button className="btn btn-ghost" style={{padding:"5px 9px"}} onClick={()=>onMove(idx,idx+1)} disabled={idx===total-1}>↓</button>
-          <button className="btn btn-ghost" style={{padding:"5px 9px",color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}} onClick={()=>onDelete(idx)}>✕</button>
-        </div>
-      </div>
-      <div>
-        <label className="lbl">Copertina 9:16 · trascina qui la foto</label>
-        <ImageField value={m.image} password={password} aspect="9/16"
-          onChange={(v)=>patch({ image:v })} onStatus={onStatus} allowUrl />
-      </div>
-      <div>
-        <label className="lbl">Logo · sopra la copertina (opzionale)</label>
-        <CellAssetField kind="logo" item={{ logo }} password={password} onStatus={onStatus}
-          onPatch={patchLogo} />
-      </div>
-      <VideoLinkField value={m.video} poster={m.image} ratio={m.ratio} password={password}
-        onChange={(v)=>patch({ video:v })}
-        onPoster={(p)=>patch({ image:p })}
-        onPatch={patch}
-        onStatus={onStatus} />
-      <div>
-        <label className="lbl">Titolo (opzionale)</label>
-        <input className="field" value={m.title} onChange={e=>patch({ title:e.target.value })} placeholder="es. SANTONI BACK TO OFFICE" />
-      </div>
-    </div>
-  );
-}
-
 // ── Guida rapida: i video su Bunny Stream ───────────────────────────────────
 function HelpBox(){
   return (
     <details className="help" style={{marginBottom:18}}>
-      <summary>▶ Come si mette un video (Bunny Stream) — 4 passi</summary>
+      <summary>Come si mette un video (Bunny Stream) — 4 passi</summary>
       <ol>
         <li>Carica il video su <b>Bunny Stream</b>, nella libreria <b>andreaonori</b>, e aspetta che finisca l'elaborazione.</li>
         <li>Su Bunny apri il video, scegli <b>Embed</b> e copia il link (<code>player.mediadelivery.net/embed/788231/…</code>). Va bene anche tutto il codice <code>&lt;iframe&gt;</code>.</li>
@@ -1735,7 +1672,7 @@ function CMS({ password }){
   const onItemChange = (key, idx, nextItem) => update(key, media[key].map((it,i)=> i===idx ? nextItem : it));
   const onItemMove   = (key, from, to)     => update(key, move(media[key], from, to));
   const onItemDelete = (key, idx)          => update(key, media[key].filter((_,i)=> i!==idx));
-  const onItemAdd    = (key)               => { update(key, media[key].concat([BLANKS[key]()])); status("Elemento aggiunto in fondo a " + key.toUpperCase(), "ok"); };
+  const onItemAdd    = (key)               => { update(key, media[key].concat([BLANKS[key]()])); status("Progetto aggiunto in fondo alla lista", "ok"); };
 
   const saveAll = async () => {
     setSaving(true);
@@ -1762,86 +1699,77 @@ function CMS({ password }){
   const meta = SECTIONS.find(s => s.key === tab);
   const list = meta.single ? [] : (media[tab] || []);
   const nVideo = (arr) => (arr || []).reduce((n, it) => {
-    if (tab === "motion") return n + (normMedia(it).video ? 1 : 0);
     const slides = (it && it.images) ? it.images : [];
     return n + slides.filter(s => normMedia(s).video).length + (it && it.video ? 1 : 0);
   }, 0);
 
   return (
     <div style={{minHeight:"100vh"}}>
-      {/* Header */}
-      <header style={{position:"sticky",top:0,zIndex:30,background:"rgba(0,0,0,0.92)",backdropFilter:"blur(10px)",borderBottom:"1px solid var(--line)"}}>
-        <div style={{maxWidth:1160,margin:"0 auto",padding:"14px 24px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
-          <div style={{display:"flex",alignItems:"baseline",gap:12}}>
-            <span className="display" style={{fontSize:18}}>AON</span>
-            <span className="mono uline" style={{fontSize:9,color:"var(--mute)"}}>Admin · Edits</span>
+      <header className="adm-head">
+        <div className="adm-wrap adm-bar">
+          <div className="adm-brand">
+            <span className="adm-name">Andrea Onori</span>
+            <span className="mono uline adm-sub">Pannello</span>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            {dirty && <span className="mono" style={{fontSize:10,color:"var(--accent)"}}>● modifiche non salvate</span>}
-            <a href="/" className="btn btn-ghost">Sito</a>
-            <button className="btn btn-accent" onClick={saveAll} disabled={saving || !dirty}>
+          <div className="adm-actions">
+            {dirty && <span className="mono adm-dirty"><i />Modifiche non salvate</span>}
+            <a href="/versione1" target="_blank" rel="noopener" className="btn btn-ghost">Vedi il sito ↗</a>
+            <button className="btn btn-primary" onClick={saveAll} disabled={saving || !dirty}>
               {saving ? "Salvo…" : "Salva tutto"}
             </button>
           </div>
         </div>
-        {/* Tabs */}
-        <div style={{maxWidth:1160,margin:"0 auto",padding:"0 24px",display:"flex",gap:24,overflowX:"auto"}}>
+        <nav className="adm-wrap adm-tabs">
           {SECTIONS.map(s => (
             <button key={s.key} className={"tab" + (tab===s.key ? " active":"")} onClick={()=>setTab(s.key)}>
-              {s.label}{!s.single && <span style={{color:"#555"}}> {(media[s.key]||[]).length}</span>}
+              {s.label}{!s.single && <span className="tab-n">{(media[s.key]||[]).length}</span>}
             </button>
           ))}
-        </div>
+        </nav>
       </header>
 
-      {/* Body */}
-      <main style={{maxWidth:1160,margin:"0 auto",padding:"24px"}}>
-        {!meta.single && <HelpBox />}
-
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",gap:16,marginBottom:18,flexWrap:"wrap"}}>
+      <main className="adm-wrap adm-main">
+        <div className="adm-intro">
           <div>
-            <h2 className="display" style={{fontSize:30,marginBottom:6}}>{meta.label}</h2>
-            <p className="mono" style={{fontSize:11,color:"var(--mute)",maxWidth:600,lineHeight:1.6}}>{meta.help}</p>
+            <h2 className="display adm-title">{meta.label}</h2>
+            <p className="adm-help">{meta.help}</p>
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            {!meta.single && nVideo(list) > 0 && <span className="chip err">▶ {nVideo(list)} video</span>}
-            {!meta.single && <button className="btn" onClick={()=>onItemAdd(tab)}>+ Aggiungi</button>}
-          </div>
+          {!meta.single && (
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              {nVideo(list) > 0 && <span className="chip">▶ {nVideo(list)} video</span>}
+              <button className="btn" onClick={()=>onItemAdd(tab)}>+ Nuovo progetto</button>
+            </div>
+          )}
         </div>
+        {!meta.single && <HelpBox />}
 
         {tab === "about" ? (
           <AboutEditor value={media.about} password={password} onStatus={status}
             onChange={(v)=>update("about", v)} />
-        ) : meta.single ? (
-          <SettingsEditor settings={media.settings} password={password} onStatus={status}
-            onChange={(v)=>update("settings", v)} />
+        ) : tab === "home" ? (
+          <HomeEditor settings={media.settings} series={media.series} password={password} onStatus={status}
+            onChange={(v)=>update("settings", v)} onSeries={(v)=>update("series", v)} />
+        ) : tab === "settings" ? (
+          <TextsEditor settings={media.settings} onChange={(v)=>update("settings", v)} />
         ) : list.length === 0 ? (
           <div className="card" style={{padding:40,textAlign:"center"}}>
-            <p className="mono" style={{fontSize:12,color:"var(--mute)"}}>Nessun elemento. Usa “+ Aggiungi” per iniziare.</p>
+            <p className="mono" style={{fontSize:12,color:"var(--mute)"}}>Nessun progetto. Usa “+ Nuovo progetto” per iniziare.</p>
           </div>
         ) : (
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:14,alignItems:"start"}}>
-            {tab === "motion"
-              ? list.map((it,i)=>(
-                  <MotionCard key={i} item={it} idx={i} total={list.length} password={password}
-                    onChange={(v)=>onItemChange("motion",i,v)}
-                    onMove={(f,t)=>onItemMove("motion",f,t)}
-                    onDelete={(idx)=>onItemDelete("motion",idx)}
-                    onStatus={status} />
-                ))
-              : list.map((it,i)=>(
-                  <Card key={i} section={tab} item={it} idx={i} total={list.length} password={password}
-                    onChange={(v)=>onItemChange(tab,i,v)}
-                    onMove={(f,t)=>onItemMove(tab,f,t)}
-                    onDelete={(idx)=>onItemDelete(tab,idx)}
-                    onStatus={status} />
-                ))}
+          <div className="adm-grid">
+            {list.map((it,i)=>(
+              <Card key={i} section={tab} item={it} idx={i} total={list.length} password={password}
+                onChange={(v)=>onItemChange(tab,i,v)}
+                onMove={(f,t)=>onItemMove(tab,f,t)}
+                onDelete={(idx)=>onItemDelete(tab,idx)}
+                onStatus={status} />
+            ))}
           </div>
         )}
 
-        <div style={{marginTop:28,paddingTop:18,borderTop:"1px solid var(--line)",display:"flex",justifyContent:"flex-end"}}>
-          <button className="btn btn-accent" onClick={saveAll} disabled={saving || !dirty}>
-            {saving ? "Salvo…" : "Salva tutto su GitHub"}
+        <div className="adm-foot">
+          <button className="btn btn-primary" onClick={saveAll} disabled={saving || !dirty}>
+            {saving ? "Salvo…" : "Salva tutto"}
           </button>
         </div>
       </main>
