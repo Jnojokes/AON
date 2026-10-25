@@ -1007,8 +1007,22 @@ import * as ReactDOM from 'react-dom/client';
                 // Safari su iPhone guarda l'attributo per concedere l'autoplay.
                 v.muted = true;
                 v.setAttribute('muted', '');
+                v.setAttribute('playsinline', '');
+                v.setAttribute('webkit-playsinline', '');
+                // iPhone con il risparmio energetico (e alcuni browser) bloccano
+                // ogni video automatico, anche muto: play() viene rifiutato.
+                // In quel caso il video parte al primo tocco sulla pagina.
+                const EVENTI = ['touchend', 'pointerup', 'click', 'keydown'];
+                const riprova = () => {
+                    const pr = v.play();
+                    if (pr && typeof pr.then === 'function') pr.then(stacca, () => {});
+                };
+                const stacca = () => EVENTI.forEach((e) => document.removeEventListener(e, riprova, true));
                 const pr = v.play();
-                if (pr && typeof pr.catch === 'function') pr.catch(() => {});
+                if (pr && typeof pr.catch === 'function') {
+                    pr.catch(() => EVENTI.forEach((e) => document.addEventListener(e, riprova, { capture: true, passive: true })));
+                }
+                return stacca;
             }, [video]);
             return (
                 <div className="hero-reel" aria-hidden="true">
