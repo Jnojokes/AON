@@ -857,8 +857,9 @@
             /* sopra il video le scritte grigie diventano bianche al 78% */
             --mute: rgba(255,255,255,.78);
         }
-        .has-hero .hero-bottom { margin-top: auto; padding-top: 24px; padding-bottom: 40px; }
-        .has-hero .hero-bottom .mb-12 { margin-bottom: 0; }
+        /* H8: il blocco del nome sta al centro dello schermo; padding-bottom
+           compensa la barra in alto, cosi' il centro e' quello ottico. */
+        .has-hero .hero-bottom { margin: auto 0; padding-top: 24px; padding-bottom: 64px; }
         .hero-gap { height: calc(90vh - 90px); height: calc(90svh - 90px); }
         .has-hero .home-panel { position: relative; z-index: 1; background: var(--bg); padding-top: 48px; }
         @media (max-width: 767px) {
@@ -917,20 +918,16 @@
         }
         .series-circle:hover img { transform: scale(1.1); }
 
-        /* Intestazione — il nome su una riga; sotto, vicina al nome, la
-           scritta. Senza storie il bottone sta a destra della scritta; da
-           mobile va sotto, a sinistra. */
+        /* Intestazione (H8) — nome, scritta e una riga di bottoni (ABOUT ME,
+           CONTACT ME), tutto centrato. Con lo showreel sta al centro dello
+           schermo (vedi .has-hero .hero-bottom). */
         .profile-main {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
-            column-gap: 40px;
-            align-items: center;
-            container-type: inline-size;
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center;
         }
         /* Nome (H7): "Andrea Onori" com'e' scritto nel pannello, non tutto
-           maiuscolo, in Roboto Medium; non riempie piu' la riga. */
+           maiuscolo, in Roboto Medium; non riempie la riga. */
         .profile-name {
-            grid-column: 1 / -1;
             font-weight: 500;
             text-transform: none;
             font-size: clamp(40px, 6.5vw, 112px);
@@ -939,28 +936,85 @@
             letter-spacing: -.03em;
             margin-bottom: 10px;
         }
-        .profile-lines { grid-column: 1; grid-row: 2; }
         .profile-lines > * + * { margin-top: 8px; }
-        .profile-ctas { grid-column: 2; grid-row: 2; justify-self: end; }
+        /* Scritta sotto il nome (H8): Roboto, non mono, senza pallino. */
+        .profile-eyebrow {
+            font-family: 'Roboto', sans-serif; font-weight: 400;
+            font-size: 12px; letter-spacing: .16em; color: var(--mute);
+        }
+        .hero-actions { display: flex; justify-content: center; gap: 12px; margin-top: 32px; }
         @media (max-width: 767px) {
-            .profile-main { grid-template-columns: minmax(0, 1fr); }
-            .profile-ctas { grid-column: 1; grid-row: 3; justify-self: start; margin-top: 20px; }
+            /* da telefono i due rettangoli si dividono la larghezza */
+            .hero-actions { width: 100%; gap: 8px; }
+            .hero-actions > .abtn, .hero-actions > .cbtn { flex: 1 1 50%; min-width: 0; }
+            .hero-actions > .cbtn, .hero-actions .abtn-top, .hero-actions .abtn-bot { padding-left: 12px; padding-right: 12px; }
         }
-        /* Con le storie, da computer il bottone di contatto sta sulla riga dei
-           cerchi (.cta-wide) e l'intestazione e' una colonna sola. Da telefono
-           resta sotto la scritta (.cta-narrow): la riga delle storie scorre di
-           lato e lo coprirebbe. display:none toglie anche la copia nascosta
-           dall'albero di accessibilita'. */
-        @media (min-width: 768px) {
-            .profile-main.with-stories { grid-template-columns: minmax(0, 1fr); }
-            .cta-narrow { display: none !important; }
+
+        /* Rettangolo ABOUT ME (H8): formato di CONTACT ME, ma due bottoni.
+           Sopra, bianco: ABOUT ME (apre la pagina About). Sotto, velato:
+           ▷ PLAY (lo showreel). Effetti separati per le due meta'. */
+        .abtn { display: inline-flex; flex-direction: column; height: 84px; min-width: 168px; }
+        .abtn-top, .abtn-bot {
+            height: 50%; padding: 0 28px; border: 0; border-radius: 0; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 9px;
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+            letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
         }
-        @media (max-width: 767px) { .cta-wide { display: none !important; } }
-        .series-row { display: flex; align-items: flex-start; gap: 32px; }
-        .series-strip { flex: 1; min-width: 0; }
-        /* alta come i cerchi (88px): il bottone e' centrato su di loro, non
-           sulle etichette sotto */
-        .series-cta { flex-shrink: 0; height: 88px; display: flex; align-items: center; }
+        .abtn.solo .abtn-top { height: 100%; }
+        .abtn-top { background: #fff; color: #161616; }
+        .abtn-top > span { display: inline-block; transition: transform .35s var(--ease-out); }
+        .abtn-bot { background: rgba(255,255,255,.12); color: rgba(244,242,238,.55); transition: background .35s var(--ease-out), color .35s var(--ease-out); }
+        .abtn-bot .tri-f { display: none; }
+        .abtn-top:focus-visible, .abtn-bot:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+        @media (hover: hover) {
+            .abtn-top:hover > span { transform: scale(1.08); }
+            .abtn-bot:hover { background: rgba(255,255,255,.22); color: rgba(244,242,238,.9); }
+            .abtn-bot:hover .tri-o { display: none; }
+            .abtn-bot:hover .tri-f { display: inline; }
+        }
+        .abtn-top:focus-visible > span { transform: scale(1.08); }
+        .abtn-bot:focus-visible { background: rgba(255,255,255,.22); color: rgba(244,242,238,.9); }
+        .abtn-bot:focus-visible .tri-o { display: none; }
+        .abtn-bot:focus-visible .tri-f { display: inline; }
+
+        /* Freccina laterale "FEED ↓" (H8): fa capire che sotto c'e' il feed.
+           Opacita' allo scroll: useEffect in App. */
+        .side-arrow {
+            position: fixed; right: 40px; top: 50%; transform: translateY(-50%); z-index: 5;
+            width: 44px; padding: 16px 0 14px; border: 0; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+            background: rgba(255,255,255,.12); color: rgba(244,242,238,.9);
+            font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase;
+            transition: background .35s var(--ease-out);
+        }
+        .side-arrow:hover { background: rgba(255,255,255,.22); }
+        .side-arrow:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+        .side-arrow-t { writing-mode: vertical-rl; }
+        .side-arrow-a { display: inline-block; font-size: 13px; animation: arrownudge 2.2s ease-in-out infinite; }
+        @keyframes arrownudge { 0%, 60%, 100% { transform: translateY(0); } 75% { transform: translateY(4px); } }
+        @media (max-width: 767px) { .side-arrow { right: 20px; top: auto; bottom: 24px; transform: none; } }
+
+        /* Modalita' PLAY (H8): showreel pulito. !important vince sulle opacita'
+           scritte dall'effetto allo scroll. La dissolvenza c'e' solo entrando
+           e uscendo (.reel-anim), non durante lo scroll normale. */
+        .reel-anim .hero-screen, .reel-anim .hero-veil, .reel-anim .side-arrow { transition: opacity .5s ease; }
+        .is-playing .hero-screen { opacity: 0 !important; pointer-events: none !important; }
+        .is-playing .hero-veil { opacity: 0 !important; }
+        .is-playing .side-arrow { opacity: 0 !important; pointer-events: none !important; }
+        .is-playing .hero-reel { cursor: pointer; }
+        .reel-close {
+            position: fixed; top: 16px; right: 16px; z-index: 50;
+            display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px;
+            border: 0; cursor: pointer; background: rgba(0,0,0,.45); color: #fff;
+            font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase;
+            transition: background .25s var(--ease-out);
+        }
+        .reel-close:hover { background: rgba(0,0,0,.7); }
+        .reel-close:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+        @media (prefers-reduced-motion: reduce) {
+            .side-arrow-a { animation: none; }
+            .abtn-top > span { transition: none; }
+        }
 
         /* Bottone di contatto a due piani (CONTACT ME / STAND BY → REC). */
         .cbtn {
@@ -1162,9 +1216,11 @@
         .colofone-value { font-size: 13px; color: var(--fg); font-family: 'JetBrains Mono', monospace; }
 
         /* ─────────────────────────────────────────────────────────────────
-           PAGINA ABOUT (#about) — variante C3 approvata. Vista a tutto schermo
-           sopra il sito, con il suo scorrimento: il video verticale resta
-           fermo (sticky) accanto al testo.
+           PAGINA ABOUT (#about) — variante "Cinema" (H8). Vista a tutto schermo
+           sopra il sito, con il suo scorrimento. Come la home: il video About
+           e' uno sfondo fisso col velo al 50%; al centro titolo, lead e
+           bottoni; poi uno spazio vuoto e il pannello con bio e foto, che
+           sale e copre il video. Opacita' allo scroll: AboutView.
            ───────────────────────────────────────────────────────────────── */
         .about-view {
             position: fixed; inset: 0; z-index: 10000;
@@ -1172,49 +1228,85 @@
             overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
             animation: modalIn .25s ease; outline: none;
         }
-        .about-wrap { max-width: 1240px; margin: 0 auto; padding: 0 32px; }
+        .about-wrap { padding: 0 40px; }
+        .about-bg { position: fixed; inset: 0; z-index: 0; height: 100vh; height: 100lvh; background: #000; overflow: hidden; }
+        .about-bg video, .about-bg img { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .about-veil { position: absolute; inset: 0; background: var(--bg); opacity: .5; pointer-events: none; }
+        .about-caption {
+            position: absolute; left: 40px; bottom: 32px; z-index: 1; opacity: 0;
+            font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #fff;
+            text-shadow: 0 1px 8px rgba(0,0,0,.6);
+        }
+        .about-hero { position: relative; z-index: 1; display: flex; flex-direction: column; }
+        .has-bg .about-hero { min-height: 100vh; min-height: 100svh; }
         .about-top { border-bottom: 1px solid var(--line); }
         .about-topbar { display: flex; justify-content: space-between; align-items: center; height: 52px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
         .about-back { color: inherit; text-decoration: none; transition: color .3s var(--ease-out); }
-        .about-back:hover, .about-back:focus-visible { color: var(--accent); }
-        .about-here { color: var(--mute); }
-        .about-hero { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 64px; align-items: start; padding-top: 40px; padding-bottom: 120px; }
-        .about-hero.no-media { grid-template-columns: minmax(0, 1fr); }
-        /* Il video si dimensiona sull'ALTEZZA dello schermo e resta 9:16: su
-           schermi bassi diventa piu' stretto e il testo si allarga. */
-        .about-vert {
-            position: sticky; top: 24px;
-            height: min(calc(100vh - 48px), 880px); height: min(calc(100svh - 48px), 880px);
-            width: auto; aspect-ratio: 9 / 16; overflow: hidden; background: #0c0c0c;
+        .about-back:hover, .about-back:focus-visible { color: rgba(255,255,255,.6); }
+        .about-here { color: rgba(255,255,255,.78); }
+        .about-center {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            padding-top: 64px; padding-bottom: 64px;
         }
-        .about-vert video, .about-vert img { display: block; width: 100%; height: 100%; object-fit: cover; }
-        .about-caption { position: absolute; left: 16px; bottom: 16px; z-index: 2; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--fg); text-shadow: 0 1px 12px rgba(0,0,0,.5); }
-        .about-side { container-type: inline-size; min-width: 0; }
+        .has-bg .about-center { margin: auto 0; padding-top: 24px; }
         .about-title {
-            font-family: 'Roboto', sans-serif; font-weight: 900; text-transform: uppercase;
-            margin-top: 8px; font-size: 48px; font-size: clamp(34px, 12.5cqi, 92px);
-            line-height: .92; letter-spacing: -.03em;
+            font-family: 'Roboto', sans-serif; font-weight: 500; text-transform: none;
+            font-size: clamp(40px, 6vw, 96px); line-height: .98; letter-spacing: -.03em;
         }
-        .about-title .nw { white-space: nowrap; }
-        .about-lead { margin-top: 28px; font-weight: 300; font-size: clamp(22px, 2vw, 28px); line-height: 1.3; max-width: 22ch; }
-        .about-body { margin-top: 24px; font-size: 18px; line-height: 1.55; color: #c4c4c4; max-width: 38ch; }
-        .about-ctas { margin-top: 40px; display: flex; gap: 8px; flex-wrap: wrap; }
-        .about-ctas .btn-primary, .about-ctas .btn-secondary { min-height: 44px; text-decoration: none; }
-        .about-photos { margin-top: 72px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .about-lead {
+            margin-top: 24px; font-weight: 300; font-size: clamp(18px, 1.7vw, 24px);
+            line-height: 1.35; max-width: 34ch; color: rgba(255,255,255,.88);
+        }
+        .about-ctas { margin-top: 36px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        /* Bottoni: la meta' bianca del rettangolo della home, niente arancione. */
+        .rbtn {
+            height: 44px; min-width: 168px; padding: 0 24px; border: 0; border-radius: 0; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+            letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; text-decoration: none;
+            transition: background .35s var(--ease-out);
+        }
+        .rbtn > span { display: inline-block; transition: transform .35s var(--ease-out); }
+        .rbtn.white { background: #fff; color: #161616; }
+        .rbtn.veil { background: rgba(255,255,255,.12); color: rgba(244,242,238,.9); }
+        .rbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+        .rbtn:focus-visible > span { transform: scale(1.08); }
+        @media (hover: hover) {
+            .rbtn:hover > span { transform: scale(1.08); }
+            .rbtn.veil:hover { background: rgba(255,255,255,.22); }
+        }
+        .about-gap { height: 50vh; height: 50svh; }
+        .about-panel { position: relative; z-index: 1; background: var(--bg); }
+        /* Alto almeno quanto lo schermo: "BIO ↓" arriva esatto alla bio e in
+           fondo non resta una striscia di video sopra il pannello. */
+        .has-bg .about-panel { padding-top: 96px; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
+        .has-bg .about-panel > .about-foot { margin-top: auto; }
+        .has-bg .about-panel > :nth-last-child(2) { margin-bottom: 120px; }
+        .about-bio { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; align-items: start; }
+        .about-bio-lbl { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8a8a8a; padding-top: 8px; }
+        .about-body {
+            font-weight: 300; font-size: clamp(20px, 1.9vw, 28px); line-height: 1.45;
+            color: #e6e6e6; max-width: 34ch;
+        }
+        .about-body + .about-body { margin-top: 16px; }
+        .about-photos { margin-top: 96px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .about-photos:first-child { margin-top: 0; }
         .about-photos.one { grid-template-columns: 1fr; }
         .about-photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--cell); }
         .about-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
         .about-photos figcaption { margin-top: 12px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8a8a8a; }
-        .about-foot { border-top: 1px solid var(--line); padding: 28px 0; }
+        .about-foot { margin-top: 120px; border-top: 1px solid var(--line); padding: 28px 0; }
         .about-foot .about-wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--mute); }
-        @media (max-width: 860px) {
+        @media (max-width: 767px) {
             .about-wrap { padding: 0 20px; }
-            .about-hero { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-top: 20px; padding-bottom: 80px; }
-            /* Da mobile il video va a tutta larghezza in 4:5: 9:16 sarebbe troppo alto. */
-            .about-vert { position: relative; top: 0; height: auto; width: 100%; aspect-ratio: 4 / 5; }
-            .about-lead { max-width: none; }
-            .about-photos { gap: 6px; margin-top: 48px; }
+            .about-caption { left: 20px; bottom: 24px; }
+            .about-ctas { width: 100%; gap: 8px; flex-wrap: nowrap; }
+            .about-ctas .rbtn { flex: 1 1 0; min-width: 0; padding: 0 12px; }
+            .has-bg .about-panel { padding-top: 64px; }
+            .about-bio { grid-template-columns: 1fr; gap: 16px; }
+            .about-photos { gap: 6px; margin-top: 56px; }
         }
+        @media (prefers-reduced-motion: reduce) { .rbtn > span { transition: none; } }
 
         /* Respect reduced-motion: kill marquee/auto-animations and shorten transitions */
         @media (prefers-reduced-motion: reduce) {
@@ -1373,7 +1465,7 @@
             border-top: 1px solid var(--line);
         }
     </style>
-    <link rel="stylesheet" href="/assets/tailwind.css?v=1ecc5536">
+    <link rel="stylesheet" href="/assets/tailwind.css?v=0b1f6d1b">
 </head>
 <body>
     <!-- Il contenuto statico qui sotto è generato da scripts/prerender.mjs a ogni
@@ -1594,7 +1686,7 @@
 
     <!-- Il sorgente di questo bundle e' src/app.jsx. Non modificare
          assets/app.js a mano: si rigenera con `npm run build`. -->
-    <script src="/assets/app.js?v=5d7d91df" defer></script>
+    <script src="/assets/app.js?v=cff5fb1d" defer></script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
          BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:

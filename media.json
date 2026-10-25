@@ -794,7 +794,7 @@
     },
     "profile": {
       "badge": "",
-      "eyebrow": "◌ FILM-MAKER · BASED IN MILAN",
+      "eyebrow": "FILM-MAKER · BASED IN MILAN",
       "nameFirst": "Andrea",
       "nameLast": "Onori",
       "handle": "",
@@ -804,6 +804,7 @@
       "ctaPrimary": "CONTACT ME",
       "ctaIdle": "STAND BY",
       "ctaHover": "REC",
+      "ctaPlay": "PLAY",
       "ctaEmail": "video@andreaonori.com",
       "ctaSubject": "Production enquiry",
       "ctaSecondary": ""
@@ -882,6 +883,8 @@
   "about": {
     "video": "media/about/super8-about.mp4",
     "poster": "media/about/super8-about-poster.jpg",
+    "videoWide": "media/about/super8-about-wide.mp4",
+    "posterWide": "media/about/super8-about-wide-poster.jpg",
     "caption": "Super 8 · Stromboli, 2025",
     "title": "I'm Andrea —\nfilmmaker.",
     "lead": "Raised catching Marche light, now based in Milan, shooting fashion and commercial.",

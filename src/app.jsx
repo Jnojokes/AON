@@ -58,6 +58,8 @@ import * as ReactDOM from 'react-dom/client';
                 // Riga sotto del bottone di contatto: a riposo e col mouse sopra.
                 ctaIdle: 'STAND BY',
                 ctaHover: 'REC',
+                // Meta' sotto del rettangolo ABOUT ME: fa partire lo showreel.
+                ctaPlay: 'PLAY',
                 ctaEmail: 'video@andreaonori.com',
                 ctaSubject: 'Commission enquiry',
                 ctaSecondary: 'AVAILABLE FOR WORK',
@@ -726,63 +728,76 @@ import * as ReactDOM from 'react-dom/client';
                 </button>
             );
         };
-        const hasSeries = () => Boolean(M().series && M().series.length);
 
-        // onContact: apre il modulo di contatto, il cui stato sta in App (uno
-        // solo per il bottone dell'intestazione e per quello delle storie).
-        const ProfileHeader = ({ onContact }) => {
+        // Rettangolo ABOUT ME (H8), stesso formato di CONTACT ME ma fatto di due
+        // bottoni: sopra "ABOUT ME" apre la pagina About, sotto "▷ PLAY" fa
+        // partire lo showreel (vedi App). Senza showreel (onPlay assente) resta
+        // solo la meta' bianca, alta quanto tutto il rettangolo.
+        const AboutPlayButton = ({ label, onAbout, onPlay }) => (
+            <div className={'abtn' + (onPlay ? '' : ' solo')}>
+                <button type="button" className="abtn-top" aria-label="About me" onClick={onAbout}>
+                    <span>{label || 'ABOUT ME'}</span>
+                </button>
+                {onPlay && (
+                    <button type="button" className="abtn-bot" aria-label="Play showreel" onClick={onPlay}>
+                        <span className="tri-o" aria-hidden="true">▷</span><span className="tri-f" aria-hidden="true">▶</span>
+                        <span>{S().profile.ctaPlay || 'PLAY'}</span>
+                    </button>
+                )}
+            </div>
+        );
+
+        // Intestazione (H8): nome, scritta e una riga di bottoni (ABOUT ME a
+        // sinistra, CONTACT ME a destra), centrati. Delle storie in evidenza
+        // in home resta solo ABOUT ME (serie "aboutme"): le altre restano nei
+        // dati e nel pannello. onAbout riceve la serie, onPlay e' assente
+        // senza showreel. Le righe handle e disciplines si vedono solo se piene.
+        const ProfileHeader = ({ onContact, onAbout, onPlay }) => {
             const p = S().profile;
-            const conCta = (p.ctaPrimary && p.ctaEmail) || p.ctaSecondary;
+            const aboutS = (M().series || []).find((x) => x && x.id === ABOUT_SERIES_ID);
+            const contatto = Boolean(p.ctaPrimary && p.ctaEmail);
             return (
-            <div>
-                <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-start mb-14 md:mb-10">
-                    {/* Intestazione: niente foto profilo, il nome riempie la
-                        riga; sotto, la scritta. Il bottone di contatto sta qui
-                        da telefono; da computer sta sulla riga delle storie
-                        (.cta-narrow), o qui a destra se non ci sono storie. Le
-                        righe handle e disciplines si vedono solo se piene. */}
-                    <div className={'profile-main flex-1 w-full' + (hasSeries() ? ' with-stories' : '')}>
-                        <h1 className="display profile-name">
-                            <span className="reveal-line d1"><span>{p.nameFirst}</span></span>{' '}
-                            <span className="reveal-line d2"><span>{p.nameLast}</span></span>
-                        </h1>
+                <div className="profile-main w-full">
+                    <h1 className="display profile-name">
+                        <span className="reveal-line d1"><span>{p.nameFirst}</span></span>{' '}
+                        <span className="reveal-line d2"><span>{p.nameLast}</span></span>
+                    </h1>
 
-                        <div className="profile-lines">
-                            {p.eyebrow && <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '10px' }}>
-                                {p.eyebrow}
-                            </div>}
+                    <div className="profile-lines">
+                        {p.eyebrow && <div className="profile-eyebrow uline">{p.eyebrow}</div>}
 
-                            {p.handle && <p className="mono uline" style={{ color: 'var(--mute)', fontSize: '11px' }}>
-                                {p.handle}
-                            </p>}
+                        {p.handle && <p className="mono uline" style={{ color: 'var(--mute)', fontSize: '11px' }}>
+                            {p.handle}
+                        </p>}
 
-                            {p.disciplines && <p className="grot uline" style={{ fontSize: '13px', fontWeight: 500 }}>{p.disciplines}</p>}
+                        {p.disciplines && <p className="grot uline" style={{ fontSize: '13px', fontWeight: 500 }}>{p.disciplines}</p>}
 
-                            {/* Svuotare un campo dal pannello toglie il testo dal sito
-                                (è voluto), ma un indirizzo vuoto non deve lasciare in
-                                piedi un link rotto: href="" ricarica la pagina e
-                                "mailto:" apre il client di posta senza destinatario.
-                                Senza indirizzo il testo resta, il link no. */}
-                            {p.siteLabel && (p.siteUrl
-                                ? <a href={p.siteUrl}
-                                     className="mono uline inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
-                                    {p.siteLabel}
-                                  </a>
-                                : <span className="mono uline inline-block" style={{ fontSize: '11px' }}>{p.siteLabel}</span>)}
-                        </div>
+                        {/* Svuotare un campo dal pannello toglie il testo dal sito
+                            (è voluto), ma un indirizzo vuoto non deve lasciare in
+                            piedi un link rotto: href="" ricarica la pagina e
+                            "mailto:" apre il client di posta senza destinatario.
+                            Senza indirizzo il testo resta, il link no. */}
+                        {p.siteLabel && (p.siteUrl
+                            ? <a href={p.siteUrl}
+                                 className="mono uline inline-block" style={{ fontSize: '11px', borderBottom: '1px solid var(--fg)', paddingBottom: '2px' }}>
+                                {p.siteLabel}
+                              </a>
+                            : <span className="mono uline inline-block" style={{ fontSize: '11px' }}>{p.siteLabel}</span>)}
+                    </div>
 
-                        {conCta && <div className={'profile-ctas flex gap-3 md:gap-2 flex-wrap' + (hasSeries() ? ' cta-narrow' : ' cta-solo')}>
+                    {(aboutS || contatto || p.ctaSecondary) && (
+                        <div className="hero-actions">
+                            {aboutS && <AboutPlayButton label={aboutS.label} onAbout={() => onAbout(aboutS)} onPlay={onPlay} />}
                             {/* Apre il modulo, non un link mailto: — vedi il
                                 commento su ContactModal. */}
-                            <ContactButton onOpen={onContact} />
+                            {contatto && <ContactButton onOpen={onContact} />}
                             {p.ctaSecondary && <button className="btn-secondary">
                                 <span className="pulse-dot"></span>
                                 {p.ctaSecondary}
                             </button>}
-                        </div>}
-                    </div>
+                        </div>
+                    )}
                 </div>
-            </div>
             );
         };
 
@@ -803,42 +818,10 @@ import * as ReactDOM from 'react-dom/client';
             </div>
         );
 
-        // Series
-        const Series = ({ onClick, onContact }) => {
-            const series = (M().series && M().series.length) ? M().series : [];
-            if (!series.length) return null;
-            const { seriesTitle, seriesUnit } = S().sections;
-            return (
-                <div className="mb-12">
-                    {/* Titolo e unità vuoti nel pannello = niente riga sopra i
-                        cerchi (versione 1). */}
-                    {(seriesTitle || seriesUnit) && (
-                        <div className="flex items-baseline justify-between mb-5 pb-3" style={{ borderBottom: '1px solid var(--line)' }}>
-                            <div className="mono uline" style={{ fontSize: '10px' }}>{seriesTitle}</div>
-                            <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '9px' }}>{String(series.length).padStart(2,'0')} {seriesUnit}</div>
-                        </div>
-                    )}
-                    {/* Da computer il bottone di contatto sta a destra dei
-                        cerchi, centrato su di loro; da telefono e' sotto la
-                        scritta dell'intestazione (.cta-wide / .cta-narrow). */}
-                    <div className="series-row">
-                    <div className="series-strip flex gap-7 overflow-x-auto pb-2">
-                        {series.map((s, i) => (
-                            <div key={s.id} className="flex flex-col items-center gap-3 flex-shrink-0 cursor-pointer" role="button" tabIndex={0} aria-label={s.label} onClick={() => onClick(s)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(s); } }}>
-                                <div className="series-circle">
-                                    <img src={normMedia(s.image).image || firstImageOf((s.images || []).map(normMedia)) || ''} alt={S().seo.author ? `${s.label} — series by ${S().seo.author}` : s.label} loading="lazy" decoding="async" />
-                                </div>
-                                <div className="text-center">
-                                    <div className="mono uline" style={{ fontSize: '9px' }}>{s.label}</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    {onContact && <div className="series-cta cta-wide"><ContactButton onOpen={onContact} /></div>}
-                    </div>
-                </div>
-            );
-        };
+        // Le storie in evidenza (cerchi) non si mostrano piu' in home dalla H8:
+        // resta solo ABOUT ME, come rettangolo nell'intestazione. Le serie
+        // restano in media.json e nel pannello; la serie aboutme apre la pagina
+        // About (o, senza i suoi contenuti, il visore delle storie).
 
         // Tabs
         // Le chiavi ('FEED'/'MOTION'/'INDEX') restano interne: rinominare una
@@ -983,7 +966,7 @@ import * as ReactDOM from 'react-dom/client';
         const hasFeedReel = () => isDirectVideo((S().feedReel || {}).video);
         // Schermo verticale o stretto: larghezza < 768px oppure piu' alto che largo.
         const isNarrowScreen = () => window.innerWidth < 768 || window.innerHeight > window.innerWidth;
-        const HeroReel = React.forwardRef(({ veilRef, labelRef }, ref) => {
+        const HeroReel = React.forwardRef(({ veilRef, labelRef, onClick }, ref) => {
             const r = S().feedReel || {};
             const [narrow, setNarrow] = useState(isNarrowScreen);
             useEffect(() => {
@@ -1024,13 +1007,13 @@ import * as ReactDOM from 'react-dom/client';
                 }
                 return stacca;
             }, [video]);
+            // Con meno movimento il video c'e' ma non parte: si vede il poster
+            // fermo, e PLAY lo puo' comunque far partire.
             return (
-                <div className="hero-reel" aria-hidden="true">
-                    {calmo && poster
-                        ? <img src={poster} alt="" />
-                        : <video ref={ref} key={video} src={video} poster={poster || undefined}
-                            autoPlay={!calmo} muted loop playsInline
-                            preload={calmo ? 'metadata' : 'auto'} />}
+                <div className="hero-reel" aria-hidden="true" onClick={onClick}>
+                    <video ref={ref} key={video} src={video} poster={poster || undefined}
+                        autoPlay={!calmo} muted loop playsInline
+                        preload={calmo ? 'metadata' : 'auto'} />
                     <div ref={veilRef} className="hero-veil"></div>
                     {r.label && <div ref={labelRef} className="hero-reel-label mono uline">{r.label}</div>}
                 </div>
@@ -1519,21 +1502,39 @@ import * as ReactDOM from 'react-dom/client';
             return a && typeof a === 'object' ? a : null;
         };
 
+        // Impaginazione "Cinema" (H8), come la home: il video About a tutto
+        // schermo come sfondo fisso, col velo; al centro titolo, lead e
+        // bottoni; scorrendo spariscono, poi sale il pannello con bio e foto.
+        // Da computer (largo e orizzontale) usa about.videoWide, altrimenti
+        // about.video (verticale); se ce n'e' uno solo, quello, tagliato al
+        // centro. La vista scorre dentro .about-view: il listener sta li'.
+        const isWideScreen = () => window.innerWidth >= 768 && window.innerWidth > window.innerHeight;
         const AboutView = ({ onClose }) => {
             const a = aboutData() || {};
-            const video = String(a.video || '').trim();
-            const poster = String(a.poster || '').trim();
+            const [wide, setWide] = useState(isWideScreen);
+            useEffect(() => {
+                const on = () => setWide(isWideScreen());
+                window.addEventListener('resize', on);
+                window.addEventListener('orientationchange', on);
+                return () => { window.removeEventListener('resize', on); window.removeEventListener('orientationchange', on); };
+            }, []);
+            const vV = String(a.video || '').trim(), vW = String(a.videoWide || '').trim();
+            const pV = String(a.poster || '').trim(), pW = String(a.posterWide || '').trim();
+            const usaWide = (wide && vW) || (!vV && vW);
+            const video = usaWide ? vW : vV;
+            const poster = usaWide ? (pW || pV) : (pV || pW);
             const photos = (Array.isArray(a.photos) ? a.photos : [])
-                .filter((p) => p && String(p.src || '').trim());
+                .filter((ph) => ph && String(ph.src || '').trim());
             const righe = brLines(a.title).filter((r, i, all) => r.trim() || i < all.length - 1);
-            const paras = (s) => String(s || '').split(/\r?\n+/).map((t) => t.trim()).filter(Boolean);
+            const paras = (t) => String(t || '').split(/\r?\n+/).map((x) => x.trim()).filter(Boolean);
             const p = S().profile;
             const social = S().footer.socialUrl;
             const [formAperto, setFormAperto] = useState(false);
-            const ref = useRef(null);
-            const box = useRef(null);
+            const ref = useRef(null), box = useRef(null), hero = useRef(null), veil = useRef(null);
+            const cap = useRef(null), arrow = useRef(null), panel = useRef(null);
             const calmo = typeof window.matchMedia === 'function'
                 && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const sfondo = Boolean(video || poster);
 
             useEffect(() => {
                 const overflow = document.body.style.overflow;
@@ -1552,84 +1553,121 @@ import * as ReactDOM from 'react-dom/client';
             useEffect(() => {
                 const v = ref.current;
                 if (!v || calmo) return;
-                // Come nel feed: Safari su iPhone concede l'autoplay solo con
+                // Come in home: Safari su iPhone concede l'autoplay solo con
                 // l'attributo muted, che React non scrive.
                 v.muted = true;
                 v.setAttribute('muted', '');
+                v.setAttribute('playsinline', '');
                 const pr = v.play();
                 if (pr && typeof pr.catch === 'function') pr.catch(() => {});
             }, [video]);
-
-            // Senza video si mostra il poster; senza nessuno dei due la colonna
-            // sinistra sparisce e il testo prende tutta la larghezza.
-            const media = video && !calmo
-                ? <video ref={ref} src={video} poster={poster || undefined} autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
-                : (poster || video)
-                    ? (poster ? <img src={poster} alt="" /> : <video src={video} muted playsInline preload="metadata" aria-hidden="true" />)
-                    : null;
+            // p = quanto si e' sceso nel primo mezzo schermo (0..1).
+            useEffect(() => {
+                const el = box.current;
+                if (!el || !sfondo) return;
+                let raf = 0;
+                const update = () => {
+                    raf = 0;
+                    const pp = Math.min(1, Math.max(0, el.scrollTop / (0.5 * el.clientHeight)));
+                    for (const r of [hero, arrow]) if (r.current) {
+                        r.current.style.opacity = String(1 - pp);
+                        r.current.style.pointerEvents = pp > 0.9 ? 'none' : '';
+                    }
+                    if (veil.current) veil.current.style.opacity = String(0.5 * (1 - pp));
+                    if (cap.current) cap.current.style.opacity = String(pp);
+                };
+                const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+                update();
+                el.addEventListener('scroll', onScroll, { passive: true });
+                window.addEventListener('resize', onScroll);
+                return () => { el.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); if (raf) cancelAnimationFrame(raf); };
+            }, [sfondo]);
+            const vaiAllaBio = () => {
+                const el = box.current, pn = panel.current;
+                if (!el || !pn) return;
+                el.scrollTo({ top: pn.offsetTop, behavior: calmo ? 'auto' : 'smooth' });
+            };
 
             return (
-                <div className="about-view" role="dialog" aria-modal="true" aria-label="About" tabIndex={-1} ref={box}>
-                    <div className="about-top">
-                        <div className="about-wrap about-topbar mono">
-                            <a href="#" className="about-back" onClick={(e) => { e.preventDefault(); onClose(); }}>
-                                ← {[p.nameFirst, p.nameLast].filter(Boolean).map((s) => s.charAt(0) + s.slice(1).toLowerCase()).join(' ') || 'Andrea Onori'}
-                            </a>
-                            <span className="about-here">About</span>
+                <div className={'about-view' + (sfondo ? ' has-bg' : '')} role="dialog" aria-modal="true" aria-label="About" tabIndex={-1} ref={box}>
+                    {sfondo && (
+                        <div className="about-bg" aria-hidden="true">
+                            {video && !calmo
+                                ? <video ref={ref} key={video} src={video} poster={poster || undefined} autoPlay muted loop playsInline preload="auto" />
+                                : (poster ? <img src={poster} alt="" /> : <video key={video} src={video} muted playsInline preload="metadata" />)}
+                            <div ref={veil} className="about-veil"></div>
+                            {a.caption && <span ref={cap} className="about-caption mono">{a.caption}</span>}
                         </div>
-                    </div>
-                    <main className={'about-wrap about-hero' + (media ? '' : ' no-media')}>
-                        {media && (
-                            <div className="about-vert">
-                                {media}
-                                {a.caption && <span className="about-caption mono">{a.caption}</span>}
+                    )}
+                    <div ref={hero} className="about-hero">
+                        <div className="about-top">
+                            <div className="about-wrap about-topbar mono">
+                                <a href="#" className="about-back" onClick={(e) => { e.preventDefault(); onClose(); }}>
+                                    ← {[p.nameFirst, p.nameLast].filter(Boolean).map((t) => t.charAt(0) + t.slice(1).toLowerCase()).join(' ') || 'Andrea Onori'}
+                                </a>
+                                <span className="about-here">About</span>
                             </div>
-                        )}
-                        <div className="about-side">
+                        </div>
+                        <div className="about-wrap about-center">
                             {righe.length > 0 && (
                                 <h1 className="about-title">
                                     {righe.map((r, i) => (
                                         <React.Fragment key={i}>
                                             {i > 0 && <br />}
-                                            <span className={i === 0 ? 'nw' : undefined}>{r}</span>
+                                            {r}
                                         </React.Fragment>
                                     ))}
                                 </h1>
                             )}
                             {paras(a.lead).map((t, i) => <p key={'l' + i} className="about-lead">{t}</p>)}
-                            {paras(a.body).map((t, i) => <p key={'b' + i} className="about-body">{t}</p>)}
-                            <div className="about-ctas">
-                                {p.ctaEmail && (
-                                    <button type="button" className="btn-primary"
-                                        onClick={() => { track('contact_click', { method: 'form', location: 'about' }); setFormAperto(true); }}>
-                                        <span>{p.ctaPrimary || "Let's film"}</span> <span className="arrow">→</span>
-                                    </button>
-                                )}
-                                {social && (
-                                    <a className="btn-secondary" href={social} target="_blank" rel="me noopener"
-                                        onClick={() => track('outbound_click', { link_domain: 'instagram.com', location: 'about' })}>
-                                        Instagram ↗
-                                    </a>
-                                )}
-                            </div>
-                            {photos.length > 0 && (
-                                <div className={'about-photos' + (photos.length === 1 ? ' one' : '')}>
-                                    {photos.slice(0, 2).map((ph, i) => (
-                                        <figure key={i}>
-                                            <div className="about-photo"><img src={ph.src} alt={ph.caption || 'Andrea Onori'} loading="lazy" decoding="async" /></div>
-                                            {ph.caption && <figcaption className="mono">{ph.caption}</figcaption>}
-                                        </figure>
-                                    ))}
+                            {(p.ctaEmail || social) && (
+                                <div className="about-ctas">
+                                    {p.ctaEmail && (
+                                        <button type="button" className="rbtn white"
+                                            onClick={() => { track('contact_click', { method: 'form', location: 'about' }); setFormAperto(true); }}>
+                                            <span>{p.ctaPrimary || 'Contact me'}</span>
+                                        </button>
+                                    )}
+                                    {social && (
+                                        <a className="rbtn veil" href={social} target="_blank" rel="me noopener"
+                                            onClick={() => track('outbound_click', { link_domain: 'instagram.com', location: 'about' })}>
+                                            <span>Instagram ↗</span>
+                                        </a>
+                                    )}
                                 </div>
                             )}
                         </div>
-                    </main>
-                    <footer className="about-foot">
-                        <div className="about-wrap mono">
-                            <span>© {new Date().getFullYear()} {S().footer.name || 'Andrea Onori'} — Milan, Italy</span>
-                            <span>{[S().footer.emailValue, S().footer.socialValue].filter(Boolean).join(' · ')}</span>
-                        </div>
-                    </footer>
+                    </div>
+                    {sfondo && <div className="about-gap" aria-hidden="true"></div>}
+                    <div ref={panel} className="about-panel">
+                        {paras(a.body).length > 0 && (
+                            <section className="about-wrap about-bio">
+                                <div className="about-bio-lbl mono">Bio</div>
+                                <div>{paras(a.body).map((t, i) => <p key={'b' + i} className="about-body">{t}</p>)}</div>
+                            </section>
+                        )}
+                        {photos.length > 0 && (
+                            <div className={'about-wrap about-photos' + (photos.length === 1 ? ' one' : '')}>
+                                {photos.slice(0, 2).map((ph, i) => (
+                                    <figure key={i}>
+                                        <div className="about-photo"><img src={ph.src} alt={ph.caption || 'Andrea Onori'} loading="lazy" decoding="async" /></div>
+                                        {ph.caption && <figcaption className="mono">{ph.caption}</figcaption>}
+                                    </figure>
+                                ))}
+                            </div>
+                        )}
+                        <footer className="about-foot">
+                            <div className="about-wrap mono">
+                                <span>© {new Date().getFullYear()} {S().footer.name || 'Andrea Onori'} — Milan, Italy</span>
+                                <span>{[S().footer.emailValue, S().footer.socialValue].filter(Boolean).join(' · ')}</span>
+                            </div>
+                        </footer>
+                    </div>
+                    {sfondo && (
+                        <button ref={arrow} type="button" className="side-arrow" aria-label="Scroll to the bio" onClick={vaiAllaBio}>
+                            <span className="side-arrow-t">Bio</span><span className="side-arrow-a" aria-hidden="true">↓</span>
+                        </button>
+                    )}
                     {formAperto && <ContactModal
                         email={p.ctaEmail} oggetto={p.ctaSubject} origine="about"
                         onClose={() => setFormAperto(false)} />}
@@ -1647,7 +1685,6 @@ import * as ReactDOM from 'react-dom/client';
             // dove e' stato aperto ('header' da telefono, 'stories' da computer).
             const [contactOpen, setContactOpen] = useState('');
             const apriContatto = (dove) => { track('contact_click', { method: 'form', location: dove }); setContactOpen(dove); };
-            const conContatto = Boolean(S().profile.ctaPrimary && S().profile.ctaEmail);
             // La pagina About vive sull'hash #about: si apre anche da un link
             // diretto (/versione1#about) e il tasto indietro la chiude.
             const isAboutHash = () => window.location.hash === '#about' && !!aboutData();
@@ -1755,7 +1792,65 @@ import * as ReactDOM from 'react-dom/client';
             // feed copre tutto lo schermo il video va in pausa.
             const reel = hasFeedReel();
             const heroRef = useRef(null), panelRef = useRef(null);
-            const reelVideo = useRef(null), reelVeil = useRef(null), reelLabel = useRef(null);
+            const reelVideo = useRef(null), reelVeil = useRef(null), reelLabel = useRef(null), arrowRef = useRef(null);
+
+            // PLAY (H8): lo showreel si guarda pulito, dall'inizio e con
+            // l'audio. Scritte, bottoni e velo spariscono (classe is-playing,
+            // con dissolvenza solo all'entrata e all'uscita: reel-anim) e
+            // compare CLOSE. Si esce con CLOSE, Esc, un clic sul video o
+            // scorrendo; il video torna muto e continua il suo loop.
+            const [playing, setPlaying] = useState(false);
+            const [reelAnim, setReelAnim] = useState(false);
+            const playingRef = useRef(false), animT = useRef(0);
+            const anima = () => { setReelAnim(true); clearTimeout(animT.current); animT.current = setTimeout(() => setReelAnim(false), 600); };
+            const calmoReel = () => typeof window.matchMedia === 'function'
+                && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const playReel = () => {
+                const v = reelVideo.current;
+                if (!v) return;
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                anima();
+                playingRef.current = true;
+                setPlaying(true);
+                try { v.currentTime = 0; } catch (e) {}
+                // play() nel gestore del clic: cosi' su iPhone parte anche l'audio.
+                // Se il browser lo blocca comunque, riparte muto.
+                v.muted = false;
+                const pr = v.play();
+                if (pr && typeof pr.catch === 'function') pr.catch(() => {
+                    v.muted = true;
+                    const p2 = v.play();
+                    if (p2 && typeof p2.catch === 'function') p2.catch(() => {});
+                });
+                track('showreel_play', { source: 'about_play' });
+            };
+            const stopReel = () => {
+                if (!playingRef.current) return;
+                anima();
+                playingRef.current = false;
+                setPlaying(false);
+                const v = reelVideo.current;
+                if (v) {
+                    v.muted = true;
+                    if (calmoReel()) v.pause();
+                }
+            };
+            const stopRef = useRef(stopReel);
+            stopRef.current = stopReel;
+            useEffect(() => {
+                if (!playing) return;
+                const onKey = (e) => { if (e.key === 'Escape') stopRef.current(); };
+                document.addEventListener('keydown', onKey);
+                return () => document.removeEventListener('keydown', onKey);
+            }, [playing]);
+            useEffect(() => () => clearTimeout(animT.current), []);
+            // Freccina "FEED ↓": porta all'inizio del pannello del feed.
+            const vaiAlFeed = () => {
+                const panel = panelRef.current;
+                const y = panel ? panel.getBoundingClientRect().top + window.scrollY : window.innerHeight;
+                window.scrollTo({ top: y, behavior: calmoReel() ? 'auto' : 'smooth' });
+            };
+
             useEffect(() => {
                 if (!reel) return;
                 const calmo = typeof window.matchMedia === 'function'
@@ -1771,6 +1866,12 @@ import * as ReactDOM from 'react-dom/client';
                     }
                     if (reelVeil.current) reelVeil.current.style.opacity = String(0.5 * (1 - p));
                     if (reelLabel.current) reelLabel.current.style.opacity = String(p);
+                    if (arrowRef.current) {
+                        arrowRef.current.style.opacity = String(1 - p);
+                        arrowRef.current.style.pointerEvents = p > 0.9 ? 'none' : '';
+                    }
+                    // Mentre si guarda lo showreel, scorrendo si esce.
+                    if (playingRef.current && window.scrollY > 40) stopRef.current();
                     const v = reelVideo.current, panel = panelRef.current;
                     if (v && panel && !calmo) {
                         const coperto = panel.getBoundingClientRect().top <= 0;
@@ -1806,8 +1907,8 @@ import * as ReactDOM from 'react-dom/client';
             }, [active]);
 
             return (
-                <div className={reel ? 'has-hero' : undefined}>
-                    {reel && <HeroReel ref={reelVideo} veilRef={reelVeil} labelRef={reelLabel} />}
+                <div className={[reel && 'has-hero', reel && playing && 'is-playing', reel && reelAnim && 'reel-anim'].filter(Boolean).join(' ') || undefined}>
+                    {reel && <HeroReel ref={reelVideo} veilRef={reelVeil} labelRef={reelLabel} onClick={playing ? stopReel : undefined} />}
                     {/* Prima schermata: con lo showreel e' alta quanto lo schermo,
                         con barra in alto e nome, storie e bottone in basso;
                         scorrendo sparisce (opacita' da useEffect qui sopra). */}
@@ -1820,12 +1921,22 @@ import * as ReactDOM from 'react-dom/client';
                             </div>
                         </div>
                         <div className="hero-bottom page-x">
-                            <ProfileHeader onContact={() => apriContatto('header')} />
-                            <Series onClick={onSeries} onContact={conContatto ? () => apriContatto('stories') : null} />
+                            <ProfileHeader onContact={() => apriContatto('header')} onAbout={onSeries}
+                                onPlay={reel ? playReel : undefined} />
                         </div>
                     </div>
                     {/* Spazio vuoto: qui si vede il video pulito. */}
                     {reel && <div className="hero-gap" aria-hidden="true"></div>}
+                    {reel && (
+                        <button ref={arrowRef} type="button" className="side-arrow" aria-label="Scroll to the feed" onClick={vaiAlFeed}>
+                            <span className="side-arrow-t">Feed</span><span className="side-arrow-a" aria-hidden="true">↓</span>
+                        </button>
+                    )}
+                    {reel && playing && (
+                        <button type="button" className="reel-close" onClick={stopReel}>
+                            <span aria-hidden="true">✕</span> Close
+                        </button>
+                    )}
 
                     <main ref={panelRef} className="home-panel page-x">
                         {TAB_KEYS.length > 1 && <Tabs active={active} setActive={setActive} />}

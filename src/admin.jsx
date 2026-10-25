@@ -420,9 +420,9 @@ const BLANKS = {
 const SECTIONS = [
   { key:"feed",   label:"FEED",   help:"Griglia principale (celle 4:5). La Copertina è l'immagine della cella e si vede solo nella griglia: può essere una WebP o GIF animata, si carica così com'è (max 3 MB) e, se è piccola, il sito la ingrandisce a pixel netti. Senza Copertina la cella mostra la prima foto del carosello. Il Logo (PNG o SVG trasparente) compare centrato sopra la copertina. Il carosello è quello che si sfoglia aprendo il post: trascina le foto e, con “+ Link video”, aggiungi un film ospitato su Bunny Stream: incolla il link Embed e proporzioni e copertina si compilano da sole. Il titolo è il nome del video; sotto, nella scheda, compaiono i Crediti: etichetta e valore liberi, nell'ordine che scegli, e le voci vuote non si vedono. Il valore di CLIENT compare anche passando col mouse sulla griglia. Anno, luogo e formato non si vedono nella scheda: servono a Google e alle pagine dei progetti." },
   { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link Embed del video su Bunny Stream: il video parte solo al click, quindi la griglia resta veloce. Se la copertina manca, il pannello mette la miniatura di Bunny." },
-  { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
+  { key:"series", label:"SERIES", help:"Storie in evidenza. Dalla home H8 il sito mostra solo la serie ABOUT ME (id aboutme), come rettangolo accanto a CONTACT ME: la sua etichetta è la scritta del bottone. Le altre serie restano qui ma non si vedono." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
-  { key:"about", label:"ABOUT", single:true, help:"Si apre cliccando la storia ABOUT ME: una pagina a tutto schermo con il video verticale a sinistra e, a destra, titolo, testi, i bottoni LET'S FILM e INSTAGRAM e due foto. La copertina rotonda della storia si cambia nella sezione SERIES." },
+  { key:"about", label:"ABOUT", single:true, help:"Si apre dal rettangolo ABOUT ME in home: una pagina a tutto schermo con il video come sfondo, al centro titolo, lead e i bottoni CONTACT ME e INSTAGRAM; scorrendo, la bio e due foto. La scritta ABOUT ME è l'etichetta della serie aboutme, nella sezione SERIES." },
   { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel sullo sfondo della home e la descrizione per Google e i motori AI." },
 ];
 
@@ -448,6 +448,7 @@ const SETTINGS_SCHEMA = [
       ["ctaPrimary",  "Pulsante principale (riga in alto, es. CONTACT ME)"],
       ["ctaIdle",     "Pulsante · riga sotto, a riposo (es. STAND BY)"],
       ["ctaHover",    "Pulsante · riga sotto, col mouse sopra (es. REC)"],
+      ["ctaPlay",     "Rettangolo ABOUT ME · riga sotto, fa partire lo showreel (es. PLAY)"],
       ["ctaEmail",    "Email di contatto"],
       ["ctaSubject",  "Oggetto dell'email"],
       ["ctaSecondary","Pulsante secondario"],
@@ -1306,9 +1307,9 @@ function FeedReelEditor({ value, password, onChange, onStatus }){
 // media.json → "about". Il sito la apre cliccando la storia ABOUT ME.
 // Il video e' un file MP4 diretto (un <video> in loop non sa riprodurre il
 // player di Bunny): o un link, o un file caricato dal pannello (max 3 MB).
-const ABOUT_BLANK = () => ({ video:"", poster:"", caption:"", title:"", lead:"", body:"", photos:[{ src:"", caption:"" }, { src:"", caption:"" }] });
+const ABOUT_BLANK = () => ({ video:"", poster:"", videoWide:"", posterWide:"", caption:"", title:"", lead:"", body:"", photos:[{ src:"", caption:"" }, { src:"", caption:"" }] });
 
-function AboutVideoField({ value, password, onChange, onStatus }){
+function AboutVideoField({ value, password, onChange, onStatus, aspect = "9/16" }){
   const inputRef = useRef(null);
   const [busy, setBusy] = useState(false);
   const [nota, setNota] = useState("");
@@ -1354,8 +1355,8 @@ function AboutVideoField({ value, password, onChange, onStatus }){
       <div className={"drop" + (over ? " over" : "")} data-hint="Rilascia l'MP4" {...dropHandlers} style={{ position:"relative" }}>
         {file
           ? <video key={video} src={srcOf(video)} controls muted playsInline preload="metadata"
-              style={{ width:"100%", aspectRatio:"9/16", objectFit:"cover", background:"#000", display:"block" }} />
-          : <div className="thumb mono" style={{ aspectRatio:"9/16", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:4, fontSize:9, color:"#555", letterSpacing:"0.14em" }}>
+              style={{ width:"100%", aspectRatio:aspect, objectFit:"cover", background:"#000", display:"block" }} />
+          : <div className="thumb mono" style={{ aspectRatio:aspect, display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:4, fontSize:9, color:"#555", letterSpacing:"0.14em" }}>
               <span>TRASCINA QUI L'MP4</span>
               <span style={{ fontSize:8, color:"#3d3d3d" }}>max 3 MB · oppure incolla un link</span>
             </div>}
@@ -1402,20 +1403,28 @@ function AboutEditor({ value, password, onChange, onStatus }){
       <div className="set-group">
         <h3>Video</h3>
         <p className="hint">
-          Il video verticale a sinistra: parte da solo, muto, e gira in loop. Meglio un montaggio
-          verticale 9:16; un video orizzontale viene tagliato al centro. Carica un MP4 (max 3 MB)
-          oppure incolla il link diretto di Bunny, per esempio
+          Da computer si vede il video orizzontale, da telefono il verticale. Se ce n'è uno solo, si usa quello, tagliato al centro.
+          È lo sfondo a tutto schermo della pagina: parte da solo, muto, e gira in loop.
+          Carica un MP4 (max 3 MB) oppure incolla il link diretto di Bunny, per esempio
           https://vz-13c73ffe-e6a.b-cdn.net/&#123;guid&#125;/play_720p.mp4 (anche il link Embed
-          viene convertito da solo). Da telefono si vede in 4:5. Senza video compare la copertina;
-          senza nessuno dei due, il testo prende tutta la larghezza.
+          viene convertito da solo). Senza nessun video la pagina non ha lo sfondo.
         </p>
         <div className="set-grid">
           <div>
-            <label className="lbl">Video (.mp4)</label>
+            <label className="lbl">Video orizzontale (computer)</label>
+            <AboutVideoField value={v.videoWide} password={password} onStatus={onStatus} aspect="16/9" onChange={(x) => set("videoWide", x)} />
+          </div>
+          <div>
+            <label className="lbl">Copertina orizzontale</label>
+            <ImageField value={v.posterWide || ""} password={password} aspect="16/9" allowUrl
+              onChange={(x) => set("posterWide", x)} onStatus={onStatus} />
+          </div>
+          <div>
+            <label className="lbl">Video verticale (telefono)</label>
             <AboutVideoField value={v.video} password={password} onStatus={onStatus} onChange={(x) => set("video", x)} />
           </div>
           <div>
-            <label className="lbl">Copertina · si vede finché il video carica</label>
+            <label className="lbl">Copertina verticale · si vede finché il video carica</label>
             <ImageField value={v.poster || ""} password={password} aspect="9/16" allowUrl
               onChange={(x) => set("poster", x)} onStatus={onStatus} />
             <label className="lbl" style={{ marginTop:12 }}>Scritta sul video (una riga)</label>
@@ -1428,7 +1437,7 @@ function AboutEditor({ value, password, onChange, onStatus }){
       <div className="set-group">
         <h3>Testi</h3>
         <div className="set-grid">
-          {text("title", "Titolo", true, "Vai a capo dove vuoi spezzare il titolo: la prima riga non va mai a capo da sola.", 60)}
+          {text("title", "Titolo", true, "Vai a capo dove vuoi spezzare il titolo.", 60)}
           {text("lead", "Lead (testo grande)", true)}
           {text("body", "Testo", true, "Una riga vuota o un a capo separa i paragrafi.", 100)}
         </div>
@@ -1436,7 +1445,7 @@ function AboutEditor({ value, password, onChange, onStatus }){
 
       <div className="set-group">
         <h3>Foto</h3>
-        <p className="hint">Due foto 4:5 affiancate sotto i bottoni, con una didascalia corta. Si caricano così come sono (max 3 MB). Se ne togli una, l'altra prende tutta la larghezza.</p>
+        <p className="hint">Due foto 4:5 affiancate sotto il testo, con una didascalia corta. Si caricano così come sono (max 3 MB). Se ne togli una, l'altra prende tutta la larghezza.</p>
         <div className="set-grid">
           {photos.map((p, i) => (
             <div key={i}>
