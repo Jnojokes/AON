@@ -106,23 +106,28 @@ const isVideoUrl = (u) =>
   typeof u === "string" && (VIDEO_RE.test(u) || BUNNY_RE.test(u) || JUMPSHARE_RE.test(u));
 
 const normMedia = (v) => {
-  if (!v) return { image:"", video:"", title:"", ratio:"" };
+  if (!v) return { image:"", video:"", title:"", ratio:"", link:"", linkLabel:"" };
   if (typeof v === "string") {
-    return isVideoUrl(v) ? { image:"", video:v, title:"", ratio:"" } : { image:v, video:"", title:"", ratio:"" };
+    return isVideoUrl(v)
+      ? { image:"", video:v, title:"", ratio:"", link:"", linkLabel:"" }
+      : { image:v, video:"", title:"", ratio:"", link:"", linkLabel:"" };
   }
   const src = v.src || "";
   const video = v.video || (isVideoUrl(src) ? src : "");
   const image = v.poster || v.image || (isVideoUrl(src) ? "" : src) || v.url || "";
-  return { image, video, title: v.title || "", ratio: v.ratio || "" };
+  return { image, video, title: v.title || "", ratio: v.ratio || "", link: v.link || "", linkLabel: v.linkLabel || "" };
 };
 
 // Riscrive un media nella forma più semplice possibile: stringa se è solo una
 // foto (così media.json resta identico a prima), oggetto se c'è un video.
-// Le proporzioni si salvano solo se ci sono.
-const toRaw = ({ image, video, title, ratio }) =>
-  (video || title)
-    ? { poster: image || "", video: video || "", title: title || "", ...(ratio ? { ratio } : {}) }
-    : (image || "");
+// Le proporzioni e il link esterno si salvano solo se ci sono. Una foto con
+// link diventa { image, link, linkLabel }; senza link resta una stringa.
+const toRaw = ({ image, video, title, ratio, link, linkLabel }) => {
+  const extra = link ? { link, ...(linkLabel ? { linkLabel } : {}) } : {};
+  if (video || title) return { poster: image || "", video: video || "", title: title || "", ...(ratio ? { ratio } : {}), ...extra };
+  if (link) return { image: image || "", ...extra };
+  return image || "";
+};
 
 const firstImage = (arr) => {
   for (const it of (arr || [])) { const m = normMedia(it); if (m.image) return m.image; }
@@ -411,7 +416,7 @@ const SECTIONS = [
   { key:"motion", label:"MOTION", help:"Reel verticali 9:16. Copertina (foto leggera, trascinabile) + link Embed del video su Bunny Stream: il video parte solo al click, quindi la griglia resta veloce. Se la copertina manca, il pannello mette la miniatura di Bunny." },
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
-  { key:"about", label:"ABOUT", single:true, help:"Si apre cliccando la storia ABOUT ME: una pagina a tutto schermo con il video verticale a sinistra e, a destra, titolo, testi, i bottoni LET'S ROLL e INSTAGRAM e due foto. La copertina rotonda della storia si cambia nella sezione SERIES." },
+  { key:"about", label:"ABOUT", single:true, help:"Si apre cliccando la storia ABOUT ME: una pagina a tutto schermo con il video verticale a sinistra e, a destra, titolo, testi, i bottoni LET'S FILM e INSTAGRAM e due foto. La copertina rotonda della storia si cambia nella sezione SERIES." },
   { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel sopra il Feed e la descrizione per Google e i motori AI." },
 ];
 
@@ -965,7 +970,15 @@ function SlideEditor({ item, password, onChange, onStatus, onDone, aspect }){
           onStatus={onStatus} />
         <div>
           <label className="lbl">Titolo slide (opzionale)</label>
-          <input className="field sm" value={m.title} onChange={e=>patch({ title:e.target.value })} placeholder="es. SANTONI BTO — FILM" />
+          <input className="field sm" value={m.title} onChange={e=>patch({ title:e.target.value })} placeholder="es. SANTONI BACK TO OFFICE — FILM" />
+        </div>
+        <div>
+          <label className="lbl">Link (opzionale)</label>
+          <input className="field sm" value={m.link} onChange={e=>patch({ link:e.target.value.trim() })} placeholder="https://www.youtube.com/watch?v=…" />
+        </div>
+        <div>
+          <label className="lbl">Etichetta link</label>
+          <input className="field sm" value={m.linkLabel} onChange={e=>patch({ linkLabel:e.target.value })} placeholder="Watch on YouTube ↗" disabled={!m.link} />
         </div>
         <button className="btn btn-ghost btn-xs" style={{alignSelf:"flex-start"}} onClick={onDone}>Chiudi slide</button>
       </div>
@@ -1573,7 +1586,15 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
 // ── Motion card: copertina + link al video su Bunny Stream ──────────────────
 function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, onStatus }){
   const m = normMedia(item);
-  const patch = (p) => onChange(toRaw({ ...m, ...p }));
+  const logo = item && typeof item === "object" ? item.logo : undefined;
+  // Il logo non fa parte della slide: si rimette accanto a ogni modifica, cosi'
+  // cambiare titolo o video non lo cancella.
+  const withLogo = (raw, lg) => {
+    if (!lg) return raw;
+    return typeof raw === "string" ? { image: raw, logo: lg } : { ...raw, logo: lg };
+  };
+  const patch = (p) => onChange(withLogo(toRaw({ ...m, ...p }), logo));
+  const patchLogo = (p) => onChange(withLogo(toRaw(m), p.logo));
   return (
     <div className="card fade" style={{padding:12,display:"flex",flexDirection:"column",gap:10}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -1590,6 +1611,11 @@ function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, on
         <ImageField value={m.image} password={password} aspect="9/16"
           onChange={(v)=>patch({ image:v })} onStatus={onStatus} allowUrl />
       </div>
+      <div>
+        <label className="lbl">Logo · sopra la copertina (opzionale)</label>
+        <CellAssetField kind="logo" item={{ logo }} password={password} onStatus={onStatus}
+          onPatch={patchLogo} />
+      </div>
       <VideoLinkField value={m.video} poster={m.image} ratio={m.ratio} password={password}
         onChange={(v)=>patch({ video:v })}
         onPoster={(p)=>patch({ image:p })}
@@ -1597,7 +1623,7 @@ function MotionCard({ item, idx, total, password, onChange, onMove, onDelete, on
         onStatus={onStatus} />
       <div>
         <label className="lbl">Titolo (opzionale)</label>
-        <input className="field" value={m.title} onChange={e=>patch({ title:e.target.value })} placeholder="es. SANTONI BTO" />
+        <input className="field" value={m.title} onChange={e=>patch({ title:e.target.value })} placeholder="es. SANTONI BACK TO OFFICE" />
       </div>
     </div>
   );

@@ -477,7 +477,7 @@
               "genre": "DOC — LIVE",
               "image": {
                 "@type": "ImageObject",
-                "contentUrl": "https://www.andreaonori.com/media/okgiorgio-01.webp",
+                "contentUrl": "https://www.andreaonori.com/media/okgiorgio-dj-ginostra.webp",
                 "creator": {
                   "@id": "https://www.andreaonori.com/#person"
                 },
@@ -760,6 +760,8 @@
             transition: background .25s var(--ease-out);
         }
         .feed-item:hover .motion-play { background: rgba(0,0,0,0.72); }
+        /* Cella Motion con logo: il logo sta al centro, il play scende sotto. */
+        .motion-play.under-logo { top: 72%; }
 
         /* Feed grid — celle ferme. Dalla versione 1 in hover non c'è più
            sollevamento, zoom, cornice bianca né numero d'angolo: resta solo il
@@ -959,12 +961,16 @@
             position: fixed; inset: 0;
             background: rgba(0,0,0,0.94);
             z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: flex-start; justify-content: center;
             backdrop-filter: blur(14px);
             animation: modalIn .25s ease;
             padding: 20px;
             overflow-y: auto;
         }
+        /* Centrato con i margini automatici, non con align-items: se la scheda
+           e' piu' alta dello schermo (mobile) l'inizio resta raggiungibile
+           scorrendo, invece di finire tagliato sopra il bordo. */
+        .modal-overlay > * { margin-top: auto; margin-bottom: auto; }
         @keyframes modalIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* Scheda progetto — da desktop foto, <video> e iframe stanno nello
@@ -985,6 +991,25 @@
            desktop è alto 76vh come le foto. I controlli stanno così sul video
            e, passando da un video a una foto, titolo e pallini non si muovono. */
         .post-stage { display: flex; align-items: center; justify-content: center; width: 100%; }
+        /* Slide con link esterno: il riquadro prende la forma della foto,
+           cosi' il bottoncino sta sull'immagine. */
+        .slide-linkbox { position: relative; }
+        .slide-linkbox.fit { display: inline-block; max-width: 100%; line-height: 0; }
+        .slide-linkbox .post-fit { display: block; max-width: 100%; height: auto; background: #000; }
+        @media (max-width: 767px) { .slide-linkbox.fit, .slide-linkbox .post-fit { width: 100%; } }
+        @media (min-width: 768px) { .slide-linkbox .post-fit { max-height: 76vh; width: auto; } }
+        .slide-link {
+            position: absolute; top: 12px; left: 12px; z-index: 6;
+            display: inline-flex; align-items: center; min-height: 44px;
+            padding: 8px 12px; box-sizing: border-box;
+            background: rgba(0,0,0,.55); color: #fff;
+            font-size: 10px; line-height: 1.2; letter-spacing: .08em; text-transform: uppercase;
+            text-decoration: none; white-space: nowrap; max-width: calc(100% - 24px);
+            overflow: hidden; text-overflow: ellipsis;
+            transition: background .2s var(--ease-out);
+        }
+        .slide-link:hover { background: rgba(0,0,0,.8); }
+        .slide-link:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
         @media (min-width: 768px) { .post-stage { height: 76vh; } }
         /* Pallini del carosello: fuori dal riquadro, sotto, nella stessa
            posizione per foto e video (non coprono i controlli del player). */
@@ -1325,7 +1350,7 @@
               <p class="pf-meta">2024 · ADV</p>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/okgiorgio-01.webp" alt="IN VACANZA A STROMBOLI CON OKGIORGIO — Est Radio — DOC — LIVE — STROMBOLI — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <img src="https://www.andreaonori.com/media/okgiorgio-dj-ginostra.webp" alt="IN VACANZA A STROMBOLI CON OKGIORGIO — Est Radio — DOC — LIVE — STROMBOLI — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
               <h3><a href="/work/in-vacanza-a-stromboli-con-okgiorgio">IN VACANZA A STROMBOLI CON OKGIORGIO</a></h3>
               <p class="pf-meta">STROMBOLI · 2025 · DOC — LIVE</p>
             </article>
@@ -1356,17 +1381,17 @@
               <h2 id="pf-series">Series</h2>
               <div class="pf-grid">
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/santoni-01.webp" alt="ABOUT ME — series by Andrea Onori" style="aspect-ratio:1 / 1" loading="lazy" decoding="async">
+              <img src="https://www.andreaonori.com/media/story-aboutme-bn.webp" alt="ABOUT ME — series by Andrea Onori" style="aspect-ratio:1 / 1" loading="lazy" decoding="async">
               <h3>ABOUT ME</h3>
               
             </article>
             <article class="pf-item">
               <img src="https://www.andreaonori.com/media/greta-01.webp" alt="SUPER8 — series by Andrea Onori" style="aspect-ratio:1 / 1" loading="lazy" decoding="async">
               <h3>SUPER8</h3>
-              
+              <p class="pf-meta">1 image</p>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/santoni-storyboard-story1-mqunxs15.webp" alt="STORYBOARD — series by Andrea Onori" style="aspect-ratio:1 / 1" loading="lazy" decoding="async">
+              <img src="https://www.andreaonori.com/media/santoni-storyboard-story1-mqunxs15-v2.webp" alt="STORYBOARD — series by Andrea Onori" style="aspect-ratio:1 / 1" loading="lazy" decoding="async">
               <h3>STORYBOARD</h3>
               <p class="pf-meta">6 images</p>
             </article>
@@ -1474,7 +1499,7 @@
 
     <!-- Il sorgente di questo bundle e' src/app.jsx. Non modificare
          assets/app.js a mano: si rigenera con `npm run build`. -->
-    <script src="/assets/app.js?v=1af2ad10" defer></script>
+    <script src="/assets/app.js?v=d2125c1a" defer></script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
          BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:

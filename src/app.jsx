@@ -278,16 +278,19 @@ import * as ReactDOM from 'react-dom/client';
         };
 
         const normMedia = (v) => {
-            if (!v) return { image: '', video: '', title: '', ratio: '' };
+            if (!v) return { image: '', video: '', title: '', ratio: '', link: '', linkLabel: '' };
             if (typeof v === 'string') {
                 return isVideoUrl(v)
-                    ? { image: '', video: v, title: '', ratio: '' }
-                    : { image: v, video: '', title: '', ratio: '' };
+                    ? { image: '', video: v, title: '', ratio: '', link: '', linkLabel: '' }
+                    : { image: v, video: '', title: '', ratio: '', link: '', linkLabel: '' };
             }
             const src = v.src || '';
             const video = v.video || (isVideoUrl(src) ? src : '');
             const image = v.poster || v.image || (isVideoUrl(src) ? '' : src) || v.url || '';
-            return { image, video, title: v.title || '', ratio: v.ratio || '' };
+            // link: link esterno della slide (es. il film intero su YouTube),
+            // mostrato come bottoncino in alto a sinistra.
+            const link = /^https?:\/\//i.test(v.link || '') ? v.link : '';
+            return { image, video, title: v.title || '', ratio: v.ratio || '', link, linkLabel: v.linkLabel || '' };
         };
 
         // Slide di un post (FEED / INDEX): immagini e video mescolati, in ordine.
@@ -896,8 +899,18 @@ import * as ReactDOM from 'react-dom/client';
         };
 
         // Badge ▶ mostrato sulle celle che contengono un video esterno
-        const PlayBadge = () => (
-            <div className="motion-play">
+        // Link esterno di una slide del carosello (es. il film intero su
+        // YouTube): bottoncino in alto a sinistra, si apre in una nuova scheda.
+        const SlideLink = ({ slide }) => slide && slide.link ? (
+            <a className="slide-link mono" href={slide.link} target="_blank" rel="noopener"
+               onClick={(e) => { e.stopPropagation(); track('slide_link_click', { link_url: slide.link }); }}>
+                {slide.linkLabel || 'Watch on YouTube ↗'}
+            </a>
+        ) : null;
+
+        // lowered: la cella ha un logo al centro, il simbolo play scende sotto.
+        const PlayBadge = ({ lowered }) => (
+            <div className={'motion-play' + (lowered ? ' under-logo' : '')}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
             </div>
         );
@@ -1069,7 +1082,10 @@ import * as ReactDOM from 'react-dom/client';
                             aria-label={m.video ? `Riproduci ${label}` : label}
                             onClick={() => { track('motion_play', { reel_label: label, reel_index: i + 1 }); onClick(raw); }} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(raw); } }}>
                             <GridMedia image={m.image} video={m.video} alt={alt} />
-                            {m.video && <PlayBadge />}
+                            {/* Logo del brand, come nel feed: decorativo, il nome e'
+                                gia' nell'etichetta della cella. */}
+                            {raw && raw.logo && <img className="feed-logo" src={raw.logo} alt="" loading="lazy" decoding="async" />}
+                            {m.video && <PlayBadge lowered={!!(raw && raw.logo)} />}
                             <div className="feed-meta">
                                 <div style={{ fontSize: '10px' }}>{label}</div>
                                 <div style={{ color: 'var(--mute)' }}>{m.video ? S().post.play : S().sections.motionYear}</div>
@@ -1299,15 +1315,35 @@ import * as ReactDOM from 'react-dom/client';
                                 titolo e pallini non si spostano. Un video Bunny prende
                                 le proporzioni vere del video, centrato in quel palco:
                                 i controlli stanno sul video. */}
+                            {/* Con un link esterno la slide sta in un riquadro che
+                                ha la forma della foto o del video, cosi' il bottoncino
+                                in alto a sinistra sta sopra l'immagine e non sulle
+                                bande nere. */}
                             {slide.video && isEmbedUrl(slide.video) && videoRatio(slide, 16 / 9)
                                 ? <div className="post-stage">
-                                      <Player key={slide.video} src={slide.video} poster={slide.image}
-                                          titolo={slide.title || post.title}
-                                          style={fitStyle(videoRatio(slide, 16 / 9), '76vh')} />
+                                      {slide.link
+                                          ? <div className="slide-linkbox" style={fitStyle(videoRatio(slide, 16 / 9), '76vh')}>
+                                                <Player key={slide.video} src={slide.video} poster={slide.image}
+                                                    titolo={slide.title || post.title}
+                                                    style={{ width: '100%', height: '100%' }} />
+                                                <SlideLink slide={slide} />
+                                            </div>
+                                          : <Player key={slide.video} src={slide.video} poster={slide.image}
+                                                titolo={slide.title || post.title}
+                                                style={fitStyle(videoRatio(slide, 16 / 9), '76vh')} />}
                                   </div>
-                                : slide.video
-                                    ? <Player key={slide.video} src={slide.video} poster={slide.image} titolo={slide.title || post.title} className="post-media" />
-                                    : <img src={slide.image} alt={altOf(post)} className="post-media" loading="lazy" decoding="async" />}
+                                : slide.link
+                                    ? <div className="post-stage">
+                                          <div className="slide-linkbox fit">
+                                              {slide.video
+                                                  ? <Player key={slide.video} src={slide.video} poster={slide.image} titolo={slide.title || post.title} className="post-media" />
+                                                  : <img key={slide.image} src={slide.image} alt={altOf(post)} className="post-fit" decoding="async" />}
+                                              <SlideLink slide={slide} />
+                                          </div>
+                                      </div>
+                                    : slide.video
+                                        ? <Player key={slide.video} src={slide.video} poster={slide.image} titolo={slide.title || post.title} className="post-media" />
+                                        : <img src={slide.image} alt={altOf(post)} className="post-media" loading="lazy" decoding="async" />}
                             {multi && (
                                 <>
                                     <button className="carousel-arrow" style={{ left: '12px' }} onClick={() => setPhoto(p => Math.max(p - 1, 0))} disabled={photo === 0} aria-label="Previous photo">‹</button>
@@ -1536,7 +1572,7 @@ import * as ReactDOM from 'react-dom/client';
                                 {p.ctaEmail && (
                                     <button type="button" className="btn-primary"
                                         onClick={() => { track('contact_click', { method: 'form', location: 'about' }); setFormAperto(true); }}>
-                                        <span>{p.ctaPrimary || "Let's roll"}</span> <span className="arrow">→</span>
+                                        <span>{p.ctaPrimary || "Let's film"}</span> <span className="arrow">→</span>
                                     </button>
                                 )}
                                 {social && (
