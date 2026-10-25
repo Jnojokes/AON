@@ -47,7 +47,7 @@ import * as ReactDOM from 'react-dom/client';
             // versione 1, senza perdere la possibilità di rimetterli.
             profile: {
                 badge: 'VERIFIED · 25',
-                eyebrow: '◌ PHOTOGRAPHER · BASED IN MILAN',
+                eyebrow: 'FILM-MAKER · BASED IN MILAN',
                 nameFirst: 'Andrea',
                 nameLast: 'Onori',
                 handle: '@andrea__onori · ESTABLISHED MMXVIII',
@@ -141,7 +141,7 @@ import * as ReactDOM from 'react-dom/client';
             },
             seo: {
                 author: 'Andrea Onori',
-                avatarAlt: 'Andrea Onori, fashion photographer and filmmaker based in Milan',
+                avatarAlt: 'Andrea Onori, filmmaker based in Milan',
                 // "Descrizione per SEO & Motori AI": non compare a schermo.
                 // Finisce in JSON-LD, nella sezione sr-only e in llms.txt,
                 // tutti generati da scripts/prerender.mjs. Vuoto = il testo
@@ -355,7 +355,7 @@ import * as ReactDOM from 'react-dom/client';
             const author = S().seo.author || '';
             const base = altOf(p);
             if (!author) return base;
-            return base ? `${base} — photographed by ${author}` : `Photograph by ${author}`;
+            return base ? `${base} — ${author}` : author;
         };
 
         // I file di MOTION sono stringhe tipo "media/story-greta.png": senza

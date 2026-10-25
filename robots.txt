@@ -17,7 +17,7 @@ Disallow: /POST/
 
 # ── Motori generativi: recupero e citazione ──────────────────────────────────
 # Questi bot leggono la pagina per rispondere a una domanda adesso, e possono
-# citare e linkare la fonte. Per un fotografo che vuole essere trovato,
+# citare e linkare la fonte. Per un filmmaker che vuole essere trovato,
 # bloccarli sarebbe controproducente.
 User-agent: OAI-SearchBot
 User-agent: ChatGPT-User
@@ -36,7 +36,7 @@ Disallow: /POST/
 
 # ── Crawler di addestramento ─────────────────────────────────────────────────
 # Questi ingeriscono i contenuti nei pesi del modello, senza citazione e senza
-# traffico di ritorno. Per un fotografo è una scelta sui diritti delle proprie
+# traffico di ritorno. Per un filmmaker è una scelta sui diritti delle proprie
 # immagini, non una scelta SEO — e qui il portfolio contiene lavoro su
 # commissione per Santoni, Fabiana Filippi, Greta Boldini e altri, i cui
 # contratti non autorizzano l'uso per l'addestramento di modelli.
