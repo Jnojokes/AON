@@ -605,8 +605,9 @@
          caricamento di pagina inviava a Google l'IP del visitatore prima di
          qualunque consenso. Serviti dal nostro dominio, quella trasmissione
          non avviene. I .woff2 sono preload perché il testo è il contenuto. -->
-    <link rel="preload" href="/fonts/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/archivo-black-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/roboto-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/roboto-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/roboto-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/fonts/fonts.css">
 
     <!-- React, ReactDOM e @babel/standalone non arrivano piu' da unpkg.
@@ -635,7 +636,7 @@
         html { scroll-behavior: smooth; }
         html, body { background: var(--bg); color: var(--fg); }
         body {
-            font-family: 'Bricolage Grotesque', sans-serif;
+            font-family: 'Roboto', sans-serif;
             font-weight: 400;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
@@ -643,8 +644,8 @@
         }
         ::selection { background: var(--fg); color: var(--bg); }
 
-        .display { font-family: 'Archivo Black', sans-serif; letter-spacing: -0.025em; line-height: 0.92; text-transform: uppercase; }
-        .grot { font-family: 'Bricolage Grotesque', sans-serif; }
+        .display { font-family: 'Roboto', sans-serif; font-weight: 900; letter-spacing: -0.025em; line-height: 0.92; text-transform: uppercase; }
+        .grot { font-family: 'Roboto', sans-serif; }
         .mono { font-family: 'JetBrains Mono', monospace; font-feature-settings: "tnum"; }
 
         .uline { letter-spacing: 0.18em; text-transform: uppercase; }
@@ -814,32 +815,49 @@
         }
         .feed-item:hover .feed-meta { opacity: 1; transform: translateY(0); transition-delay: .05s; }
 
-        /* Showreel in testa al Feed — video a tutta larghezza, 16:9, muto e in
-           loop. La sorgente è settings.feedReel in media.json (pannello →
-           Impostazioni). Sotto ha lo stesso spazio che c'è tra le celle. */
-        .feed-reel {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            margin-bottom: 20px;
-            background: #000;
-            overflow: hidden;
+        /* Home a tutta larghezza (H7): niente colonna da 1100px, margini
+           laterali 40px (20px da telefono). */
+        .page-x { padding-left: 40px; padding-right: 40px; }
+        .hero-bottom { padding-top: 64px; }
+        .home-panel { padding-bottom: 64px; }
+        @media (max-width: 767px) {
+            .page-x { padding-left: 20px; padding-right: 20px; }
+            .hero-bottom { padding-top: 40px; }
         }
-        .feed-reel video { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .feed-reel-label {
-            position: absolute; left: 16px; bottom: 14px;
-            font-size: 10px; color: #fff;
+
+        /* Showreel a tutto schermo come sfondo (H7). Il video e' fisso e copre
+           lo schermo, con un velo del colore dello sfondo al 50%. Sopra, la
+           prima schermata (.hero-screen) alta quanto lo schermo: barra in alto,
+           nome, scritta, storie e bottone in basso. Poi uno spazio vuoto in cui
+           si vede il video pulito, poi il pannello (.home-panel) con tab, feed
+           e footer, che ha lo sfondo pieno e scorrendo copre il video.
+           Opacita' di scritte, velo ed etichetta: useEffect in App. */
+        .hero-reel {
+            position: fixed; inset: 0; z-index: 0;
+            height: 100vh; height: 100lvh;
+            background: #000; overflow: hidden;
+        }
+        .hero-reel video, .hero-reel img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hero-veil { position: absolute; inset: 0; background: var(--bg); opacity: .5; pointer-events: none; }
+        .hero-reel-label {
+            position: absolute; left: 40px; bottom: 32px;
+            font-size: 10px; color: #fff; opacity: 0;
             text-shadow: 0 1px 6px rgba(0,0,0,0.6);
             pointer-events: none;
         }
-        /* Showreel in cima alla home, sopra il nome: 21:9 da computer, 16:9
-           da telefono, tagliato al centro. main.has-reel accorcia lo spazio
-           sotto la barra in alto (senza showreel la pagina parte dal nome). */
-        main.has-reel { padding-top: 8px; }
-        .feed-reel { aspect-ratio: 21 / 9; margin-bottom: 44px; }
+        .has-hero .hero-screen {
+            position: relative; z-index: 1;
+            min-height: 100vh; min-height: 100svh;
+            display: flex; flex-direction: column;
+            /* sopra il video le scritte grigie diventano bianche al 78% */
+            --mute: rgba(255,255,255,.78);
+        }
+        .has-hero .hero-bottom { margin-top: auto; padding-top: 24px; padding-bottom: 40px; }
+        .has-hero .hero-bottom .mb-12 { margin-bottom: 0; }
+        .hero-gap { height: calc(90vh - 90px); height: calc(90svh - 90px); }
+        .has-hero .home-panel { position: relative; z-index: 1; background: var(--bg); padding-top: 48px; }
         @media (max-width: 767px) {
-            main.has-reel { padding-top: 4px; }
-            .feed-reel { aspect-ratio: 16 / 9; margin-bottom: 28px; }
+            .hero-reel-label { left: 20px; bottom: 24px; }
         }
 
         /* Reveal on scroll */
@@ -894,11 +912,9 @@
         }
         .series-circle:hover img { transform: scale(1.1); }
 
-        /* Intestazione H4 — il nome riempie la larghezza del contenuto su una
-           riga sola (11.8cqi = misurato sul contenitore, a ogni schermo).
-           Sotto, vicina al nome, una riga: scritta a sinistra, bottone a
-           destra, centrati tra loro. Da mobile il bottone va sotto, a
-           sinistra. */
+        /* Intestazione — il nome su una riga; sotto, vicina al nome, la
+           scritta. Senza storie il bottone sta a destra della scritta; da
+           mobile va sotto, a sinistra. */
         .profile-main {
             display: grid;
             grid-template-columns: minmax(0, 1fr) auto;
@@ -906,13 +922,17 @@
             align-items: center;
             container-type: inline-size;
         }
+        /* Nome (H7): "Andrea Onori" com'e' scritto nel pannello, non tutto
+           maiuscolo, in Roboto Medium; non riempie piu' la riga. */
         .profile-name {
             grid-column: 1 / -1;
-            font-size: 11.8cqi;
+            font-weight: 500;
+            text-transform: none;
+            font-size: clamp(40px, 6.5vw, 112px);
             white-space: nowrap;
-            line-height: .8;
-            letter-spacing: -.035em;
-            margin-bottom: 4px;
+            line-height: .95;
+            letter-spacing: -.03em;
+            margin-bottom: 10px;
         }
         .profile-lines { grid-column: 1; grid-row: 2; }
         .profile-lines > * + * { margin-top: 8px; }
@@ -1166,7 +1186,7 @@
         .about-caption { position: absolute; left: 16px; bottom: 16px; z-index: 2; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--fg); text-shadow: 0 1px 12px rgba(0,0,0,.5); }
         .about-side { container-type: inline-size; min-width: 0; }
         .about-title {
-            font-family: 'Archivo Black', sans-serif; font-weight: 400; text-transform: uppercase;
+            font-family: 'Roboto', sans-serif; font-weight: 900; text-transform: uppercase;
             margin-top: 8px; font-size: 48px; font-size: clamp(34px, 12.5cqi, 92px);
             line-height: .92; letter-spacing: -.03em;
         }
@@ -1282,14 +1302,16 @@
             color: var(--mute);
         }
         .prerender-fallback h1 {
-            font-family: 'Archivo Black', sans-serif;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 900;
             font-size: clamp(48px, 8vw, 96px);
             line-height: 0.9;
             text-transform: uppercase;
             margin: 12px 0;
         }
         .prerender-fallback h2 {
-            font-family: 'Archivo Black', sans-serif;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 900;
             font-size: 28px;
             text-transform: uppercase;
             margin: 48px 0 16px;
@@ -1297,23 +1319,23 @@
             border-bottom: 1px solid var(--line);
         }
         .prerender-fallback h3 {
-            font-family: 'Bricolage Grotesque', sans-serif;
+            font-family: 'Roboto', sans-serif;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.06em;
             margin: 10px 0 4px;
         }
         .pf-role {
-            font-family: 'Bricolage Grotesque', sans-serif;
+            font-family: 'Roboto', sans-serif;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
         .pf-about { max-width: 62ch; margin: 24px 0; }
         .pf-about p {
-            font-family: 'Bricolage Grotesque', sans-serif;
+            font-family: 'Roboto', sans-serif;
             font-size: 15px;
             line-height: 1.6;
             color: var(--mute);
@@ -1346,7 +1368,7 @@
             border-top: 1px solid var(--line);
         }
     </style>
-    <link rel="stylesheet" href="/assets/tailwind.css?v=9caa149c">
+    <link rel="stylesheet" href="/assets/tailwind.css?v=1ecc5536">
 </head>
 <body>
     <!-- Il contenuto statico qui sotto è generato da scripts/prerender.mjs a ogni
@@ -1567,7 +1589,7 @@
 
     <!-- Il sorgente di questo bundle e' src/app.jsx. Non modificare
          assets/app.js a mano: si rigenera con `npm run build`. -->
-    <script src="/assets/app.js?v=f9dc3b9d" defer></script>
+    <script src="/assets/app.js?v=e3e68e9c" defer></script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
          BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:

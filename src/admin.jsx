@@ -423,7 +423,7 @@ const SECTIONS = [
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
   { key:"about", label:"ABOUT", single:true, help:"Si apre cliccando la storia ABOUT ME: una pagina a tutto schermo con il video verticale a sinistra e, a destra, titolo, testi, i bottoni LET'S FILM e INSTAGRAM e due foto. La copertina rotonda della storia si cambia nella sezione SERIES." },
-  { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel in cima alla home e la descrizione per Google e i motori AI." },
+  { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel sullo sfondo della home e la descrizione per Google e i motori AI." },
 ];
 
 // ── Schema dei testi del sito ───────────────────────────────────────────────
@@ -1207,26 +1207,26 @@ function TextGroup({ group, values, onChange }){
   );
 }
 
-// ── Showreel in cima alla home ──────────────────────────────────────────────
-// Il video in loop in cima alla home, sopra il nome (settings.feedReel). Serve un file video diretto: un <video> in loop non sa riprodurre
-// il player di Bunny, che funziona solo dentro un iframe. Se si incolla il
-// link Embed di Bunny, il pannello lo converte nell'MP4 diretto dello stesso
-// video (1080p) e, se manca, mette la miniatura come copertina.
-function FeedReelEditor({ value, password, onChange, onStatus }){
-  const v = value || {};
-  const set = (k, x) => onChange({ ...v, [k]: x });
+// ── Showreel: sfondo a tutto schermo della home ─────────────────────────────
+// settings.feedReel. video/poster: la versione orizzontale, che vale ovunque;
+// videoVertical/posterVertical (opzionali): la versione per i telefoni e gli
+// schermi verticali. Serve un file video diretto: un <video> in loop non sa
+// riprodurre il player di Bunny, che funziona solo dentro un iframe. Se si
+// incolla il link Embed di Bunny, il pannello lo converte nell'MP4 diretto
+// dello stesso video (1080p) e, se manca, mette la miniatura come copertina.
+function ReelSource({ v, onChange, kVideo, kPoster, aspect, labelVideo, labelPoster, password, onStatus, children }){
   const [nota, setNota] = useState("");
   const onVideo = (raw) => {
     const b = bunnyInfo(estraiSrc(raw.trim()));
     if (b && b.cdn) {
-      onChange({ ...v, video: b.mp4(1080), poster: v.poster || b.thumb });
-      setNota("Link Bunny convertito nel file MP4 diretto a 1080p" + (v.poster ? "." : ", con la miniatura di Bunny come copertina."));
+      onChange({ [kVideo]: b.mp4(1080), [kPoster]: v[kPoster] || b.thumb });
+      setNota("Link Bunny convertito nel file MP4 diretto a 1080p" + (v[kPoster] ? "." : ", con la miniatura di Bunny come copertina."));
       return;
     }
     setNota("");
-    set("video", raw.trim());
+    onChange({ [kVideo]: raw.trim() });
   };
-  const video = String(v.video || "").trim();
+  const video = String(v[kVideo] || "").trim();
   const embed = Boolean(video) && (JUMPSHARE_RE.test(video) || /\/embed\//i.test(video) || /<iframe/i.test(video));
   // L'anteprima si accende solo su un indirizzo che finisce come un file
   // video: altrimenti, mentre si scrive, ogni lettera ("h", "ht", …) farebbe
@@ -1234,45 +1234,70 @@ function FeedReelEditor({ value, password, onChange, onStatus }){
   const file = Boolean(video) && !embed && VIDEO_RE.test(video);
   const strano = Boolean(video) && !embed && !file;
   const avviso = { marginTop:6, fontSize:10, lineHeight:1.5, color:"var(--accent)" };
+  return (
+    <div className="set-grid">
+      <div style={{ gridColumn:"1 / -1" }}>
+        <label className="lbl">{labelVideo}</label>
+        <input className="field mono" value={v[kVideo] || ""} placeholder="media/showreel.mp4"
+          onChange={e => onVideo(e.target.value)} />
+        {nota && <div className="mono" style={{ ...avviso, color:"var(--ok)" }}>✓ {nota}</div>}
+        {embed && <div className="mono" style={avviso}>✕ Questo è un link da incorporare: qui serve il file .mp4 diretto. Così com'è, sul sito non viene usato.</div>}
+        {strano && <div className="mono" style={avviso}>Non sembra un file video: l'indirizzo dovrebbe finire in .mp4 (o .webm, .mov). Il sito proverà comunque a riprodurlo.</div>}
+      </div>
+      <div>
+        <label className="lbl">{labelPoster}</label>
+        <ImageField value={v[kPoster] || ""} password={password} aspect={aspect}
+          onChange={(x) => onChange({ [kPoster]: x })} onStatus={onStatus} allowUrl />
+      </div>
+      <div>
+        <label className="lbl">Anteprima</label>
+        {file
+          ? <video key={video} src={srcOf(video)} poster={v[kPoster] ? srcOf(v[kPoster]) : undefined}
+              controls muted playsInline preload="metadata"
+              style={{ width:"100%", aspectRatio:aspect, maxHeight:320, objectFit:"cover", background:"#000", display:"block" }} />
+          : <div className="mono" style={{ width:"100%", aspectRatio:aspect, maxHeight:320, background:"#111", display:"flex",
+              alignItems:"center", justifyContent:"center", fontSize:9, color:"#555", letterSpacing:"0.14em" }}>NESSUN VIDEO</div>}
+        {children}
+      </div>
+    </div>
+  );
+}
 
+function FeedReelEditor({ value, password, onChange, onStatus }){
+  const v = value || {};
+  // I campi vuoti della versione verticale si tolgono da media.json:
+  // vuoto = si usa l'orizzontale.
+  const patch = (p) => {
+    const next = { ...v, ...p };
+    for (const k of ["videoVertical", "posterVertical"]) if (k in next && !String(next[k] || "").trim()) delete next[k];
+    onChange(next);
+  };
   return (
     <div className="set-group">
-      <h3>Showreel in cima alla home (video in loop)</h3>
+      <h3>Showreel · sfondo della home</h3>
       <p className="hint">
-        Il video a tutta larghezza in cima alla home, sopra il nome (21:9 da computer, 16:9 da telefono,
-        tagliato al centro): si vede sia nel Feed sia nei Motion, parte da solo, muto, e gira in loop.
+        Sfondo a tutto schermo della home. Video orizzontale; da telefono viene tagliato al centro se non c'è la versione verticale.
+        Parte da solo, muto, e gira in loop; scorrendo, il feed sale e lo copre.
         Serve l'indirizzo di un file video diretto (.mp4): un file del sito come
         media/showreel.mp4, oppure l'MP4 di un video su Bunny Stream. Puoi incollare
         anche il link Embed di Bunny: il pannello lo converte da solo nell'MP4 a 1080p
-        (per un file più leggero cambia 1080 in 720). Con il campo video vuoto il blocco non compare.
+        (per un file più leggero cambia 1080 in 720). Con il campo video vuoto la home non ha lo sfondo e parte dal nome.
       </p>
-      <div className="set-grid">
-        <div style={{ gridColumn:"1 / -1" }}>
-          <label className="lbl">Video (.mp4)</label>
-          <input className="field mono" value={v.video || ""} placeholder="media/showreel.mp4"
-            onChange={e => onVideo(e.target.value)} />
-          {nota && <div className="mono" style={{ ...avviso, color:"var(--ok)" }}>✓ {nota}</div>}
-          {embed && <div className="mono" style={avviso}>✕ Questo è un link da incorporare: qui serve il file .mp4 diretto. Così com'è, sul sito il blocco non compare.</div>}
-          {strano && <div className="mono" style={avviso}>Non sembra un file video: l'indirizzo dovrebbe finire in .mp4 (o .webm, .mov). Il sito proverà comunque a riprodurlo.</div>}
-        </div>
-        <div>
-          <label className="lbl">Copertina · si vede finché il video carica</label>
-          <ImageField value={v.poster || ""} password={password} aspect="16/9"
-            onChange={(x) => set("poster", x)} onStatus={onStatus} allowUrl />
-        </div>
-        <div>
-          <label className="lbl">Anteprima</label>
-          {file
-            ? <video key={video} src={srcOf(video)} poster={v.poster ? srcOf(v.poster) : undefined}
-                controls muted playsInline preload="metadata"
-                style={{ width:"100%", aspectRatio:"16/9", objectFit:"cover", background:"#000", display:"block" }} />
-            : <div className="mono" style={{ width:"100%", aspectRatio:"16/9", background:"#111", display:"flex",
-                alignItems:"center", justifyContent:"center", fontSize:9, color:"#555", letterSpacing:"0.14em" }}>NESSUN VIDEO</div>}
-          <label className="lbl" style={{ marginTop:12 }}>Scritta in basso a sinistra</label>
-          <input className="field" value={v.label != null ? v.label : ""} placeholder="SHOWREEL"
-            onChange={e => set("label", e.target.value)} />
-        </div>
-      </div>
+      <ReelSource v={v} onChange={patch} kVideo="video" kPoster="poster" aspect="16/9"
+        labelVideo="Video (.mp4)" labelPoster="Copertina · si vede finché il video carica"
+        password={password} onStatus={onStatus}>
+        <label className="lbl" style={{ marginTop:12 }}>Scritta in basso a sinistra</label>
+        <input className="field" value={v.label != null ? v.label : ""} placeholder="SHOWREEL"
+          onChange={e => patch({ label: e.target.value })} />
+      </ReelSource>
+      <h3 style={{ marginTop:24 }}>Showreel verticale (telefono) · opzionale</h3>
+      <p className="hint">
+        La stessa cosa in verticale (9:16): la usano i telefoni e gli schermi più alti che larghi.
+        Vuoto = si usa l'orizzontale, tagliato al centro.
+      </p>
+      <ReelSource v={v} onChange={patch} kVideo="videoVertical" kPoster="posterVertical" aspect="9/16"
+        labelVideo="Video verticale (.mp4)" labelPoster="Copertina verticale"
+        password={password} onStatus={onStatus} />
     </div>
   );
 }

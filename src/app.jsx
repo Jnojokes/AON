@@ -48,8 +48,8 @@ import * as ReactDOM from 'react-dom/client';
             profile: {
                 badge: 'VERIFIED · 25',
                 eyebrow: '◌ PHOTOGRAPHER · BASED IN MILAN',
-                nameFirst: 'ANDREA',
-                nameLast: 'ONORI',
+                nameFirst: 'Andrea',
+                nameLast: 'Onori',
                 handle: '@andrea__onori · ESTABLISHED MMXVIII',
                 disciplines: 'EDITORIAL · PORTRAIT · PERSONAL WORK.',
                 siteLabel: '↗ ANDREAONORI.COM',
@@ -756,7 +756,7 @@ import * as ReactDOM from 'react-dom/client';
                                 {p.handle}
                             </p>}
 
-                            {p.disciplines && <p className="grot uline" style={{ fontSize: '13px', fontWeight: 600 }}>{p.disciplines}</p>}
+                            {p.disciplines && <p className="grot uline" style={{ fontSize: '13px', fontWeight: 500 }}>{p.disciplines}</p>}
 
                             {/* Svuotare un campo dal pannello toglie il testo dal sito
                                 (è voluto), ma un indirizzo vuoto non deve lasciare in
@@ -968,46 +968,59 @@ import * as ReactDOM from 'react-dom/client';
             );
         };
 
-        // Showreel in cima alla home (sopra il nome, in tutte le tab): video a
-        // tutta larghezza, 21:9 da computer e 16:9 da telefono, muto, in loop
-        // (settings.feedReel, dal pannello). Serve un file video diretto, del
-        // sito o di Bunny (…b-cdn.net/<id>/play_1080p.mp4): il link Embed di
-        // Bunny e' una pagina da incorporare e un <video> non sa riprodurla,
-        // quindi in quel caso il blocco non compare, come senza video.
-        const hasFeedReel = () => {
-            const video = String((S().feedReel || {}).video || '').trim();
-            return Boolean(video) && !isEmbedUrl(video);
-        };
-        const FeedReel = () => {
+        // Showreel a tutto schermo come sfondo della home (H7). Il video sta
+        // fisso dietro alla prima schermata (nome, storie, bottone) e allo
+        // spazio vuoto sotto; scorrendo, il pannello con tab e feed sale e lo
+        // copre (vedi App e .hero-* in index.html). settings.feedReel, dal
+        // pannello: serve un file video diretto, del sito o di Bunny
+        // (…b-cdn.net/<id>/play_1080p.mp4). Il link Embed di Bunny e' una
+        // pagina da incorporare e un <video> non sa riprodurla: in quel caso
+        // lo sfondo non c'e', come senza video.
+        // videoVertical / posterVertical (opzionali): versione verticale per
+        // gli schermi stretti o verticali.
+        const isDirectVideo = (u) => Boolean(String(u || '').trim()) && !isEmbedUrl(String(u).trim());
+        const hasFeedReel = () => isDirectVideo((S().feedReel || {}).video);
+        // Schermo verticale o stretto: larghezza < 768px oppure piu' alto che largo.
+        const isNarrowScreen = () => window.innerWidth < 768 || window.innerHeight > window.innerWidth;
+        const HeroReel = React.forwardRef(({ veilRef, labelRef }, ref) => {
             const r = S().feedReel || {};
-            const video = String(r.video || '').trim();
-            const ref = useRef(null);
-            // Chi ha chiesto al sistema meno movimento vede la copertina ferma,
-            // con i controlli per farlo partire: come il resto del sito, che in
-            // quel caso spegne le animazioni.
+            const [narrow, setNarrow] = useState(isNarrowScreen);
+            useEffect(() => {
+                // Girando il telefono o ridimensionando la finestra si sceglie di
+                // nuovo la versione giusta, senza ricaricare.
+                const on = () => setNarrow(isNarrowScreen());
+                window.addEventListener('resize', on);
+                window.addEventListener('orientationchange', on);
+                return () => { window.removeEventListener('resize', on); window.removeEventListener('orientationchange', on); };
+            }, []);
+            const vertical = narrow && isDirectVideo(r.videoVertical);
+            const video = String((vertical ? r.videoVertical : r.video) || '').trim();
+            const poster = (vertical ? (r.posterVertical || r.poster) : r.poster) || '';
+            // Chi ha chiesto al sistema meno movimento vede il poster fermo.
             const calmo = typeof window.matchMedia === 'function'
                 && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             useEffect(() => {
-                const v = ref.current;
+                const v = ref && ref.current;
                 if (!v || calmo) return;
                 // React imposta muted come proprieta', non come attributo, e
                 // Safari su iPhone guarda l'attributo per concedere l'autoplay.
                 v.muted = true;
                 v.setAttribute('muted', '');
-                const p = v.play();
-                if (p && typeof p.catch === 'function') p.catch(() => {});
+                const pr = v.play();
+                if (pr && typeof pr.catch === 'function') pr.catch(() => {});
             }, [video]);
-            if (!hasFeedReel()) return null;
             return (
-                <div className="feed-reel">
-                    <video ref={ref} src={video} poster={r.poster || undefined}
-                        autoPlay={!calmo} controls={calmo} muted loop playsInline
-                        preload={calmo ? 'metadata' : 'auto'}
-                        aria-label={r.label || 'Showreel'} />
-                    {r.label && <div className="feed-reel-label mono uline" aria-hidden="true">{r.label}</div>}
+                <div className="hero-reel" aria-hidden="true">
+                    {calmo && poster
+                        ? <img src={poster} alt="" />
+                        : <video ref={ref} key={video} src={video} poster={poster || undefined}
+                            autoPlay={!calmo} muted loop playsInline
+                            preload={calmo ? 'metadata' : 'auto'} />}
+                    <div ref={veilRef} className="hero-veil"></div>
+                    {r.label && <div ref={labelRef} className="hero-reel-label mono uline">{r.label}</div>}
                 </div>
             );
-        };
+        });
 
         // Feed Grid — uniform 4:5 cells on every breakpoint (no bento, no mixed ratios, no holes)
         const FeedGrid = ({ onClick }) => {
@@ -1721,6 +1734,47 @@ import * as ReactDOM from 'react-dom/client';
                 return () => window.removeEventListener('scroll', onScroll);
             }, []);
 
+            // Showreel a tutto schermo (H7). p = quanto si e' scesi nel primo
+            // mezzo schermo (0..1): le scritte della prima schermata e il velo
+            // spariscono, compare l'etichetta SHOWREEL. Quando il pannello del
+            // feed copre tutto lo schermo il video va in pausa.
+            const reel = hasFeedReel();
+            const heroRef = useRef(null), panelRef = useRef(null);
+            const reelVideo = useRef(null), reelVeil = useRef(null), reelLabel = useRef(null);
+            useEffect(() => {
+                if (!reel) return;
+                const calmo = typeof window.matchMedia === 'function'
+                    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                let raf = 0;
+                const update = () => {
+                    raf = 0;
+                    const p = Math.min(1, Math.max(0, window.scrollY / (0.5 * window.innerHeight)));
+                    const hero = heroRef.current;
+                    if (hero) {
+                        hero.style.opacity = String(1 - p);
+                        hero.style.pointerEvents = p > 0.9 ? 'none' : '';
+                    }
+                    if (reelVeil.current) reelVeil.current.style.opacity = String(0.5 * (1 - p));
+                    if (reelLabel.current) reelLabel.current.style.opacity = String(p);
+                    const v = reelVideo.current, panel = panelRef.current;
+                    if (v && panel && !calmo) {
+                        const coperto = panel.getBoundingClientRect().top <= 0;
+                        if (coperto && !v.paused) v.pause();
+                        else if (!coperto && v.paused) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+                    }
+                };
+                const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+                update();
+                window.addEventListener('scroll', onScroll, { passive: true });
+                window.addEventListener('resize', onScroll);
+                return () => {
+                    window.removeEventListener('scroll', onScroll);
+                    window.removeEventListener('resize', onScroll);
+                    if (raf) cancelAnimationFrame(raf);
+                    if (heroRef.current) { heroRef.current.style.opacity = ''; heroRef.current.style.pointerEvents = ''; }
+                };
+            }, [reel]);
+
             // Scroll-triggered reveal
             useEffect(() => {
                 const els = document.querySelectorAll('.reveal-on-scroll');
@@ -1737,19 +1791,28 @@ import * as ReactDOM from 'react-dom/client';
             }, [active]);
 
             return (
-                <div>
-                    <Marquee />
-                    <div style={{ borderBottom: '1px solid var(--line)' }}>
-                        <div className="max-w-[1100px] mx-auto px-6 py-3 flex justify-between items-center">
-                            <div className="mono uline" style={{ fontSize: '10px' }}>{S().topbar.left}</div>
-                            <div className="mono uline" style={{ fontSize: '9px', color: 'var(--mute)' }}>{S().topbar.right}</div>
+                <div className={reel ? 'has-hero' : undefined}>
+                    {reel && <HeroReel ref={reelVideo} veilRef={reelVeil} labelRef={reelLabel} />}
+                    {/* Prima schermata: con lo showreel e' alta quanto lo schermo,
+                        con barra in alto e nome, storie e bottone in basso;
+                        scorrendo sparisce (opacita' da useEffect qui sopra). */}
+                    <div ref={heroRef} className="hero-screen">
+                        <Marquee />
+                        <div className="hero-topbar" style={{ borderBottom: '1px solid var(--line)' }}>
+                            <div className="page-x py-3 flex justify-between items-center">
+                                <div className="mono uline" style={{ fontSize: '10px' }}>{S().topbar.left}</div>
+                                <div className="mono uline" style={{ fontSize: '9px', color: 'var(--mute)' }}>{S().topbar.right}</div>
+                            </div>
+                        </div>
+                        <div className="hero-bottom page-x">
+                            <ProfileHeader onContact={() => apriContatto('header')} />
+                            <Series onClick={onSeries} onContact={conContatto ? () => apriContatto('stories') : null} />
                         </div>
                     </div>
+                    {/* Spazio vuoto: qui si vede il video pulito. */}
+                    {reel && <div className="hero-gap" aria-hidden="true"></div>}
 
-                    <main className={'max-w-[1100px] mx-auto px-6 py-16' + (hasFeedReel() ? ' has-reel' : '')}>
-                        <FeedReel />
-                        <ProfileHeader onContact={() => apriContatto('header')} />
-                        <Series onClick={onSeries} onContact={conContatto ? () => apriContatto('stories') : null} />
+                    <main ref={panelRef} className="home-panel page-x">
                         <Tabs active={active} setActive={setActive} />
                         <div key={active} className="tab-panel">
                             {active === 'FEED' && <FeedGrid onClick={open} />}
