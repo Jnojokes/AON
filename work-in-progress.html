@@ -10,58 +10,73 @@
 <meta name="theme-color" content="#161616">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/fonts/archivo-black-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/roboto-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/fonts/fonts.css">
 <!--
-  WORK IN PROGRESS v2 — pagina d'attesa di andreaonori.com (25/10)
-  Stessa impostazione della nuova home H6C, ma senza showreel: nome a tutta
-  riga, scritta, storie con il bottone CONTACT ME / STAND BY → REC, tab.
-  Sotto, al posto del feed, il montaggio sfocato con "Work in progress".
-  Nessun JavaScript, nessun cookie, nessun servizio esterno: solo HTML + CSS,
-  tutti i file arrivano dal nostro dominio. Le storie qui sono solo
-  un'anteprima: non si aprono.
+  WORK IN PROGRESS v4 — pagina d'attesa di andreaonori.com (25/10)
+  Stessa impostazione della home H7: sfondo a tutto schermo con un velo del
+  colore dello sfondo al 50%, nome "Andrea Onori" in Roboto 500, scritta,
+  storie e bottone CONTACT ME / STAND BY → REC in basso. Scorrendo le scritte
+  e il velo spariscono, poi sale il pannello con tab, "Work in progress" e footer.
+  Al posto dello showreel, come sfondo temporaneo, c'è il montaggio sfocato
+  dei lavori (media/wip-reel.webp).
+  Niente cookie, nessun servizio esterno: tutti i file arrivano dal nostro
+  dominio. Un piccolo script in fondo fa solo l'effetto allo scroll; senza
+  script la pagina funziona lo stesso (scritte e velo restano fermi).
+  Le storie qui sono solo un'anteprima: non si aprono.
 -->
 <style>
     :root {
         --bg: #161616; --fg: #fff; --mute: #707070;
         --cell: #1E1E1E;
-        --line: rgba(255,255,255,0.12); --line-strong: rgba(255,255,255,0.26);
+        --line: rgba(255,255,255,0.12);
         --accent: #FF3D00;
         --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-        --gap: 20px;
+        --gap: 20px; --side: 40px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { background: var(--bg); color: var(--fg); }
     body {
-        font-family: 'Bricolage Grotesque', sans-serif;
+        font-family: 'Roboto', sans-serif;
         -webkit-font-smoothing: antialiased;
-        font-feature-settings: "ss01", "tnum";
         overflow-x: hidden;
-        min-height: 100vh;
-        display: flex; flex-direction: column;
     }
     a { color: inherit; text-decoration: none; }
     ::selection { background: var(--fg); color: var(--bg); }
     .mono { font-family: 'JetBrains Mono', monospace; }
     .uline { letter-spacing: 0.18em; text-transform: uppercase; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; width: 100%; }
+    /* tutta larghezza, come la home H7 */
+    .wrap { padding: 0 var(--side); width: 100%; }
 
-    /* ── Barra in alto ── */
+    /* ── Sfondo fisso a tutto schermo: montaggio sfocato + velo al 50% ── */
+    .bg { position: fixed; inset: 0; height: 100vh; height: 100lvh; z-index: 0; overflow: hidden; background: #0a0a0a; }
+    .bg img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.04); }
+    .bg::after { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: var(--ov, .5); }
+    .bg-label {
+        position: absolute; left: var(--side); bottom: 32px; z-index: 1;
+        font-size: 10px; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+        opacity: var(--lbl, 0);
+    }
+
+    /* ── Prima schermata: barra in alto, intestazione in basso ── */
+    .hero {
+        position: relative; z-index: 1;
+        min-height: 100vh; min-height: 100svh;
+        display: flex; flex-direction: column;
+        opacity: var(--txt, 1);
+    }
     .topbar { border-bottom: 1px solid var(--line); }
     .topbar .wrap { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; padding-bottom: 12px; }
-
-    /* Niente showreel qui: la pagina parte dal nome (come la home senza showreel) */
-    main.wrap { padding-top: 64px; }
-
-    /* ── Intestazione H4: nome a tutta riga, scritta sotto ── */
-    .profile { container-type: inline-size; }
+    .topbar .right { font-size: 9px; color: rgba(255,255,255,.78); }
+    .profile { margin-top: auto; padding-top: 48px; padding-bottom: 40px; }
     h1 {
-        font-family: 'Archivo Black', sans-serif; font-weight: 400;
-        text-transform: uppercase; white-space: nowrap;
-        font-size: 11.8cqi; line-height: .8; letter-spacing: -.035em;
-        margin-bottom: 4px;
+        font-family: 'Roboto', sans-serif; font-weight: 500;
+        white-space: nowrap;
+        font-size: clamp(40px, 6.5vw, 112px); line-height: .95; letter-spacing: -.03em;
+        margin-bottom: 10px;
     }
-    .eyebrow { color: var(--mute); font-size: 10px; }
+    /* sul video le scritte grigie diventano bianche al 78%, se no non si leggono */
+    .eyebrow { color: rgba(255,255,255,.78); font-size: 10px; }
 
     /* ── Riga delle storie + bottone a destra (da computer) ── */
     .series-row { display: flex; align-items: flex-start; gap: 32px; margin-top: 40px; }
@@ -113,8 +128,12 @@
     .cbtn:focus-visible .cbtn-top > span { transform: scale(1.08); }
     @keyframes recblink { 0%, 55% { opacity: 1; } 70%, 100% { opacity: .2; } }
 
-    /* ── Tab (inattive) ── */
-    .tabs { display: flex; border-bottom: 1px solid var(--line); margin-top: 48px; }
+    /* ── Spazio trasparente: si vede lo sfondo pulito ── */
+    .gap { height: 50vh; height: 50svh; }
+
+    /* ── Pannello pieno che sale e copre lo sfondo ── */
+    .panel { position: relative; z-index: 1; background: var(--bg); padding-top: 48px; }
+    .tabs { display: flex; border-bottom: 1px solid var(--line); }
     .tab {
         flex: 1; text-align: center; padding: 18px 0; position: relative;
         font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
@@ -123,9 +142,8 @@
     .tab.active { color: var(--fg); }
     .tab.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--fg); }
 
-    /* ── Feed in lavorazione: montaggio sfocato visto attraverso la griglia ──
-       Le celle sono trasparenti; l'ombra piena color sfondo (metà gap per lato)
-       disegna gli spazi tra le celle, come nel feed vero (20px, 6px da telefono). */
+    /* Feed in lavorazione: montaggio sfocato visto attraverso la griglia 3×2
+       (stessi spazi del feed vero: 20px, 6px da telefono) */
     .wip { position: relative; margin-top: 40px; overflow: hidden; background: #0a0a0a; }
     .wip-reel, .wip-reel img {
         position: absolute; inset: 0; width: 100%; height: 100%;
@@ -144,7 +162,7 @@
     .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: blink 1.4s ease-in-out infinite; }
     @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
     .wip-label h2 {
-        font-family: 'Archivo Black', sans-serif; font-weight: 400;
+        font-family: 'Roboto', sans-serif; font-weight: 900;
         font-size: clamp(34px, 7vw, 84px); line-height: 0.92;
         letter-spacing: -0.025em; text-transform: uppercase;
     }
@@ -167,15 +185,15 @@
 
     /* ── Telefono ── */
     @media (max-width: 767px) {
-        :root { --gap: 6px; }
-        main.wrap { padding-top: 40px; }
+        :root { --gap: 6px; --side: 20px; }
+        .bg-label { bottom: 24px; }
         .cta-narrow { display: block; margin-top: 20px; }
         .series-cta { display: none; }
         .series-row { margin-top: 36px; }
         .tab { font-size: 9px; letter-spacing: 0.16em; }
         .wip-label .kicker, .wip-label p { font-size: 9px; }
     }
-    /* Movimento ridotto: niente lampeggi */
+    /* Movimento ridotto: sfondo fermo (copertina), niente lampeggi */
     @media (prefers-reduced-motion: reduce) {
         .live-dot, .cbtn .cbtn-dot { animation: none !important; }
         .cbtn-top > span { transition: none; }
@@ -184,15 +202,23 @@
 </head>
 <body>
 
-    <div class="topbar">
-        <div class="wrap">
-            <div class="mono uline" style="font-size:10px">andrea__onori</div>
-            <div class="mono uline" style="font-size:9px; color:var(--mute)">ARCHIVE / 26 · VOLUME 01</div>
-        </div>
+    <div class="bg" aria-hidden="true">
+        <picture>
+            <source media="(prefers-reduced-motion: reduce)" srcset="/media/wip-reel-poster.jpg">
+            <img src="/media/wip-reel.webp" alt="" decoding="async">
+        </picture>
+        <span class="bg-label mono uline">Showreel — coming soon</span>
     </div>
 
-    <main class="wrap">
-        <header class="profile">
+    <div class="hero" id="hero">
+        <div class="topbar">
+            <div class="wrap">
+                <div class="mono uline" style="font-size:10px">andrea__onori</div>
+                <div class="mono uline right">ARCHIVE / 26 · VOLUME 01</div>
+            </div>
+        </div>
+
+        <header class="profile wrap">
             <h1>Andrea Onori</h1>
             <div class="eyebrow mono uline">◌ Film-maker · Based in Milan</div>
             <div class="cta-narrow">
@@ -201,56 +227,79 @@
                     <span class="cbtn-bot" aria-hidden="true"><i class="cbtn-dot"></i><span class="cbtn-idle">Stand by</span><span class="cbtn-hover">Rec</span></span>
                 </a>
             </div>
+            <div class="series-row">
+                <div class="series-strip" aria-label="Stories (coming soon)">
+                    <div class="story"><div class="story-circle"><img src="/media/story-aboutme-bn.webp" alt="" width="88" height="88"></div><div class="story-label mono uline">About me</div></div>
+                    <div class="story"><div class="story-circle"><img src="/media/story-super8-bn.webp" alt="" width="88" height="88"></div><div class="story-label mono uline">Super8</div></div>
+                    <div class="story"><div class="story-circle"><img src="/media/santoni-storyboard-story1-mqunxs15-v2.webp" alt="" width="88" height="88"></div><div class="story-label mono uline">Storyboard</div></div>
+                    <div class="story"><div class="story-circle"><img src="/media/ypsum-01.webp" alt="" width="88" height="88"></div><div class="story-label mono uline">Frames</div></div>
+                </div>
+                <div class="series-cta">
+                    <a class="cbtn" href="mailto:video@andreaonori.com?subject=Production%20enquiry" aria-label="Contact me">
+                        <span class="cbtn-top"><span>Contact me</span></span>
+                        <span class="cbtn-bot" aria-hidden="true"><i class="cbtn-dot"></i><span class="cbtn-idle">Stand by</span><span class="cbtn-hover">Rec</span></span>
+                    </a>
+                </div>
+            </div>
         </header>
+    </div>
 
-        <div class="series-row">
-            <div class="series-strip" aria-label="Stories (coming soon)">
-                <div class="story"><div class="story-circle"><img src="/media/story-aboutme-bn.webp" alt="" width="88" height="88"></div><div class="story-label mono uline">About me</div></div>
-                <div class="story"><div class="story-circle"><img src="/media/story-super8-bn.webp" alt="" width="88" height="88"></div><div class="story-label mono uline">Super8</div></div>
-                <div class="story"><div class="story-circle"><img src="/media/santoni-storyboard-story1-mqunxs15-v2.webp" alt="" width="88" height="88"></div><div class="story-label mono uline">Storyboard</div></div>
-                <div class="story"><div class="story-circle"><img src="/media/ypsum-01.webp" alt="" width="88" height="88"></div><div class="story-label mono uline">Frames</div></div>
+    <div class="gap" aria-hidden="true"></div>
+
+    <div class="panel">
+        <main class="wrap">
+            <nav class="tabs" aria-label="Sections (coming soon)">
+                <span class="tab active">Feed</span>
+                <span class="tab">Motion</span>
+            </nav>
+
+            <section class="wip" aria-labelledby="wip-title">
+                <picture class="wip-reel" aria-hidden="true">
+                    <source media="(prefers-reduced-motion: reduce)" srcset="/media/wip-reel-poster.jpg">
+                    <img src="/media/wip-reel.webp" alt="" decoding="async" loading="lazy">
+                </picture>
+                <div class="tiles" aria-hidden="true">
+                    <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+                    <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+                </div>
+                <div class="wip-label">
+                    <div class="kicker mono uline"><i class="live-dot"></i>New site loading</div>
+                    <h2 id="wip-title">Feed<br><span class="soft">Work in progress</span></h2>
+                    <p class="mono uline">Back soon · <a class="ig-link" href="https://www.instagram.com/andrea__onori" rel="noopener">Meanwhile on Instagram ↗</a></p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="wrap mono uline">
+                <span>© 2026 Andrea Onori — Milan, Italy · P. IVA 02491850448</span>
+                <span class="links">
+                    <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>
+                    <a href="https://www.instagram.com/andrea__onori" rel="noopener">@andrea__onori</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="/note-legali">Note legali</a>
+                </span>
             </div>
-            <div class="series-cta">
-                <a class="cbtn" href="mailto:video@andreaonori.com?subject=Production%20enquiry" aria-label="Contact me">
-                    <span class="cbtn-top"><span>Contact me</span></span>
-                    <span class="cbtn-bot" aria-hidden="true"><i class="cbtn-dot"></i><span class="cbtn-idle">Stand by</span><span class="cbtn-hover">Rec</span></span>
-                </a>
-            </div>
-        </div>
+        </footer>
+    </div>
 
-        <nav class="tabs" aria-label="Sections (coming soon)">
-            <span class="tab active">Feed</span>
-            <span class="tab">Motion</span>
-        </nav>
-
-        <section class="wip" aria-labelledby="wip-title">
-            <picture class="wip-reel" aria-hidden="true">
-                <source media="(prefers-reduced-motion: reduce)" srcset="/media/wip-reel-poster.jpg">
-                <img src="/media/wip-reel.webp" alt="" decoding="async" loading="lazy">
-            </picture>
-            <div class="tiles" aria-hidden="true">
-                <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-                <div class="tile"></div><div class="tile"></div><div class="tile"></div>
-            </div>
-            <div class="wip-label">
-                <div class="kicker mono uline"><i class="live-dot"></i>New site loading</div>
-                <h2 id="wip-title">Feed<br><span class="soft">Work in progress</span></h2>
-                <p class="mono uline">Back soon · <a class="ig-link" href="https://www.instagram.com/andrea__onori" rel="noopener">Meanwhile on Instagram ↗</a></p>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="wrap mono uline">
-            <span>© 2026 Andrea Onori — Milan, Italy · P. IVA 02491850448</span>
-            <span class="links">
-                <a href="mailto:video@andreaonori.com">video@andreaonori.com</a>
-                <a href="https://www.instagram.com/andrea__onori" rel="noopener">@andrea__onori</a>
-                <a href="/privacy">Privacy</a>
-                <a href="/note-legali">Note legali</a>
-            </span>
-        </div>
-    </footer>
-
+<script>
+/* Effetto allo scroll: nel primo mezzo schermo scritte e velo spariscono e
+   compare l'etichetta in basso. Niente cookie, niente richieste. */
+(function () {
+    var root = document.documentElement, hero = document.getElementById('hero'), ticking = false;
+    function update() {
+        ticking = false;
+        var p = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.5)));
+        root.style.setProperty('--txt', (1 - p).toFixed(3));
+        root.style.setProperty('--ov', (0.5 * (1 - p)).toFixed(3));
+        root.style.setProperty('--lbl', p.toFixed(3));
+        hero.style.pointerEvents = p > 0.9 ? 'none' : '';
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+})();
+</script>
 </body>
 </html>
