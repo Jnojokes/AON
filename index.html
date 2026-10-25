@@ -1259,6 +1259,10 @@
         }
         /* Bio sotto il titolo, sopra il video */
         .about-intro { margin-top: 32px; max-width: 76ch; }
+        /* da computer tutta la bio su tre righe: due per il primo paragrafo, una per il secondo */
+        @media (min-width: 1024px) {
+            .about-intro { max-width: none; width: min(100%, 1240px); }
+        }
         .about-intro p {
             font-weight: 300; font-size: clamp(15px, 1.15vw, 18px); line-height: 1.8;
             letter-spacing: .01em; color: rgba(255,255,255,.88); text-wrap: balance;
