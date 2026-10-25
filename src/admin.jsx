@@ -115,15 +115,21 @@ const normMedia = (v) => {
   const src = v.src || "";
   const video = v.video || (isVideoUrl(src) ? src : "");
   const image = v.poster || v.image || (isVideoUrl(src) ? "" : src) || v.url || "";
-  return { image, video, title: v.title || "", ratio: v.ratio || "", link: v.link || "", linkLabel: v.linkLabel || "" };
+  return { image, video, title: v.title || "", ratio: v.ratio || "", link: v.link || "", linkLabel: v.linkLabel || "",
+    videoWide: v.videoWide || "", ratioWide: v.ratioWide || "", posterWide: v.posterWide || "" };
 };
 
 // Riscrive un media nella forma più semplice possibile: stringa se è solo una
 // foto (così media.json resta identico a prima), oggetto se c'è un video.
 // Le proporzioni e il link esterno si salvano solo se ci sono. Una foto con
 // link diventa { image, link, linkLabel }; senza link resta una stringa.
-const toRaw = ({ image, video, title, ratio, link, linkLabel }) => {
-  const extra = link ? { link, ...(linkLabel ? { linkLabel } : {}) } : {};
+// videoWide (+ ratioWide, posterWide): la versione orizzontale di un video
+// delle storie, per gli schermi larghi; si salva solo se c'e'.
+const toRaw = ({ image, video, title, ratio, link, linkLabel, videoWide, ratioWide, posterWide }) => {
+  const extra = {
+    ...(link ? { link, ...(linkLabel ? { linkLabel } : {}) } : {}),
+    ...(video && videoWide ? { videoWide, ...(ratioWide ? { ratioWide } : {}), ...(posterWide ? { posterWide } : {}) } : {}),
+  };
   if (video || title) return { poster: image || "", video: video || "", title: title || "", ...(ratio ? { ratio } : {}), ...extra };
   if (link) return { image: image || "", ...extra };
   return image || "";
@@ -494,18 +500,6 @@ const SETTINGS_SCHEMA = [
       ["play",     "Dicitura play sui reel"],
       ["aiShort",  "Marchio AI sulla griglia"],
       ["aiLabel",  "Dicitura AI nella scheda"],
-    ],
-  },
-  {
-    key: "showreel",
-    title: "Showreel della foto profilo",
-    hint: "La presentazione di foto a schermo intero che parte cliccando la foto profilo. Il video in loop sopra il Feed si imposta più in alto, in “Showreel nel feed”.",
-    fields: [
-      ["title",    "Titolo"],
-      ["subtitle", "Sottotitolo"],
-      ["headline", "Frase grande (a capo consentiti)", "area"],
-      ["frame",    "Etichetta fotogramma"],
-      ["autoplay", "Etichetta autoplay"],
     ],
   },
   {
@@ -952,7 +946,7 @@ function VideoLinkField({ value, poster, ratio, password, onChange, onPoster, on
 }
 
 // ── Editor di una singola slide (foto e/o video) ─────────────────────────────
-function SlideEditor({ item, password, onChange, onStatus, onDone, aspect }){
+function SlideEditor({ item, password, onChange, onStatus, onDone, aspect, wide }){
   const m = normMedia(item);
   const patch = (p) => onChange(toRaw({ ...m, ...p }));
   return (
@@ -968,6 +962,22 @@ function SlideEditor({ item, password, onChange, onStatus, onDone, aspect }){
           onPoster={(p)=>patch({ image:p })}
           onPatch={patch}
           onStatus={onStatus} />
+        {wide && m.video && (
+          <div>
+            <label className="lbl">Link video orizzontale (desktop) · opzionale</label>
+            {/* Stesso campo del video normale, ma scrive videoWide /
+                ratioWide / posterWide: su schermi larghi la storia usa questo. */}
+            <VideoLinkField value={m.videoWide} poster={m.posterWide} ratio={m.ratioWide} password={password} compact
+              onChange={(v)=>patch({ videoWide:v })}
+              onPoster={(p)=>patch({ posterWide:p })}
+              onPatch={(p)=>patch({
+                ...("video" in p ? { videoWide:p.video } : {}),
+                ...("ratio" in p ? { ratioWide:p.ratio } : {}),
+                ...("image" in p ? { posterWide:p.image } : {}),
+              })}
+              onStatus={onStatus} />
+          </div>
+        )}
         <div>
           <label className="lbl">Titolo slide (opzionale)</label>
           <input className="field sm" value={m.title} onChange={e=>patch({ title:e.target.value })} placeholder="es. SANTONI BACK TO OFFICE — FILM" />
@@ -989,7 +999,7 @@ function SlideEditor({ item, password, onChange, onStatus, onDone, aspect }){
 // ── Galleria: foto (drag&drop multiplo) + slide video ───────────────────────
 // coverIndex: la slide da segnare COVER, cioe' quella che la cella del feed
 // mostra quando il post non ha una Copertina propria (-1 = nessuna).
-function GalleryField({ images, password, onChange, onStatus, aspect, coverIndex = 0 }){
+function GalleryField({ images, password, onChange, onStatus, aspect, coverIndex = 0, wide }){
   const inputRef = useRef(null);
   const [busy, setBusy] = useState(false);
   const [edit, setEdit] = useState(-1);
@@ -1081,6 +1091,7 @@ function GalleryField({ images, password, onChange, onStatus, aspect, coverIndex
           item={list[edit]}
           password={password}
           aspect={aspect}
+          wide={wide}
           onChange={(next)=>onChange(list.map((it,i)=> i===edit ? next : it))}
           onStatus={onStatus}
           onDone={()=>setEdit(-1)} />
@@ -1524,7 +1535,7 @@ function Card({ section, item, idx, total, password, onChange, onMove, onDelete,
           </div>
           <div>
             <label className="lbl">Slide della cartella · foto o video (⋯)</label>
-            <GalleryField images={item.images || []} password={password} onChange={(arr)=>set("images",arr)} onStatus={onStatus} aspect="9/16" />
+            <GalleryField images={item.images || []} password={password} onChange={(arr)=>set("images",arr)} onStatus={onStatus} aspect="9/16" wide />
           </div>
         </>
       )}
