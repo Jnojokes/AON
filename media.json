@@ -4,7 +4,7 @@
       "url": "media/greta-01.webp",
       "cover": "media/covers/greta-boldini-m2.webp",
       "coverPoster": "media/covers/greta-boldini-m2-poster.jpg",
-      "logo": "media/logos/greta-boldini.png",
+      "logo": "media/logos/greta-boldini-v2.png",
       "images": [
         {
           "poster": "https://vz-13c73ffe-e6a.b-cdn.net/591d9dd1-4c05-466d-9e2c-5cf7202c5539/thumbnail.jpg",
@@ -88,7 +88,8 @@
           "label": "PRODUCTION",
           "value": "Bianca Rovati, Viola Cecconello, Enrico Sorbini"
         }
-      ]
+      ],
+      "logo": "media/logos/est-radio.png"
     },
     {
       "url": "https://vz-13c73ffe-e6a.b-cdn.net/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6/thumbnail.jpg",
@@ -418,7 +419,8 @@
           "label": "SOUND",
           "value": "Francesco Ciccarelli"
         }
-      ]
+      ],
+      "logo": "media/logos/est-radio.png"
     },
     {
       "url": "https://vz-13c73ffe-e6a.b-cdn.net/1ba07f8f-8f02-461d-94f2-7d81950f154f/thumbnail.jpg",
@@ -601,8 +603,7 @@
       "poster": "media/screenshot-2026-09-07-alle-11-46-39-mtr23fcy.png",
       "video": "https://player.mediadelivery.net/embed/788231/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6",
       "title": "PRADA - SHOW INVITATION",
-      "ratio": "9/16",
-      "logo": "media/logos/prada.svg"
+      "ratio": "9/16"
     },
     {
       "poster": "https://vz-13c73ffe-e6a.b-cdn.net/665f251a-1226-4ce9-84f3-2871054616ef/thumbnail.jpg",
@@ -649,7 +650,7 @@
     {
       "id": "super8",
       "label": "SUPER8",
-      "image": "media/greta-01.webp",
+      "image": "media/story-super8-bn.webp",
       "images": [
         {
           "poster": "https://vz-13c73ffe-e6a.b-cdn.net/69138668-3ab1-4d23-a1a7-60cdebe06066/thumbnail.jpg",
@@ -793,8 +794,8 @@
       "eyebrow": "◌ FILM-MAKER · BASED IN MILAN",
       "nameFirst": "ANDREA",
       "nameLast": "ONORI",
-      "handle": "@andrea__onori · BORN MM",
-      "disciplines": "EDITORIAL · WORKS · PERSONAL PROJECTS",
+      "handle": "",
+      "disciplines": "",
       "siteLabel": "",
       "siteUrl": "",
       "ctaPrimary": "LET'S FILM",

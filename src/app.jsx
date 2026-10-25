@@ -290,7 +290,10 @@ import * as ReactDOM from 'react-dom/client';
             // link: link esterno della slide (es. il film intero su YouTube),
             // mostrato come bottoncino in alto a sinistra.
             const link = /^https?:\/\//i.test(v.link || '') ? v.link : '';
-            return { image, video, title: v.title || '', ratio: v.ratio || '', link, linkLabel: v.linkLabel || '' };
+            // videoWide: versione orizzontale di un video delle storie, per
+            // gli schermi larghi (vedi StoryViewer).
+            return { image, video, title: v.title || '', ratio: v.ratio || '', link, linkLabel: v.linkLabel || '',
+                videoWide: v.videoWide || '', ratioWide: v.ratioWide || '', posterWide: v.posterWide || '' };
         };
 
         // Slide di un post (FEED / INDEX): immagini e video mescolati, in ordine.
@@ -394,48 +397,6 @@ import * as ReactDOM from 'react-dom/client';
                 </div>
             );
         };
-
-        const Avatar = ({ onClick }) => (
-            <div
-                onClick={onClick}
-                className="avatar-bold"
-                style={{ width: '160px', height: '160px', position: 'relative', flexShrink: 0, cursor: 'pointer' }}
-                aria-label="Open showreel"
-            >
-                <img
-                    src="./andrea.jpg"
-                    alt={S().seo.avatarAlt}
-                    width="160" height="160" fetchPriority="high"
-                    style={{
-                        width: '100%', height: '100%',
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                        border: '1px solid rgba(255,255,255,0.25)',
-                        transition: 'opacity .3s var(--ease-out)',
-                    }}
-                />
-                <div className="play-overlay" style={{
-                    position: 'absolute', inset: 0,
-                    borderRadius: '50%',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: 'rgba(0,0,0,0)',
-                    opacity: 0,
-                    transition: 'opacity .35s var(--ease-out), background .35s var(--ease-out)',
-                    pointerEvents: 'none',
-                }}>
-                    <svg width="38" height="38" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-                </div>
-                {/* Etichetta vuota nel pannello = niente badge (prima restava un
-                    rettangolino bianco senza testo). */}
-                {S().profile.badge && <div className="mono" style={{
-                    position: 'absolute', bottom: '-6px', right: '-6px',
-                    background: 'var(--fg)', color: 'var(--bg)',
-                    fontSize: '8px', padding: '4px 7px',
-                    letterSpacing: '0.18em', textTransform: 'uppercase',
-                    zIndex: 2,
-                }}>{S().profile.badge}</div>}
-            </div>
-        );
 
         // Copia l'indirizzo negli appunti e mostra una conferma.
         //
@@ -744,19 +705,19 @@ import * as ReactDOM from 'react-dom/client';
             );
         };
 
-        const ProfileHeader = ({ onAvatarClick }) => {
+        const ProfileHeader = () => {
             const p = S().profile;
             const [formAperto, setFormAperto] = useState(false);
             const conCta = (p.ctaPrimary && p.ctaEmail) || p.ctaSecondary;
             return (
             <div>
                 <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-start mb-14 md:mb-10">
-                    <Avatar onClick={onAvatarClick} />
-                    {/* Nome a tutta riga; sotto, le righe di presentazione a
-                        sinistra e il bottone a destra (vedi .profile-main in
-                        index.html). L'eyebrow sta sotto il nome dalla versione 1. */}
+                    {/* Intestazione H4: niente foto profilo, il nome riempie la
+                        riga; sotto, una riga sola con la scritta a sinistra e il
+                        bottone a destra (vedi .profile-main in index.html). Le
+                        righe handle e disciplines si vedono solo se piene. */}
                     <div className="profile-main flex-1 w-full">
-                        <h1 className="display profile-name" style={{ fontSize: 'clamp(48px, 8vw, 96px)' }}>
+                        <h1 className="display profile-name">
                             <span className="reveal-line d1"><span>{p.nameFirst}</span></span>{' '}
                             <span className="reveal-line d2"><span>{p.nameLast}</span></span>
                         </h1>
@@ -1165,7 +1126,20 @@ import * as ReactDOM from 'react-dom/client';
             const [paused, setPaused] = useState(false);
             const intervalRef = useRef(null);
             const rawSlides = (series.images && series.images.length) ? series.images : (series.image ? [series.image] : []);
-            const slides = rawSlides.map(normMedia).filter(s => s.image || s.video);
+            // Schermo largo e orizzontale (>= 768px e piu' largo che alto): le
+            // slide con una versione orizzontale (videoWide) usano quella.
+            const wideQuery = '(min-width: 768px) and (orientation: landscape)';
+            const [wide, setWide] = useState(() => window.matchMedia(wideQuery).matches);
+            useEffect(() => {
+                const mq = window.matchMedia(wideQuery);
+                const on = () => setWide(mq.matches);
+                mq.addEventListener('change', on);
+                return () => mq.removeEventListener('change', on);
+            }, []);
+            const slides = rawSlides.map(normMedia).filter(s => s.image || s.video)
+                .map(s => (wide && s.video && s.videoWide)
+                    ? { ...s, video: s.videoWide, image: s.posterWide || s.image, ratio: s.ratioWide || '16/9' }
+                    : s);
             const cur = slides[current] || {};
             const goNext = () => { if (current < slides.length - 1) { setCurrent(current + 1); setProgress(0); } else onClose(); };
             const goPrev = () => { if (current > 0) { setCurrent(current - 1); setProgress(0); } };
@@ -1607,155 +1581,11 @@ import * as ReactDOM from 'react-dom/client';
             );
         };
 
-        // Showreel — autoplay cross-fade reel, opens from avatar
-        const ShowreelModal = ({ onClose }) => {
-            // Solo foto: lo showreel è un cross-fade di immagini, non di video
-            // (ne' delle copertine lo-fi della griglia, troppo piccole qui).
-            const slides = (M().feed && M().feed.length)
-                ? M().feed.map(f => firstPhotoOf(slidesOf(f))).filter(Boolean).slice(0, 6)
-                : [];
-            const [cur, setCur] = useState(0);
-            const [progress, setProgress] = useState(0);
-            const intervalRef = useRef(null);
-            const DURATION_MS = 4200;
-
-            useEffect(() => {
-                document.body.style.overflow = 'hidden';
-                const onKey = (e) => {
-                    if (e.key === 'Escape') onClose();
-                    if (e.key === 'ArrowRight') { setCur((p) => (p + 1) % slides.length); setProgress(0); }
-                    if (e.key === 'ArrowLeft') { setCur((p) => (p - 1 + slides.length) % slides.length); setProgress(0); }
-                };
-                window.addEventListener('keydown', onKey);
-                return () => {
-                    document.body.style.overflow = '';
-                    window.removeEventListener('keydown', onKey);
-                };
-            }, [onClose]);
-
-            useEffect(() => {
-                const tick = 50;
-                intervalRef.current = setInterval(() => {
-                    setProgress((prev) => {
-                        const next = prev + (100 * tick / DURATION_MS);
-                        if (next >= 100) {
-                            setCur((p) => (p + 1) % slides.length);
-                            return 0;
-                        }
-                        return next;
-                    });
-                }, tick);
-                return () => intervalRef.current && clearInterval(intervalRef.current);
-            }, []);
-
-            if (!slides.length) return null;
-
-            return (
-                <div style={{
-                    position: 'fixed', inset: 0, background: '#000',
-                    zIndex: 300, display: 'flex', flexDirection: 'column',
-                    animation: 'modalIn .35s ease',
-                }}>
-                    <div style={{
-                        position: 'absolute', top: 0, left: 0, right: 0,
-                        padding: '20px 28px', zIndex: 10,
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        background: 'linear-gradient(to bottom, rgba(0,0,0,0.55), transparent)',
-                    }}>
-                        <div className="mono uline" style={{
-                            color: 'white', fontSize: '10px',
-                            display: 'flex', alignItems: 'center', gap: '12px',
-                        }}>
-                            <img src="./andrea.jpg" alt="" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '1px solid white' }} />
-                            <div style={{ letterSpacing: '0.22em' }}>
-                                <div style={{ fontWeight: 700 }}>{S().showreel.title}</div>
-                                <div style={{ opacity: 0.55, marginTop: '3px', fontSize: '9px' }}>{S().showreel.subtitle}</div>
-                            </div>
-                        </div>
-                        <button onClick={onClose} style={{
-                            background: 'rgba(255,255,255,0.06)',
-                            border: '1px solid rgba(255,255,255,0.3)',
-                            color: 'white', cursor: 'pointer',
-                            width: '40px', height: '40px',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            transition: 'background .25s var(--ease-out)',
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
-                        aria-label="Close showreel">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        </button>
-                    </div>
-
-                    <div style={{
-                        position: 'absolute', top: '20px', left: '50%',
-                        transform: 'translateX(-50%)',
-                        display: 'flex', gap: '5px', zIndex: 10,
-                    }}>
-                        {slides.map((_, i) => (
-                            <div key={i} style={{
-                                width: '32px', height: '2px',
-                                background: 'rgba(255,255,255,0.25)',
-                                overflow: 'hidden',
-                            }}>
-                                <div style={{
-                                    height: '100%', background: 'var(--accent)',
-                                    width: i < cur ? '100%' : i === cur ? `${progress}%` : '0%',
-                                    transition: 'width 60ms linear',
-                                }}></div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-                        {slides.map((src, i) => (
-                            <img key={i} src={src} alt="" style={{
-                                position: 'absolute', inset: 0,
-                                width: '100%', height: '100%',
-                                objectFit: 'cover',
-                                opacity: i === cur ? 1 : 0,
-                                transition: 'opacity 1.2s var(--ease-out), transform 5s linear',
-                                transform: i === cur ? 'scale(1.04)' : 'scale(1)',
-                            }} />
-                        ))}
-                        <div onClick={() => { setCur((p) => (p - 1 + slides.length) % slides.length); setProgress(0); }}
-                             style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '35%', zIndex: 5, cursor: 'pointer' }}></div>
-                        <div onClick={() => { setCur((p) => (p + 1) % slides.length); setProgress(0); }}
-                             style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: '65%', zIndex: 5, cursor: 'pointer' }}></div>
-                    </div>
-
-                    <div style={{
-                        position: 'absolute', bottom: 0, left: 0, right: 0,
-                        padding: '28px 28px 32px',
-                        background: 'linear-gradient(to top, rgba(0,0,0,0.65), transparent)',
-                        zIndex: 10,
-                    }}>
-                        <p className="display" style={{
-                            color: 'white', fontSize: '44px', lineHeight: 0.95,
-                        }}>
-                            {brLines(S().showreel.headline).map((l, i) => (
-                                <React.Fragment key={i}>{i > 0 && <br/>}{l}</React.Fragment>
-                            ))}
-                        </p>
-                        <p className="mono uline" style={{
-                            color: 'rgba(255,255,255,0.65)',
-                            fontSize: '10px',
-                            marginTop: '14px',
-                        }}>
-                            {S().showreel.frame} {String(cur + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
-                            &nbsp;·&nbsp; <span style={{ color: 'var(--accent)' }}>{S().showreel.autoplay}</span>
-                        </p>
-                    </div>
-                </div>
-            );
-        };
-
         const App = () => {
             const [active, setActive] = useState('FEED');
             const [selectedImg, setSelectedImg] = useState(null);
             const [imgs, setImgs] = useState([]);
             const [selectedSeries, setSelectedSeries] = useState(null);
-            const [showreelOpen, setShowreelOpen] = useState(false);
             const [selectedMotion, setSelectedMotion] = useState(null);
             // La pagina About vive sull'hash #about: si apre anche da un link
             // diretto (/versione1#about) e il tasto indietro la chiude.
@@ -1858,10 +1688,6 @@ import * as ReactDOM from 'react-dom/client';
                 return () => window.removeEventListener('scroll', onScroll);
             }, []);
 
-            useEffect(() => {
-                if (showreelOpen) track('showreel_play', { source: 'avatar' });
-            }, [showreelOpen]);
-
             // Scroll-triggered reveal
             useEffect(() => {
                 const els = document.querySelectorAll('.reveal-on-scroll');
@@ -1888,7 +1714,7 @@ import * as ReactDOM from 'react-dom/client';
                     </div>
 
                     <main className="max-w-[1100px] mx-auto px-6 py-16">
-                        <ProfileHeader onAvatarClick={() => setShowreelOpen(true)} />
+                        <ProfileHeader />
                         <Series onClick={onSeries} />
                         <Tabs active={active} setActive={setActive} />
                         <div key={active} className="tab-panel">
@@ -1909,7 +1735,6 @@ import * as ReactDOM from 'react-dom/client';
                         />
                     )}
                     {selectedSeries && <StoryViewer series={selectedSeries} onClose={() => setSelectedSeries(null)} />}
-                    {showreelOpen && <ShowreelModal onClose={() => setShowreelOpen(false)} />}
                     {selectedMotion && <MotionViewer item={selectedMotion} onClose={() => setSelectedMotion(null)} />}
                     {aboutOpen && <AboutView onClose={closeAbout} />}
                 </div>
