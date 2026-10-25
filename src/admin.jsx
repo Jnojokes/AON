@@ -1487,7 +1487,7 @@ function SettingsEditor({ settings, password, onChange, onStatus }){
           Google, Bing, ChatGPT, Claude e Perplexity leggono per capire chi sei,
           cosa fai e dove lavori.<br /><br />
           Scrivi <b>frasi brevi, complete e in terza persona</b> — “Andrea Onori è
-          un fotografo…”, non “Sono un fotografo…”: i modelli citano frammenti
+          un filmmaker…”, non “Sono un filmmaker…”: i modelli citano frammenti
           isolati, e una frase che si regge da sola viene ripresa meglio.
           Vai a capo per separare i concetti: ogni riga diventa un paragrafo.
           Inserisci città, discipline, clienti e contatto.<br /><br />
@@ -1496,7 +1496,7 @@ function SettingsEditor({ settings, password, onChange, onStatus }){
         </p>
         <textarea className="field" style={{minHeight:200}} value={seo.bio || ""}
           onChange={e => patch("seo", { ...seo, bio: e.target.value })}
-          placeholder={"Andrea Onori è un fotografo e filmmaker con base a Milano.\nLavora tra moda, editoriale e campagne, producendo foto e video per brand e magazine.\n…"} />
+          placeholder={"Andrea Onori è un filmmaker indipendente con base a Milano.\nLavora soprattutto tra moda, pubblicità e media.\n…"} />
         <p className="mono" style={{fontSize:10,color:"#555",marginTop:8}}>
           {(seo.bio || "").trim().split(/\s+/).filter(Boolean).length} parole ·{" "}
           {(seo.bio || "").split(/\r?\n/).filter(l => l.trim()).length} paragrafi

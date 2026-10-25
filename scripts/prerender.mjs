@@ -45,14 +45,14 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = {
   origin: 'https://www.andreaonori.com',
   name: 'Andrea Onori',
-  role: 'Photographer & Filmmaker',
+  role: 'Filmmaker',
   email: 'video@andreaonori.com',
   instagram: 'https://www.instagram.com/andrea__onori',
   instagramHandle: '@andrea__onori',
   city: 'Milan',
   region: 'Lombardy',
   country: 'IT',
-  // Le stesse coordinate mostrate nell'HUD del sito. Servono a "fotografo a
+  // Le stesse coordinate mostrate nell'HUD del sito. Servono a "filmmaker a
   // Milano" e alle risposte AI su base geografica: senza geo, un
   // LocalBusiness/ProfessionalService è collocato solo dal testo dell'indirizzo.
   geo: { lat: 45.4642, lon: 9.19 },
@@ -68,12 +68,10 @@ const SITE = {
   // fallback se la bio venisse svuotata.
   published: ['Vogue Italia', 'Numéro', 'Domus'],
   disciplines: [
-    'Fashion Photography',
-    'Editorial Photography',
-    'Campaign Photography',
-    'Portrait Photography',
-    'Motion',
     'Filmmaking',
+    'Fashion',
+    'Advertising',
+    'Media',
   ],
 };
 
@@ -243,8 +241,8 @@ const customBio = String(((settings.seo || {}).bio) || '')
   .filter(Boolean);
 
 const autoSentences = [
-  `${SITE.name} is a photographer and filmmaker based in ${SITE.city}, Italy.`,
-  `He works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.`,
+  `${SITE.name} is an independent filmmaker based in ${SITE.city}, Italy.`,
+  `He works internationally, mostly in fashion, advertising and media.`,
   `He has been working professionally since ${SITE.since}.`,
   SITE.published.length
     ? `His work has been selected by ${SITE.published.join(', ')}.`
@@ -283,9 +281,9 @@ const projectArticle = (p, aspect) => {
 
 const staticBlock = `        <div class="prerender-fallback">
           <header class="pf-header">
-            <p class="pf-eyebrow">Photographer · Based in ${esc(SITE.city)}</p>
+            <p class="pf-eyebrow">Film-maker · Based in ${esc(SITE.city)}</p>
             <h1>${esc(SITE.name)}</h1>
-            <p class="pf-role">${esc(SITE.role)} — Editorial · Portrait · Personal work</p>
+            <p class="pf-role">${esc(SITE.role)} — Fashion · Advertising · Media</p>
             <div class="pf-about">
 ${aboutSentences.map((s) => `              <p>${esc(s)}</p>`).join('\n')}
             </div>
@@ -423,7 +421,7 @@ const graph = [
     '@type': 'WebPage',
     '@id': pageId,
     url: SITE.origin + '/',
-    name: `${SITE.name} — Fashion Photographer & Filmmaker, Milan`,
+    name: `${SITE.name} — Filmmaker, Milan`,
     isPartOf: { '@id': siteId },
     about: { '@id': personId },
     description: aboutSentences.slice(0, 3).join(' '),
@@ -432,11 +430,11 @@ const graph = [
   },
   {
     // ProfessionalService è una sottoclasse di LocalBusiness: dichiararlo qui
-    // copre sia le ricerche "fotografo a Milano" sia le risposte AI su base
+    // copre sia le ricerche "filmmaker a Milano" sia le risposte AI su base
     // geografica, senza duplicare un secondo nodo per la stessa entità.
     '@type': 'ProfessionalService',
     '@id': `${SITE.origin}/#service`,
-    name: `${SITE.name} — Photography & Motion`,
+    name: `${SITE.name} — Filmmaking`,
     description: aboutSentences.join(' '),
     url: SITE.origin + '/',
     image: abs(SITE.ogImage),
@@ -496,7 +494,7 @@ for (const title of projectTitles) {
   if (!first) continue;
   const cover = coverOf(first);
   const work = {
-    '@type': 'Photograph',
+    '@type': 'CreativeWork',
     '@id': `${SITE.origin}/work/${slugify(title)}#work`,
     name: title,
     ...aboutBrand(entries),
@@ -540,7 +538,7 @@ for (const title of projectTitles) {
   graph.push(work);
 }
 
-// I nodi Photograph sono per titolo, il flag AI è per post: un post marcato che
+// I nodi CreativeWork sono per titolo, il flag AI è per post: un post marcato che
 // non sia il primo del suo gruppo non avrebbe dove essere dichiarato, e la
 // dichiarazione sparirebbe dai dati strutturati pur restando sul sito e in
 // llms.txt. Qui ogni copertina marcata e non ancora coperta sopra ottiene il
@@ -636,11 +634,11 @@ const projectPages = projectTitles
           [
             `${title} is a ${film ? film.toLowerCase().replace(/\s*—\s*/g, ' ') + ' ' : ''}project`,
             ` by ${SITE.name}, ${SITE.role.toLowerCase()} based in ${SITE.city}, Italy`,
-            loc ? `, photographed in ${loc}` : '',
+            loc ? `, shot in ${loc}` : '',
             year ? ` in ${year}` : '',
             '.',
           ].join(''),
-          `${SITE.name} works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines. He has been working professionally since ${SITE.since}.`,
+          `${SITE.name} works internationally as an independent filmmaker, mostly in fashion, advertising and media. He has been working professionally since ${SITE.since}.`,
           images.length
             ? `This project page collects ${images.length} image${images.length === 1 ? '' : 's'} from the shoot.`
             : '',
@@ -868,7 +866,7 @@ ${pg.images.slice(0, 12).map((src, i) => `    <image:image>
 
 const llms = `# ${SITE.name}
 
-> ${SITE.role} based in ${SITE.city}, Italy. Fashion, editorial and campaign imagery — stills and motion for brands and magazines.
+> Independent ${SITE.role.toLowerCase()} based in ${SITE.city}, Italy, working internationally in fashion, advertising and media.
 
 ${aboutSentences.join('\n\n')}
 
