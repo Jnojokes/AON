@@ -719,6 +719,8 @@ const projectPageHtml = (pg, others = []) => {
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/fonts/fonts.css">
+<!-- Umami: statistiche senza cookie, conta solo sul dominio vero (data-domains). -->
+<script defer src="https://cloud.umami.is/script.js" data-website-id="6f54222f-5c21-4707-be4f-d71137780c5a" data-domains="andreaonori.com,www.andreaonori.com"></script>
 <style>
   :root{--bg:#000;--fg:#fff;--mute:#8a8a8a;--line:rgba(255,255,255,0.14);--accent:#ff4a1c}
   *{margin:0;padding:0;box-sizing:border-box}
