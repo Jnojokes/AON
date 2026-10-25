@@ -1173,6 +1173,10 @@ function CreditsEditor({ items, onChange }){
             <button className="btn btn-ghost btn-xs" style={{color:"var(--accent)",borderColor:"rgba(255,61,0,0.4)"}}
               onClick={() => onChange(list.filter((_, j) => j !== i))} title="Elimina">✕</button>
           </div>
+          <input className="field sm" value={(it && it.link) || ""} placeholder="Link (facoltativo, es. https://instagram.com/nome)"
+            onChange={e => set(i, "link", e.target.value)} />
+          <input className="field sm" value={(it && it.linkText) || ""} placeholder="Parte da collegare (vuoto = tutto)"
+            onChange={e => set(i, "linkText", e.target.value)} />
         </div>
       ))}
       <div style={{display:"flex",gap:6,marginTop:8,flexWrap:"wrap"}}>

@@ -339,7 +339,7 @@ import * as ReactDOM from 'react-dom/client';
         // Il cliente (voce CLIENT), se il titolo non lo dice gia': "YPSUM" con
         // cliente Ypsum non ha bisogno di ripeterlo.
         const brandOf = (p) => {
-            const client = creditValue(p, 'CLIENT');
+            const client = creditValue(p, 'CLIENT') || creditValue(p, 'MAGAZINE');
             return client && !String(p.title || '').toLowerCase().includes(client.toLowerCase()) ? client : '';
         };
         // Dalla versione con i crediti il titolo e' il nome del video ("BACK TO
@@ -1291,6 +1291,25 @@ import * as ReactDOM from 'react-dom/client';
         // mono, i valori in colonna (.post-credits in index.html). Un post senza
         // crediti mostra anno e formato dai suoi campi, come prima ma senza il
         // luogo.
+        // Valore di un credito, con link facoltativo (es. Instagram di un
+        // collaboratore). linkText = la parte del valore da collegare; se manca
+        // o non c'e' nel testo, si collega tutto il valore.
+        const CreditValue = ({ c }) => {
+            const val = String(c.value || '');
+            const url = String(c.link || '').trim();
+            if (!/^https?:\/\//i.test(url)) return val;
+            let dominio = '';
+            try { dominio = new URL(url).hostname.replace(/^www\./, ''); } catch (e) {}
+            const a = (t) => (
+                <a className="credit-link" href={url} target="_blank" rel="noopener"
+                    onClick={() => track('outbound_click', { link_domain: dominio, location: 'credits' })}>{t}</a>
+            );
+            const part = String(c.linkText || '').trim();
+            const i = part ? val.indexOf(part) : -1;
+            if (i < 0) return a(val);
+            return <React.Fragment>{val.slice(0, i)}{a(part)}{val.slice(i + part.length)}</React.Fragment>;
+        };
+
         const PostCredits = ({ post }) => {
             const rows = creditsOf(post) || [
                 { label: S().post.year, value: post.year },
@@ -1302,7 +1321,7 @@ import * as ReactDOM from 'react-dom/client';
                     {rows.map((r, i) => (
                         <React.Fragment key={i}>
                             <dt>{r.label}</dt>
-                            <dd>{r.value}</dd>
+                            <dd><CreditValue c={r} /></dd>
                         </React.Fragment>
                     ))}
                 </dl>
@@ -1429,40 +1448,12 @@ import * as ReactDOM from 'react-dom/client';
             );
         };
 
-        // About — la bio, VISIBILE.
-        //
-        // Prima viveva solo in <section class="visually-hidden"> in fondo al body:
-        // ~130 parole servite ai crawler e a nessun visitatore, perche' il blocco
-        // prerenderizzato che le mostrava viene distrutto appena React monta.
-        // E' esattamente il pattern che Google classifica come testo nascosto.
-        // Renderla qui, dallo stesso settings.seo.bio, risolve il rischio e da'
-        // alla home il testo lungo che le mancava — che e' anche l'unica cosa
-        // che un motore generativo puo' citare.
-        //
-        // Dalla versione 1 restano solo i paragrafi, piu' piccoli: niente
-        // etichetta "ABOUT" e niente titolone. Non si nascondono con un trucco
-        // CSS, semplicemente non ci sono: per le ragioni dette sopra, un testo
-        // nascosto e' peggio di un testo assente.
-        const About = () => {
-            const bio = String((S().seo && S().seo.bio) || '').trim();
-            if (!bio) return null;
-            const paras = bio.split(/\n+/).map(t => t.trim()).filter(Boolean);
-            if (!paras.length) return null;
-            return (
-                <section id="bio" aria-label="About" style={{ margin: '72px 0 8px' }}>
-                    <div className="reveal-on-scroll delay-1" style={{ maxWidth: '68ch' }}>
-                        {paras.map((t, i) => (
-                            <p key={i} style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--mute)', marginBottom: '10px' }}>{t}</p>
-                        ))}
-                    </div>
-                </section>
-            );
-        };
+        // La bio non sta piu' nel footer: e' nella pagina About (about.body), e la
+        // stessa bio va in settings.seo.bio per i motori di ricerca.
 
         // Footer
         const Footer = () => (
             <footer>
-                <About />
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10" style={{ marginTop: '56px' }}>
                     <div className="colofone-cell reveal-on-scroll">
                         <div className="colofone-label">© {new Date().getFullYear()}</div>

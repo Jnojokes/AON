@@ -40,7 +40,7 @@
           "value": ""
         },
         {
-          "label": "DIRECTION",
+          "label": "ART DIRECTION",
           "value": "Raffaele Cerulo & Jasmine Jessica De Pretto"
         },
         {
@@ -87,6 +87,14 @@
         {
           "label": "PRODUCTION",
           "value": "Bianca Rovati, Viola Cecconello, Enrico Sorbini"
+        },
+        {
+          "label": "AC",
+          "value": "Pasquale Rosa"
+        },
+        {
+          "label": "AD",
+          "value": "Gabriele Vanin"
         }
       ],
       "logo": "media/logos/est-radio.png"
@@ -119,7 +127,7 @@
         },
         {
           "label": "FORMAT",
-          "value": "Invitation teaser"
+          "value": "Teaser"
         },
         {
           "label": "ART DIRECTION & PRODUCTION",
@@ -143,10 +151,10 @@
         "media/fabiana-02.webp",
         "media/fabiana-03.webp"
       ],
-      "title": "VETRINA",
+      "title": "PIZZO CARDI DW",
       "year": "2025",
       "loc": "MILANO",
-      "film": "LOOKBOOK",
+      "film": "SOCIAL",
       "credits": [
         {
           "label": "CLIENT",
@@ -158,15 +166,15 @@
         },
         {
           "label": "FORMAT",
-          "value": "Lookbook"
+          "value": "Social"
         },
         {
           "label": "ART DIRECTION",
-          "value": "SocialRise"
+          "value": "Paolo Santosuosso // Socialrise"
         },
         {
           "label": "PRODUCTION",
-          "value": "BlackFrog"
+          "value": "Silvia Gesuelli // BlackFrog"
         }
       ]
     },
@@ -255,7 +263,9 @@
         },
         {
           "label": "CRAFTED BY",
-          "value": "Andrea Onori & Pasquale Rosa"
+          "value": "Andrea Onori & Pasquale Rosa",
+          "linkText": "Pasquale Rosa",
+          "link": ""
         },
         {
           "label": "1AD",
@@ -286,7 +296,7 @@
       "film": "EDITORIAL",
       "credits": [
         {
-          "label": "CLIENT",
+          "label": "MAGAZINE",
           "value": "The Cold Magazine"
         },
         {
@@ -308,6 +318,10 @@
         {
           "label": "TALENTS",
           "value": "Michele Arrabito, Camomilla Pecchiari"
+        },
+        {
+          "label": "AC",
+          "value": "Sarah Sardi"
         }
       ]
     },
@@ -416,8 +430,8 @@
           "value": "Carlo Sabatucci"
         },
         {
-          "label": "SOUND",
-          "value": "Francesco Ciccarelli"
+          "label": "SECOND CAMERA",
+          "value": "Gabriele Vanin"
         }
       ],
       "logo": "media/logos/est-radio.png"
@@ -666,14 +680,14 @@
     {
       "id": "storyboard",
       "label": "STORYBOARD",
-      "image": "media/santoni-storyboard-story1-mqunxs15-v2.webp",
+      "image": "media/santoni-storyboard-story1-mqunxs15-v3.webp",
       "images": [
-        "media/greta-storyboard-story-final-mqunwp71.webp",
-        "media/ypsum-storyboard-story-mqunwqfo.webp",
-        "media/santoni-storyboard-story2-mqunwrkt-v2.webp",
-        "media/santoni-storyboard-story1-mqunwt2t-v2.webp",
-        "media/mugshot-storyboard-story2-mqunwuc9.webp",
-        "media/mugshot-storyboard-story1-mqunwvx6.webp"
+        "media/greta-storyboard-story-final-mqunwp71-v3.webp",
+        "media/ypsum-storyboard-story-mqunwqfo-v3.webp",
+        "media/santoni-storyboard-story2-mqunwrkt-v3.webp",
+        "media/santoni-storyboard-story1-mqunwt2t-v3.webp",
+        "media/mugshot-storyboard-story2-mqunwuc9-v3.webp",
+        "media/mugshot-storyboard-story1-mqunwvx6-v3.webp"
       ]
     },
     {
@@ -713,7 +727,7 @@
     },
     {
       "num": "04",
-      "title": "VETRINA",
+      "title": "PIZZO CARDI DW",
       "location": "MILANO",
       "year": "2025",
       "image": "media/fabiana-01.webp"
@@ -877,7 +891,7 @@
     "seo": {
       "author": "Andrea Onori",
       "avatarAlt": "Andrea Onori, filmmaker based in Milan, working on fashion and adv",
-      "bio": "Andrea Onori is a photographer and filmmaker based in Milan, Italy.\nHe works across fashion, editorial and campaign imagery, producing both stills and motion for brands and magazines.\nHe has been working professionally since 2022.\nHe is available for commissions and can be reached at video@andreaonori.com."
+      "bio": "It began in the Marche, where I was born. Today I'm based in Milan and work internationally as an independent filmmaker, mostly in fashion, advertising and media. I follow each project from the first idea to the final cut, treating every story as a film of its own.\nEmotions rarely arrive with a shape: my craft is building the frame they need to find their meaning."
     }
   },
   "about": {

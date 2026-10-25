@@ -107,7 +107,7 @@ const creditValue = (p, label) => {
  *  titolo e' il nome del video ("BACK TO OFFICE"): senza questo "Santoni"
  *  sparirebbe dagli alt e dai dati strutturati. */
 const brandOf = (p) => {
-  const client = creditValue(p, 'CLIENT');
+  const client = creditValue(p, 'CLIENT') || creditValue(p, 'MAGAZINE');
   return client && !String(p.title || '').toLowerCase().includes(client.toLowerCase()) ? client : '';
 };
 
@@ -119,7 +119,7 @@ const altOf = (p) =>
 /** Il cliente come Brand nei dati strutturati (proprieta' "about"): l'opera ha
  *  il nome del video, il marchio per cui e' stata fatta resta leggibile. */
 const aboutBrand = (entries) => {
-  const client = entries.map((e) => creditValue(e, 'CLIENT')).find(Boolean);
+  const client = entries.map((e) => creditValue(e, 'CLIENT') || creditValue(e, 'MAGAZINE')).find(Boolean);
   return client ? { about: { '@type': 'Brand', name: client } } : {};
 };
 

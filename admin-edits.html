@@ -152,7 +152,7 @@
   /* Crediti dei post: come le righe del marquee, ma etichetta e valore alla
      pari, perche' le etichette sono lunghe (ART DIRECTION, PRODUCTION…). */
   .row-cr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:center;}
-  .row-cr + .row-cr{margin-top:8px;}
+  .row-cr + .row-cr{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);}
   @media (max-width:640px){ .row-cr{grid-template-columns:1fr;} }
   /* Copertina e logo dei post del feed: anteprima della cella com'e' sul
      sito (4:5, fondo della cella, logo centrato al 40% e mai oltre il 30%
@@ -177,6 +177,6 @@
 <body>
 <div id="root"></div>
 
-<script src="/assets/admin.js?v=aefc794c" defer></script>
+<script src="/assets/admin.js?v=7ad602e8" defer></script>
 </body>
 </html>
