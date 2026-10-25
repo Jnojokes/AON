@@ -1229,7 +1229,9 @@
             animation: modalIn .25s ease; outline: none;
         }
         .about-wrap { padding: 0 40px; }
-        .about-bg { position: fixed; inset: 0; z-index: 0; height: 100vh; height: 100lvh; background: #000; overflow: hidden; }
+        /* pointer-events: none: lo sfondo e' fisso, e se ricevesse rotella o dito
+           farebbe scorrere la pagina sotto (bloccata) invece di questa vista. */
+        .about-bg { position: fixed; inset: 0; z-index: 0; height: 100vh; height: 100lvh; background: #000; overflow: hidden; pointer-events: none; }
         .about-bg video, .about-bg img { display: block; width: 100%; height: 100%; object-fit: cover; }
         .about-veil { position: absolute; inset: 0; background: var(--bg); opacity: .5; pointer-events: none; }
         .about-caption {
