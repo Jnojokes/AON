@@ -1257,6 +1257,13 @@
             margin-top: 24px; font-weight: 300; font-size: clamp(18px, 1.7vw, 24px);
             line-height: 1.35; max-width: 34ch; color: rgba(255,255,255,.88);
         }
+        /* Bio sotto il titolo, sopra il video */
+        .about-intro { margin-top: 24px; max-width: 56ch; }
+        .about-intro p {
+            font-weight: 300; font-size: clamp(15px, 1.15vw, 18px); line-height: 1.55;
+            color: rgba(255,255,255,.88); text-wrap: pretty;
+        }
+        .about-intro p + p { margin-top: 12px; }
         .about-ctas { margin-top: 36px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
         /* Bottoni: la meta' bianca del rettangolo della home, niente arancione. */
         .rbtn {
@@ -1465,7 +1472,7 @@
             border-top: 1px solid var(--line);
         }
     </style>
-    <link rel="stylesheet" href="/assets/tailwind.css?v=0b1f6d1b">
+    <link rel="stylesheet" href="/assets/tailwind.css?v=ba555a61">
 </head>
 <body>
     <!-- Il contenuto statico qui sotto è generato da scripts/prerender.mjs a ogni
@@ -1686,7 +1693,7 @@
 
     <!-- Il sorgente di questo bundle e' src/app.jsx. Non modificare
          assets/app.js a mano: si rigenera con `npm run build`. -->
-    <script src="/assets/app.js?v=cff5fb1d" defer></script>
+    <script src="/assets/app.js?v=28d068eb" defer></script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
          BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:

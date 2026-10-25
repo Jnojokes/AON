@@ -1620,6 +1620,11 @@ import * as ReactDOM from 'react-dom/client';
                                 </h1>
                             )}
                             {paras(a.lead).map((t, i) => <p key={'l' + i} className="about-lead">{t}</p>)}
+                            {paras(a.body).length > 0 && (
+                                <div className="about-intro">
+                                    {paras(a.body).map((t, i) => <p key={'b' + i}>{t}</p>)}
+                                </div>
+                            )}
                             {(p.ctaEmail || social) && (
                                 <div className="about-ctas">
                                     {p.ctaEmail && (
@@ -1640,12 +1645,6 @@ import * as ReactDOM from 'react-dom/client';
                     </div>
                     {sfondo && <div className="about-gap" aria-hidden="true"></div>}
                     <div ref={panel} className="about-panel">
-                        {paras(a.body).length > 0 && (
-                            <section className="about-wrap about-bio">
-                                <div className="about-bio-lbl mono">Bio</div>
-                                <div>{paras(a.body).map((t, i) => <p key={'b' + i} className="about-body">{t}</p>)}</div>
-                            </section>
-                        )}
                         {photos.length > 0 && (
                             <div className={'about-wrap about-photos' + (photos.length === 1 ? ' one' : '')}>
                                 {photos.slice(0, 2).map((ph, i) => (
@@ -1664,8 +1663,8 @@ import * as ReactDOM from 'react-dom/client';
                         </footer>
                     </div>
                     {sfondo && (
-                        <button ref={arrow} type="button" className="side-arrow" aria-label="Scroll to the bio" onClick={vaiAllaBio}>
-                            <span className="side-arrow-t">Bio</span><span className="side-arrow-a" aria-hidden="true">↓</span>
+                        <button ref={arrow} type="button" className="side-arrow" aria-label="Scroll to the photos" onClick={vaiAllaBio}>
+                            <span className="side-arrow-t">Photos</span><span className="side-arrow-a" aria-hidden="true">↓</span>
                         </button>
                     )}
                     {formAperto && <ContactModal
