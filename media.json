@@ -656,7 +656,10 @@
           "poster": "https://vz-13c73ffe-e6a.b-cdn.net/69138668-3ab1-4d23-a1a7-60cdebe06066/thumbnail.jpg",
           "video": "https://player.mediadelivery.net/embed/788231/69138668-3ab1-4d23-a1a7-60cdebe06066",
           "title": "",
-          "ratio": "9/16"
+          "ratio": "9/16",
+          "posterWide": "https://vz-13c73ffe-e6a.b-cdn.net/4b3700d6-cfa3-4fac-b688-e4871846eb9f/thumbnail.jpg",
+          "videoWide": "https://player.mediadelivery.net/embed/788231/4b3700d6-cfa3-4fac-b688-e4871846eb9f",
+          "ratioWide": "16/9"
         }
       ]
     },
