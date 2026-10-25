@@ -373,8 +373,31 @@ import * as ReactDOM from 'react-dom/client';
         };
 
         // GA4 — no-op finché il Measurement ID non è configurato (vedi <head>).
+        // Umami (senza cookie, niente consenso): riceve solo questi eventi e
+        // solo le proprieta' utili. Mai testo scritto da chi visita.
+        const UMAMI_PROPS = {
+            project_view: ['project_title'],
+            series_open: ['series_label'],
+            contact_click: ['method', 'location'],
+            contact_submit: ['location'],
+            outbound_click: ['link_domain', 'location'],
+            slide_link_click: ['link_domain'],
+            motion_play: ['reel_label'],
+            showreel_play: [],
+            scroll_hint: ['target'],
+        };
         const track = (name, params) => {
             try { window.aonTrack && window.aonTrack(name, params); } catch (e) {}
+            try {
+                const keys = UMAMI_PROPS[name];
+                if (!keys || !window.umami || typeof window.umami.track !== 'function') return;
+                const p = params || {}, out = {};
+                if (name === 'slide_link_click' && p.link_url) {
+                    try { out.link_domain = new URL(p.link_url, location.href).hostname.replace(/^www\./, ''); } catch (e) {}
+                }
+                keys.forEach((k) => { if (p[k] !== undefined && p[k] !== '' && out[k] === undefined) out[k] = String(p[k]).slice(0, 120); });
+                if (Object.keys(out).length) window.umami.track(name, out); else window.umami.track(name);
+            } catch (e) {}
         };
 
         // Marquee
@@ -1585,6 +1608,7 @@ import * as ReactDOM from 'react-dom/client';
             const vaiAllaBio = () => {
                 const el = box.current, pn = panel.current;
                 if (!el || !pn) return;
+                track('scroll_hint', { target: 'photos' });
                 el.scrollTo({ top: pn.offsetTop, behavior: calmo ? 'auto' : 'smooth' });
             };
 
@@ -1845,6 +1869,7 @@ import * as ReactDOM from 'react-dom/client';
             useEffect(() => () => clearTimeout(animT.current), []);
             // Freccina "FEED ↓": porta all'inizio del pannello del feed.
             const vaiAlFeed = () => {
+                track('scroll_hint', { target: 'feed' });
                 const panel = panelRef.current;
                 const y = panel ? panel.getBoundingClientRect().top + window.scrollY : window.innerHeight;
                 window.scrollTo({ top: y, behavior: calmoReel() ? 'auto' : 'smooth' });
