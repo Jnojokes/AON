@@ -17,7 +17,8 @@
   Stessa impostazione della home H7: sfondo a tutto schermo con un velo del
   colore dello sfondo al 50%, nome "Andrea Onori" in Roboto 500, scritta,
   storie e bottone CONTACT ME / STAND BY → REC in basso. Scorrendo le scritte
-  e il velo spariscono, poi sale il pannello con tab, "Work in progress" e footer.
+  e il velo spariscono, poi sale il pannello con "Work in progress" e footer
+  (niente tab FEED / MOTION dal 25/10, come la home).
   Al posto dello showreel, come sfondo temporaneo, c'è il montaggio sfocato
   dei lavori (media/wip-reel.webp).
   Niente cookie, nessun servizio esterno: tutti i file arrivano dal nostro
@@ -144,7 +145,7 @@
 
     /* Feed in lavorazione: montaggio sfocato visto attraverso la griglia 3×2
        (stessi spazi del feed vero: 20px, 6px da telefono) */
-    .wip { position: relative; margin-top: 40px; overflow: hidden; background: #0a0a0a; }
+    .wip { position: relative; overflow: hidden; background: #0a0a0a; }
     .wip-reel, .wip-reel img {
         position: absolute; inset: 0; width: 100%; height: 100%;
         object-fit: cover; display: block;
@@ -248,11 +249,6 @@
 
     <div class="panel">
         <main class="wrap">
-            <nav class="tabs" aria-label="Sections (coming soon)">
-                <span class="tab active">Feed</span>
-                <span class="tab">Motion</span>
-            </nav>
-
             <section class="wip" aria-labelledby="wip-title">
                 <picture class="wip-reel" aria-hidden="true">
                     <source media="(prefers-reduced-motion: reduce)" srcset="/media/wip-reel-poster.jpg">
@@ -264,7 +260,7 @@
                 </div>
                 <div class="wip-label">
                     <div class="kicker mono uline"><i class="live-dot"></i>New site loading</div>
-                    <h2 id="wip-title">Feed<br><span class="soft">Work in progress</span></h2>
+                    <h2 id="wip-title">Work in progress</h2>
                     <p class="mono uline">Back soon · <a class="ig-link" href="https://www.instagram.com/andrea__onori" rel="noopener">Meanwhile on Instagram ↗</a></p>
                 </div>
             </section>
