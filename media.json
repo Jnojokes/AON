@@ -801,7 +801,9 @@
       "disciplines": "",
       "siteLabel": "",
       "siteUrl": "",
-      "ctaPrimary": "LET'S FILM",
+      "ctaPrimary": "CONTACT ME",
+      "ctaIdle": "STAND BY",
+      "ctaHover": "REC",
       "ctaEmail": "video@andreaonori.com",
       "ctaSubject": "Production enquiry",
       "ctaSecondary": ""

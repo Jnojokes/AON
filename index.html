@@ -832,7 +832,15 @@
             text-shadow: 0 1px 6px rgba(0,0,0,0.6);
             pointer-events: none;
         }
-        @media (max-width: 768px) { .feed-reel { margin-bottom: 6px; } }
+        /* Showreel in cima alla home, sopra il nome: 21:9 da computer, 16:9
+           da telefono, tagliato al centro. main.has-reel accorcia lo spazio
+           sotto la barra in alto (senza showreel la pagina parte dal nome). */
+        main.has-reel { padding-top: 8px; }
+        .feed-reel { aspect-ratio: 21 / 9; margin-bottom: 44px; }
+        @media (max-width: 767px) {
+            main.has-reel { padding-top: 4px; }
+            .feed-reel { aspect-ratio: 16 / 9; margin-bottom: 28px; }
+        }
 
         /* Reveal on scroll */
         .reveal-on-scroll {
@@ -912,6 +920,60 @@
         @media (max-width: 767px) {
             .profile-main { grid-template-columns: minmax(0, 1fr); }
             .profile-ctas { grid-column: 1; grid-row: 3; justify-self: start; margin-top: 20px; }
+        }
+        /* Con le storie, da computer il bottone di contatto sta sulla riga dei
+           cerchi (.cta-wide) e l'intestazione e' una colonna sola. Da telefono
+           resta sotto la scritta (.cta-narrow): la riga delle storie scorre di
+           lato e lo coprirebbe. display:none toglie anche la copia nascosta
+           dall'albero di accessibilita'. */
+        @media (min-width: 768px) {
+            .profile-main.with-stories { grid-template-columns: minmax(0, 1fr); }
+            .cta-narrow { display: none !important; }
+        }
+        @media (max-width: 767px) { .cta-wide { display: none !important; } }
+        .series-row { display: flex; align-items: flex-start; gap: 32px; }
+        .series-strip { flex: 1; min-width: 0; }
+        /* alta come i cerchi (88px): il bottone e' centrato su di loro, non
+           sulle etichette sotto */
+        .series-cta { flex-shrink: 0; height: 88px; display: flex; align-items: center; }
+
+        /* Bottone di contatto a due piani (CONTACT ME / STAND BY → REC). */
+        .cbtn {
+            height: 84px; min-width: 168px; padding: 0 28px;
+            display: inline-flex; flex-direction: column; align-items: stretch;
+            border: 0; border-radius: 0; cursor: pointer;
+            font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+            letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
+            background: linear-gradient(to bottom, #fff 0 50%, rgba(255,255,255,.12) 50% 100%);
+            transition: background .35s var(--ease-out);
+        }
+        .cbtn-top, .cbtn-bot { height: 50%; display: flex; align-items: center; justify-content: center; }
+        .cbtn-top { color: #161616; }
+        .cbtn-top > span { display: inline-block; transition: transform .35s var(--ease-out); }
+        .cbtn-bot { gap: 9px; color: rgba(244,242,238,.55); transition: color .35s var(--ease-out); }
+        .cbtn-dot { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; transition: background .25s; }
+        .cbtn-hover { display: none; }
+        .cbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+        /* Stato "REC": col mouse (solo dove il mouse c'e', cosi' da touch resta
+           STAND BY anche dopo il tocco) e col focus da tastiera. */
+        @media (hover: hover) {
+            .cbtn:hover { background: linear-gradient(to bottom, #fff 0 50%, rgba(255,255,255,.22) 50% 100%); }
+            .cbtn:hover .cbtn-bot { color: rgba(244,242,238,.9); }
+            .cbtn:hover .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
+            .cbtn:hover .cbtn-idle { display: none; }
+            .cbtn:hover .cbtn-hover { display: inline; }
+            .cbtn:hover .cbtn-top > span { transform: scale(1.08); }
+        }
+        .cbtn:focus-visible { background: linear-gradient(to bottom, #fff 0 50%, rgba(255,255,255,.22) 50% 100%); }
+        .cbtn:focus-visible .cbtn-bot { color: rgba(244,242,238,.9); }
+        .cbtn:focus-visible .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
+        .cbtn:focus-visible .cbtn-idle { display: none; }
+        .cbtn:focus-visible .cbtn-hover { display: inline; }
+        .cbtn:focus-visible .cbtn-top > span { transform: scale(1.08); }
+        @keyframes recblink { 0%, 55% { opacity: 1; } 70%, 100% { opacity: .2; } }
+        @media (prefers-reduced-motion: reduce) {
+            .cbtn-top > span { transition: none; }
+            .cbtn .cbtn-dot { animation: none !important; }
         }
 
         /* Tabs */
@@ -1284,7 +1346,7 @@
             border-top: 1px solid var(--line);
         }
     </style>
-    <link rel="stylesheet" href="/assets/tailwind.css?v=4aa88911">
+    <link rel="stylesheet" href="/assets/tailwind.css?v=9caa149c">
 </head>
 <body>
     <!-- Il contenuto statico qui sotto è generato da scripts/prerender.mjs a ogni
@@ -1505,7 +1567,7 @@
 
     <!-- Il sorgente di questo bundle e' src/app.jsx. Non modificare
          assets/app.js a mano: si rigenera con `npm run build`. -->
-    <script src="/assets/app.js?v=814d5532" defer></script>
+    <script src="/assets/app.js?v=f9dc3b9d" defer></script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
          BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:

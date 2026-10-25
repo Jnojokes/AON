@@ -54,7 +54,10 @@ import * as ReactDOM from 'react-dom/client';
                 disciplines: 'EDITORIAL · PORTRAIT · PERSONAL WORK.',
                 siteLabel: '↗ ANDREAONORI.COM',
                 siteUrl: 'https://www.andreaonori.com/',
-                ctaPrimary: 'GET IN TOUCH',
+                ctaPrimary: 'CONTACT ME',
+                // Riga sotto del bottone di contatto: a riposo e col mouse sopra.
+                ctaIdle: 'STAND BY',
+                ctaHover: 'REC',
                 ctaEmail: 'video@andreaonori.com',
                 ctaSubject: 'Commission enquiry',
                 ctaSecondary: 'AVAILABLE FOR WORK',
@@ -99,9 +102,8 @@ import * as ReactDOM from 'react-dom/client';
                 frame: 'FRAME',
                 autoplay: 'AUTOPLAY',
             },
-            // Video in loop in testa al Feed. Da non confondere con "showreel"
-            // qui sopra, che è la presentazione di foto della foto profilo.
-            // Senza video il blocco non compare.
+            // Video in loop in cima alla home, sopra il nome. Senza video il
+            // blocco non compare.
             feedReel: {
                 video: '',
                 poster: '',
@@ -705,18 +707,41 @@ import * as ReactDOM from 'react-dom/client';
             );
         };
 
-        const ProfileHeader = () => {
+        // Bottone di contatto "a due piani": sopra CONTACT ME (ctaPrimary),
+        // sotto un pallino verde e STAND BY (ctaIdle); col mouse sopra il
+        // pallino diventa rosso e lampeggia e la scritta diventa REC
+        // (ctaHover), come una camera che registra. Apre il modulo di
+        // contatto. Stile in .cbtn (index.html).
+        const ContactButton = ({ onOpen }) => {
             const p = S().profile;
-            const [formAperto, setFormAperto] = useState(false);
+            if (!(p.ctaPrimary && p.ctaEmail)) return null;
+            return (
+                <button type="button" className="cbtn" aria-label={p.ctaPrimary} onClick={onOpen}>
+                    <span className="cbtn-top"><span>{p.ctaPrimary}</span></span>
+                    <span className="cbtn-bot" aria-hidden="true">
+                        <i className="cbtn-dot"></i>
+                        <span className="cbtn-idle">{p.ctaIdle}</span>
+                        <span className="cbtn-hover">{p.ctaHover || p.ctaIdle}</span>
+                    </span>
+                </button>
+            );
+        };
+        const hasSeries = () => Boolean(M().series && M().series.length);
+
+        // onContact: apre il modulo di contatto, il cui stato sta in App (uno
+        // solo per il bottone dell'intestazione e per quello delle storie).
+        const ProfileHeader = ({ onContact }) => {
+            const p = S().profile;
             const conCta = (p.ctaPrimary && p.ctaEmail) || p.ctaSecondary;
             return (
             <div>
                 <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-start mb-14 md:mb-10">
-                    {/* Intestazione H4: niente foto profilo, il nome riempie la
-                        riga; sotto, una riga sola con la scritta a sinistra e il
-                        bottone a destra (vedi .profile-main in index.html). Le
+                    {/* Intestazione: niente foto profilo, il nome riempie la
+                        riga; sotto, la scritta. Il bottone di contatto sta qui
+                        da telefono; da computer sta sulla riga delle storie
+                        (.cta-narrow), o qui a destra se non ci sono storie. Le
                         righe handle e disciplines si vedono solo se piene. */}
-                    <div className="profile-main flex-1 w-full">
+                    <div className={'profile-main flex-1 w-full' + (hasSeries() ? ' with-stories' : '')}>
                         <h1 className="display profile-name">
                             <span className="reveal-line d1"><span>{p.nameFirst}</span></span>{' '}
                             <span className="reveal-line d2"><span>{p.nameLast}</span></span>
@@ -746,14 +771,10 @@ import * as ReactDOM from 'react-dom/client';
                                 : <span className="mono uline inline-block" style={{ fontSize: '11px' }}>{p.siteLabel}</span>)}
                         </div>
 
-                        {conCta && <div className="profile-ctas flex gap-3 md:gap-2 flex-wrap">
+                        {conCta && <div className={'profile-ctas flex gap-3 md:gap-2 flex-wrap' + (hasSeries() ? ' cta-narrow' : ' cta-solo')}>
                             {/* Apre il modulo, non un link mailto: — vedi il
                                 commento su ContactModal. */}
-                            {p.ctaPrimary && p.ctaEmail && <button type="button"
-                               onClick={() => { track('contact_click', { method: 'form', location: 'header' }); setFormAperto(true); }}
-                               className="btn-primary" style={{ display: 'inline-flex', cursor: 'pointer' }}>
-                                <span>{p.ctaPrimary}</span> <span className="arrow">→</span>
-                            </button>}
+                            <ContactButton onOpen={onContact} />
                             {p.ctaSecondary && <button className="btn-secondary">
                                 <span className="pulse-dot"></span>
                                 {p.ctaSecondary}
@@ -761,9 +782,6 @@ import * as ReactDOM from 'react-dom/client';
                         </div>}
                     </div>
                 </div>
-                {formAperto && <ContactModal
-                    email={p.ctaEmail} oggetto={p.ctaSubject} origine="header"
-                    onClose={() => setFormAperto(false)} />}
             </div>
             );
         };
@@ -786,7 +804,7 @@ import * as ReactDOM from 'react-dom/client';
         );
 
         // Series
-        const Series = ({ onClick }) => {
+        const Series = ({ onClick, onContact }) => {
             const series = (M().series && M().series.length) ? M().series : [];
             if (!series.length) return null;
             const { seriesTitle, seriesUnit } = S().sections;
@@ -800,7 +818,11 @@ import * as ReactDOM from 'react-dom/client';
                             <div className="mono uline" style={{ color: 'var(--mute)', fontSize: '9px' }}>{String(series.length).padStart(2,'0')} {seriesUnit}</div>
                         </div>
                     )}
-                    <div className="flex gap-7 overflow-x-auto pb-2">
+                    {/* Da computer il bottone di contatto sta a destra dei
+                        cerchi, centrato su di loro; da telefono e' sotto la
+                        scritta dell'intestazione (.cta-wide / .cta-narrow). */}
+                    <div className="series-row">
+                    <div className="series-strip flex gap-7 overflow-x-auto pb-2">
                         {series.map((s, i) => (
                             <div key={s.id} className="flex flex-col items-center gap-3 flex-shrink-0 cursor-pointer" role="button" tabIndex={0} aria-label={s.label} onClick={() => onClick(s)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(s); } }}>
                                 <div className="series-circle">
@@ -811,6 +833,8 @@ import * as ReactDOM from 'react-dom/client';
                                 </div>
                             </div>
                         ))}
+                    </div>
+                    {onContact && <div className="series-cta cta-wide"><ContactButton onOpen={onContact} /></div>}
                     </div>
                 </div>
             );
@@ -944,11 +968,16 @@ import * as ReactDOM from 'react-dom/client';
             );
         };
 
-        // Showreel in testa al Feed: video a tutta larghezza, muto, in loop
+        // Showreel in cima alla home (sopra il nome, in tutte le tab): video a
+        // tutta larghezza, 21:9 da computer e 16:9 da telefono, muto, in loop
         // (settings.feedReel, dal pannello). Serve un file video diretto, del
         // sito o di Bunny (…b-cdn.net/<id>/play_1080p.mp4): il link Embed di
         // Bunny e' una pagina da incorporare e un <video> non sa riprodurla,
         // quindi in quel caso il blocco non compare, come senza video.
+        const hasFeedReel = () => {
+            const video = String((S().feedReel || {}).video || '').trim();
+            return Boolean(video) && !isEmbedUrl(video);
+        };
         const FeedReel = () => {
             const r = S().feedReel || {};
             const video = String(r.video || '').trim();
@@ -968,7 +997,7 @@ import * as ReactDOM from 'react-dom/client';
                 const p = v.play();
                 if (p && typeof p.catch === 'function') p.catch(() => {});
             }, [video]);
-            if (!video || isEmbedUrl(video)) return null;
+            if (!hasFeedReel()) return null;
             return (
                 <div className="feed-reel">
                     <video ref={ref} src={video} poster={r.poster || undefined}
@@ -987,7 +1016,6 @@ import * as ReactDOM from 'react-dom/client';
 
             return (
                 <>
-                <FeedReel />
                 <div className="grid grid-cols-3 feed-grid">
                     {images.map((img, i) => {
                         const slides = slidesOf(img);
@@ -1587,6 +1615,11 @@ import * as ReactDOM from 'react-dom/client';
             const [imgs, setImgs] = useState([]);
             const [selectedSeries, setSelectedSeries] = useState(null);
             const [selectedMotion, setSelectedMotion] = useState(null);
+            // Modulo di contatto dell'intestazione: '' = chiuso, altrimenti da
+            // dove e' stato aperto ('header' da telefono, 'stories' da computer).
+            const [contactOpen, setContactOpen] = useState('');
+            const apriContatto = (dove) => { track('contact_click', { method: 'form', location: dove }); setContactOpen(dove); };
+            const conContatto = Boolean(S().profile.ctaPrimary && S().profile.ctaEmail);
             // La pagina About vive sull'hash #about: si apre anche da un link
             // diretto (/versione1#about) e il tasto indietro la chiude.
             const isAboutHash = () => window.location.hash === '#about' && !!aboutData();
@@ -1713,9 +1746,10 @@ import * as ReactDOM from 'react-dom/client';
                         </div>
                     </div>
 
-                    <main className="max-w-[1100px] mx-auto px-6 py-16">
-                        <ProfileHeader />
-                        <Series onClick={onSeries} />
+                    <main className={'max-w-[1100px] mx-auto px-6 py-16' + (hasFeedReel() ? ' has-reel' : '')}>
+                        <FeedReel />
+                        <ProfileHeader onContact={() => apriContatto('header')} />
+                        <Series onClick={onSeries} onContact={conContatto ? () => apriContatto('stories') : null} />
                         <Tabs active={active} setActive={setActive} />
                         <div key={active} className="tab-panel">
                             {active === 'FEED' && <FeedGrid onClick={open} />}
@@ -1736,6 +1770,9 @@ import * as ReactDOM from 'react-dom/client';
                     )}
                     {selectedSeries && <StoryViewer series={selectedSeries} onClose={() => setSelectedSeries(null)} />}
                     {selectedMotion && <MotionViewer item={selectedMotion} onClose={() => setSelectedMotion(null)} />}
+                    {contactOpen && <ContactModal
+                        email={S().profile.ctaEmail} oggetto={S().profile.ctaSubject} origine={contactOpen}
+                        onClose={() => setContactOpen('')} />}
                     {aboutOpen && <AboutView onClose={closeAbout} />}
                 </div>
             );

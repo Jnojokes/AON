@@ -423,7 +423,7 @@ const SECTIONS = [
   { key:"series", label:"SERIES", help:"Storie in evidenza (cerchi). Ogni serie è una cartella: copertina + slide che si sfogliano. Le slide possono essere foto o video." },
   { key:"index",  label:"INDEX",  help:"Indice tabellare numerato dei lavori." },
   { key:"about", label:"ABOUT", single:true, help:"Si apre cliccando la storia ABOUT ME: una pagina a tutto schermo con il video verticale a sinistra e, a destra, titolo, testi, i bottoni LET'S FILM e INSTAGRAM e due foto. La copertina rotonda della storia si cambia nella sezione SERIES." },
-  { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel sopra il Feed e la descrizione per Google e i motori AI." },
+  { key:"settings", label:"IMPOSTAZIONI", single:true, help:"Tutti i testi del sito, la barra scorrevole in cima, lo showreel in cima alla home e la descrizione per Google e i motori AI." },
 ];
 
 // ── Schema dei testi del sito ───────────────────────────────────────────────
@@ -445,7 +445,9 @@ const SETTINGS_SCHEMA = [
       ["badge",       "Etichetta sulla foto profilo"],
       ["siteLabel",   "Testo del link al sito"],
       ["siteUrl",     "Indirizzo del link al sito"],
-      ["ctaPrimary",  "Pulsante principale"],
+      ["ctaPrimary",  "Pulsante principale (riga in alto, es. CONTACT ME)"],
+      ["ctaIdle",     "Pulsante · riga sotto, a riposo (es. STAND BY)"],
+      ["ctaHover",    "Pulsante · riga sotto, col mouse sopra (es. REC)"],
       ["ctaEmail",    "Email di contatto"],
       ["ctaSubject",  "Oggetto dell'email"],
       ["ctaSecondary","Pulsante secondario"],
@@ -1205,10 +1207,8 @@ function TextGroup({ group, values, onChange }){
   );
 }
 
-// ── Showreel nel feed ───────────────────────────────────────────────────────
-// Il video in loop sopra la griglia del Feed (settings.feedReel). Da non
-// confondere con lo "Showreel della foto profilo", che è una presentazione di
-// foto. Qui serve un file video diretto: un <video> in loop non sa riprodurre
+// ── Showreel in cima alla home ──────────────────────────────────────────────
+// Il video in loop in cima alla home, sopra il nome (settings.feedReel). Serve un file video diretto: un <video> in loop non sa riprodurre
 // il player di Bunny, che funziona solo dentro un iframe. Se si incolla il
 // link Embed di Bunny, il pannello lo converte nell'MP4 diretto dello stesso
 // video (1080p) e, se manca, mette la miniatura come copertina.
@@ -1237,9 +1237,10 @@ function FeedReelEditor({ value, password, onChange, onStatus }){
 
   return (
     <div className="set-group">
-      <h3>Showreel nel feed (video in loop)</h3>
+      <h3>Showreel in cima alla home (video in loop)</h3>
       <p className="hint">
-        Il video a tutta larghezza sopra la griglia del Feed: parte da solo, muto, e gira in loop.
+        Il video a tutta larghezza in cima alla home, sopra il nome (21:9 da computer, 16:9 da telefono,
+        tagliato al centro): si vede sia nel Feed sia nei Motion, parte da solo, muto, e gira in loop.
         Serve l'indirizzo di un file video diretto (.mp4): un file del sito come
         media/showreel.mp4, oppure l'MP4 di un video su Bunny Stream. Puoi incollare
         anche il link Embed di Bunny: il pannello lo converte da solo nell'MP4 a 1080p
