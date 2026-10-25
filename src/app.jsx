@@ -1523,6 +1523,25 @@ import * as ReactDOM from 'react-dom/client';
         // about.video (verticale); se ce n'e' uno solo, quello, tagliato al
         // centro. La vista scorre dentro .about-view: il listener sta li'.
         const isWideScreen = () => window.innerWidth >= 768 && window.innerWidth > window.innerHeight;
+        // Formattazione della bio (editor del pannello): **grassetto**,
+        // *corsivo*, [testo](https://…). Diventa React, mai HTML: niente
+        // rischio di codice infilato nel testo. I link escono dal sito.
+        const MD_RE = /\*\*(.+?)\*\*|\*(.+?)\*|\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^\s)]+)\)/g;
+        const inlineMd = (t) => {
+            const s = String(t || ''), out = [];
+            let last = 0, m, k = 0;
+            MD_RE.lastIndex = 0;
+            while ((m = MD_RE.exec(s))) {
+                if (m.index > last) out.push(s.slice(last, m.index));
+                if (m[1] != null) out.push(<strong key={k++}>{m[1]}</strong>);
+                else if (m[2] != null) out.push(<em key={k++}>{m[2]}</em>);
+                else out.push(<a key={k++} href={m[4]} target={/^mailto:/.test(m[4]) ? undefined : '_blank'} rel="noopener">{m[3]}</a>);
+                last = MD_RE.lastIndex;
+            }
+            if (last < s.length) out.push(s.slice(last));
+            return out;
+        };
+
         const AboutView = ({ onClose }) => {
             const a = aboutData() || {};
             const [wide, setWide] = useState(isWideScreen);
@@ -1637,7 +1656,7 @@ import * as ReactDOM from 'react-dom/client';
                             {paras(a.lead).map((t, i) => <p key={'l' + i} className="about-lead">{t}</p>)}
                             {paras(a.body).length > 0 && (
                                 <div className="about-intro">
-                                    {paras(a.body).map((t, i) => <p key={'b' + i}>{t}</p>)}
+                                    {paras(a.body).map((t, i) => <p key={'b' + i}>{inlineMd(t)}</p>)}
                                 </div>
                             )}
                             {(p.ctaEmail || social) && (

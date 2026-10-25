@@ -232,13 +232,18 @@ const yearRange = years.length
     : `${years[0]}–${years[years.length - 1]}`
   : '';
 
-// "Descrizione per SEO & Motori AI" dal pannello: ogni riga non vuota diventa
-// un paragrafo. Se il campo è vuoto si torna al testo generato dai progetti,
-// che resta un default sensato ma non dice nulla che i dati non dicano già.
-const customBio = String(((settings.seo || {}).bio) || '')
-  .split(/\r?\n/)
-  .map((l) => l.trim())
-  .filter(Boolean);
+// La descrizione per Google e gli assistenti AI e' la bio della pagina About
+// (about.body), senza i segni di formattazione dell'editor (**grassetto**,
+// *corsivo*, [link](url)). Se la bio e' vuota si usa il vecchio campo
+// settings.seo.bio e, in mancanza anche di quello, il testo generato dai
+// progetti. Ogni riga non vuota diventa un paragrafo.
+const stripMd = (t) => String(t || '')
+  .replace(/\[([^\]]+)\]\((?:https?:\/\/|mailto:)[^\s)]+\)/g, '$1')
+  .replace(/\*\*(.+?)\*\*/g, '$1')
+  .replace(/\*(.+?)\*/g, '$1');
+const righe = (t) => String(t || '').split(/\r?\n/).map((l) => stripMd(l).trim()).filter(Boolean);
+const aboutBody = righe((media.about || {}).body);
+const customBio = aboutBody.length ? aboutBody : righe((settings.seo || {}).bio);
 
 const autoSentences = [
   `${SITE.name} is an independent filmmaker based in ${SITE.city}, Italy.`,
