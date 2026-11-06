@@ -27,7 +27,7 @@
 -->
 <style>
     :root {
-        --bg: #161616; --fg: #fff; --mute: #707070;
+        --bg: #161616; --fg: #fff; --mute: #9a9a9a;
         --cell: #1E1E1E;
         --line: rgba(255,255,255,0.12);
         --accent: #FF3D00;
@@ -42,6 +42,7 @@
         overflow-x: hidden;
     }
     a { color: inherit; text-decoration: none; }
+    a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
     ::selection { background: var(--fg); color: var(--bg); }
     .mono { font-family: 'JetBrains Mono', monospace; }
     .uline { letter-spacing: 0.18em; text-transform: uppercase; }
@@ -51,15 +52,37 @@
     .bg { position: fixed; inset: 0; height: 100vh; height: 100lvh; z-index: 0; overflow: hidden; background: #0a0a0a; }
     .bg img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.04); }
     .bg::after { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: .5; }
+    /* Pausa dello sfondo animato senza JavaScript (WCAG 2.2.2): checkbox
+       nascosto ma raggiungibile da tastiera + etichetta nella barra in alto.
+       Spuntato: al posto del montaggio animato si vede la copertina ferma. */
+    .pause-cb { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .bg .still { display: none; }
+    body:has(#pause:checked) .bg .anim { display: none; }
+    body:has(#pause:checked) .bg .still { display: block; }
+    .pause-lbl {
+        display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 30px; padding: 0 12px;
+        border: 1px solid rgba(255,255,255,.35); color: #fff; cursor: pointer; font-size: 11px; letter-spacing: .1em;
+        transition: color .25s, border-color .25s;
+    }
+    .pause-lbl:hover { color: rgba(255,255,255,.7); border-color: rgba(255,255,255,.6); }
+    .pause-lbl .play { display: none; }
+    .pause-cb:checked + .pause-lbl .stop { display: none; }
+    .pause-cb:checked + .pause-lbl .play { display: inline; }
+    .pause-cb:focus-visible + .pause-lbl { outline: 2px solid #fff; outline-offset: 4px; }
+    /* Scrim: dietro al blocco centrale il velo arriva a circa il 70% */
+    .hero::before {
+        content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+        background: radial-gradient(ellipse 48% 42% at 50% 52%, rgba(22,22,22,.4) 0%, rgba(22,22,22,.4) 55%, rgba(22,22,22,0) 100%);
+    }
     /* ── Prima schermata: barra in alto, intestazione al centro ── */
     .hero {
         position: relative; z-index: 1;
         min-height: 100vh; min-height: 100svh;
         display: flex; flex-direction: column;
     }
-    .topbar { border-bottom: 1px solid var(--line); }
-    .topbar .wrap { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; padding-bottom: 12px; }
-    .topbar .right { font-size: 9px; color: rgba(255,255,255,.78); }
+    .topbar { border-bottom: 1px solid rgba(255,255,255,.14); background: #161616; }
+    .topbar .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 44px; font-size: 11px; color: #fff; }
+    .topbar .right { display: flex; align-items: center; gap: 20px; color: #fff; }
     /* al centro dello schermo */
     .profile {
         margin: auto 0; padding-top: 32px; padding-bottom: 32px;
@@ -67,8 +90,8 @@
     }
     /* sopra il nome: pallino arancio che lampeggia + WORK IN PROGRESS */
     /* un po' piu' grande della v6 (richiesta di Andrea, 25/10) */
-    .kicker { display: inline-flex; align-items: center; gap: 12px; font-size: 13px; color: rgba(255,255,255,.78); margin-bottom: 24px; }
-    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: blink 1.4s ease-in-out infinite; }
+    .kicker { display: inline-flex; align-items: center; gap: 12px; font-size: 13px; color: rgba(255,255,255,.88); margin-bottom: 24px; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: blink 1.4s ease-in-out 3; }
     @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
     h1 {
         font-family: 'Roboto', sans-serif; font-weight: 500;
@@ -76,11 +99,11 @@
         font-size: clamp(40px, 6.5vw, 112px); line-height: .95; letter-spacing: -.03em;
         margin-bottom: 10px;
     }
-    /* scritta sotto il nome: Roboto, senza pallino, bianca al 78% */
+    /* scritta sotto il nome: Roboto, senza pallino, bianca all'88% */
     .eyebrow {
         font-family: 'Roboto', sans-serif; font-weight: 400;
         font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
-        color: rgba(255,255,255,.78);
+        color: rgba(255,255,255,.88);
     }
 
     /* ── Due rettangoli a due piani, centrati ── */
@@ -90,27 +113,27 @@
         display: inline-flex; flex-direction: column; align-items: stretch;
         font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
         letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
-        background: linear-gradient(to bottom, #fff 0 50%, rgba(255,255,255,.12) 50% 100%);
+        background: linear-gradient(to bottom, #fff 0 50%, #2a2a2a 50% 100%);
         transition: background .35s var(--ease-out);
     }
     .cbtn-top, .cbtn-bot { height: 50%; display: flex; align-items: center; justify-content: center; }
     .cbtn-top { color: #161616; }
     .cbtn-top > span { display: inline-block; transition: transform .35s var(--ease-out); }
-    .cbtn-bot { gap: 9px; color: rgba(244,242,238,.55); transition: color .35s var(--ease-out); }
+    .cbtn-bot { gap: 9px; color: rgba(255,255,255,.85); transition: color .35s var(--ease-out); }
     .cbtn-dot { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; transition: background .25s; }
     .cbtn-hover { display: none; }
     .cbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
     /* stati col mouse (solo dove il mouse c'è) e col focus da tastiera */
     @media (hover: hover) {
-        .cbtn:hover { background: linear-gradient(to bottom, #fff 0 50%, rgba(255,255,255,.22) 50% 100%); }
-        .cbtn:hover .cbtn-bot { color: rgba(244,242,238,.9); }
+        .cbtn:hover { background: linear-gradient(to bottom, #fff 0 50%, #3a3a3a 50% 100%); }
+        .cbtn:hover .cbtn-bot { color: #fff; }
         .cbtn:hover .cbtn-top > span { transform: scale(1.08); }
         .cbtn.contact:hover .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
         .cbtn.contact:hover .cbtn-idle { display: none; }
         .cbtn.contact:hover .cbtn-hover { display: inline; }
     }
-    .cbtn:focus-visible { background: linear-gradient(to bottom, #fff 0 50%, rgba(255,255,255,.22) 50% 100%); }
-    .cbtn:focus-visible .cbtn-bot { color: rgba(244,242,238,.9); }
+    .cbtn:focus-visible { background: linear-gradient(to bottom, #fff 0 50%, #3a3a3a 50% 100%); }
+    .cbtn:focus-visible .cbtn-bot { color: #fff; }
     .cbtn:focus-visible .cbtn-top > span { transform: scale(1.08); }
     .cbtn.contact:focus-visible .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
     .cbtn.contact:focus-visible .cbtn-idle { display: none; }
@@ -119,8 +142,8 @@
 
     /* ── Footer ── */
     /* footer in fondo alla stessa schermata */
-    footer { border-top: 1px solid var(--line); padding: 18px 0 20px; }
-    footer .wrap { display: flex; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; font-size: 9px; color: rgba(255,255,255,.6); }
+    footer { border-top: 1px solid rgba(255,255,255,.14); padding: 18px 0 20px; background: #161616; }
+    footer .wrap { display: flex; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; font-size: 11px; color: rgba(255,255,255,.85); }
     footer a { border-bottom: 1px solid transparent; transition: border-color .3s; }
     footer a:hover { color: var(--fg); border-color: var(--fg); }
     footer .links { display: flex; gap: 18px; flex-wrap: wrap; }
@@ -131,8 +154,10 @@
         .btn-row { width: 100%; gap: 8px; }
         .btn-row .cbtn { flex: 1 1 0; min-width: 0; padding: 0 12px; }
         .kicker { font-size: 11px; gap: 10px; }
+        .hero::before { background: radial-gradient(ellipse 90% 36% at 50% 50%, rgba(22,22,22,.4) 0%, rgba(22,22,22,.4) 55%, rgba(22,22,22,0) 100%); }
+        .topbar .right .vol { display: none; }
         /* footer da telefono: tre righe ordinate */
-        footer .wrap { font-size: 8px; flex-direction: column; gap: 10px; }
+        footer .wrap { font-size: 11px; flex-direction: column; gap: 8px; }
         footer .sep { display: none; }
         footer .piva { display: block; margin-top: 4px; }
         footer .links { gap: 8px 16px; }
@@ -147,21 +172,26 @@
 <body>
 
     <div class="bg" aria-hidden="true">
-        <picture>
+        <picture class="anim">
             <source media="(prefers-reduced-motion: reduce)" srcset="/media/wip-reel-poster.jpg">
             <img src="/media/wip-reel.webp" alt="" decoding="async">
         </picture>
+        <img class="still" src="/media/wip-reel-poster.jpg" alt="" loading="lazy" decoding="async">
     </div>
 
     <div class="hero" id="hero">
-        <div class="topbar">
+        <header class="topbar">
             <div class="wrap">
-                <div class="mono uline" style="font-size:10px">andrea__onori</div>
-                <div class="mono uline right">ARCHIVE / 26 · VOLUME 01</div>
+                <div class="mono uline">andrea__onori</div>
+                <div class="mono uline right">
+                    <span class="vol">ARCHIVE / 26 · VOLUME 01</span>
+                    <input type="checkbox" id="pause" class="pause-cb" aria-label="Pause the background">
+                    <label for="pause" class="pause-lbl" aria-hidden="true"><span class="stop">❚❚</span><span class="play">▶</span></label>
+                </div>
             </div>
-        </div>
+        </header>
 
-        <header class="profile wrap">
+        <main class="profile wrap">
             <div class="kicker mono uline"><i class="live-dot" aria-hidden="true"></i>Work in progress</div>
             <h1>Andrea Onori</h1>
             <div class="eyebrow">Film-maker · Based in Milan</div>
@@ -175,7 +205,7 @@
                     <span class="cbtn-bot" aria-hidden="true"><i class="cbtn-dot"></i><span class="cbtn-idle">Stand by</span><span class="cbtn-hover">Rec</span></span>
                 </a>
             </div>
-        </header>
+        </main>
 
         <footer>
             <div class="wrap mono uline">

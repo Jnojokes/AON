@@ -520,7 +520,7 @@ import * as ReactDOM from 'react-dom/client';
                         <p style={{ fontSize: '13px', marginBottom: '10px' }}>
                             Il modulo non si è caricato.
                         </p>
-                        <p className="mono uline" style={{ fontSize: '10px', color: 'var(--mute)', lineHeight: 1.7 }}>
+                        <p className="mono uline" style={{ fontSize: '11px', color: 'var(--mute)', lineHeight: 1.7 }}>
                             Scrivi direttamente a <a href={'mailto:' + email} style={{ color: 'var(--fg)' }}>{email}</a>:
                             la tua richiesta arriva comunque.
                         </p>
@@ -532,7 +532,7 @@ import * as ReactDOM from 'react-dom/client';
                 <div style={{ position: 'relative', minHeight: '200px' }}>
                     {!caricato && <div className="mono uline" style={{
                         position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-                        justifyContent: 'center', fontSize: '10px', color: 'var(--mute)' }}>
+                        justifyContent: 'center', fontSize: '11px', color: 'var(--mute)' }}>
                         Carico il modulo…
                     </div>}
                     <iframe
@@ -631,7 +631,7 @@ import * as ReactDOM from 'react-dom/client';
             const campo = { width: '100%', background: '#0d0d0d', border: '1px solid var(--line)',
                             color: 'var(--fg)', padding: '11px 12px', fontSize: '13px',
                             fontFamily: 'inherit', outline: 'none' };
-            const etichetta = { fontSize: '9px', letterSpacing: '0.18em', textTransform: 'uppercase',
+            const etichetta = { fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase',
                                 color: 'var(--mute)', display: 'block', marginBottom: '5px' };
 
             return (
@@ -644,7 +644,7 @@ import * as ReactDOM from 'react-dom/client';
                                   width: '100%', maxWidth: '480px', marginTop: '4vh', marginBottom: '4vh' }}>
                         <div className="flex justify-between items-start" style={{ marginBottom: '18px' }}>
                             <div>
-                                <div className="mono uline" style={{ fontSize: '9px', color: 'var(--accent)', marginBottom: '6px' }}>Contatto</div>
+                                <div className="mono uline" style={{ fontSize: '11px', color: 'var(--accent)', marginBottom: '6px' }}>Contatto</div>
                                 <div className="display" style={{ fontSize: '22px', lineHeight: 1.1, textTransform: 'uppercase' }}>
                                     {progetto || 'Scrivimi'}
                                 </div>
@@ -659,7 +659,7 @@ import * as ReactDOM from 'react-dom/client';
                         ) : stato === 'inviato' ? (
                             <div>
                                 <p style={{ fontSize: '14px', marginBottom: '10px' }}>Messaggio inviato.</p>
-                                <p className="mono uline" style={{ fontSize: '10px', color: 'var(--mute)', lineHeight: 1.7 }}>
+                                <p className="mono uline" style={{ fontSize: '11px', color: 'var(--mute)', lineHeight: 1.7 }}>
                                     Ti risponderò appena possibile, all&rsquo;indirizzo che hai indicato.
                                 </p>
                                 <button onClick={onClose} className="btn-secondary" style={{ marginTop: '20px', cursor: 'pointer' }}>Chiudi</button>
@@ -701,7 +701,7 @@ import * as ReactDOM from 'react-dom/client';
                                           trattamento dei miei dati per ricevere una risposta.</span>
                                 </label>
 
-                                {errore && <p className="mono" role="alert" style={{ fontSize: '10px', color: 'var(--accent)',
+                                {errore && <p className="mono" role="alert" style={{ fontSize: '11px', color: 'var(--accent)',
                                               marginBottom: '12px', lineHeight: 1.6 }}>{errore}</p>}
 
                                 <button type="submit" disabled={stato === 'invio'} className="btn-primary"
@@ -716,14 +716,14 @@ import * as ReactDOM from 'react-dom/client';
                         {/* L'indirizzo resta comunque disponibile: chi preferisce il
                             proprio programma di posta non deve passare dal modulo. */}
                         <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--line)' }}>
-                            <div className="mono uline" style={{ fontSize: '9px', color: 'var(--mute)', marginBottom: '6px' }}>Oppure scrivi a</div>
+                            <div className="mono uline" style={{ fontSize: '11px', color: 'var(--mute)', marginBottom: '6px' }}>Oppure scrivi a</div>
                             <button onClick={copiaEmail} className="mono" title="Copia l'indirizzo"
                                     style={{ background: 'none', border: 'none', padding: 0, color: 'var(--fg)',
                                              fontSize: '12px', cursor: 'pointer', wordBreak: 'break-all' }}>
                                 {email}
                             </button>
                             <span className="mono" role="status" aria-live="polite"
-                                  style={{ fontSize: '9px', color: 'var(--accent)', marginLeft: '8px' }}>
+                                  style={{ fontSize: '11px', color: 'var(--accent)', marginLeft: '8px' }}>
                                 {copiata ? 'copiata' : ' '}
                             </span>
                         </div>
@@ -1110,7 +1110,7 @@ import * as ReactDOM from 'react-dom/client';
                             {raw && raw.logo && <img className="feed-logo" src={raw.logo} alt="" loading="lazy" decoding="async" />}
                             {m.video && <PlayBadge lowered={!!(raw && raw.logo)} />}
                             <div className="feed-meta">
-                                <div style={{ fontSize: '10px' }}>{label}</div>
+                                <div style={{ fontSize: '11px' }}>{label}</div>
                                 <div style={{ color: 'var(--mute)' }}>{m.video ? S().post.play : S().sections.motionYear}</div>
                             </div>
                         </div>
@@ -1159,7 +1159,7 @@ import * as ReactDOM from 'react-dom/client';
             if (!projects.length) return <EmptyState section="INDEX" />;
             return (
                 <div className="max-w-4xl mx-auto">
-                    <div className="mono uline mb-6 pb-3" style={{ fontSize: '10px', color: 'var(--mute)', borderBottom: '1px solid var(--line-strong)' }}>
+                    <div className="mono uline mb-6 pb-3" style={{ fontSize: '11px', color: 'var(--mute)', borderBottom: '1px solid var(--line-strong)' }}>
                         <div className="grid items-center" style={{ gridTemplateColumns: '50px 1fr 160px 90px 30px', gap: '24px' }}>
                             <div>{S().sections.indexNo}</div>
                             <div>{S().sections.indexTitle}</div>
@@ -1254,7 +1254,7 @@ import * as ReactDOM from 'react-dom/client';
                             </div>
                         ))}
                     </div>
-                    <div className="flex justify-between items-center px-5 pb-2 mono uline" style={{ fontSize: '10px' }}>
+                    <div className="flex justify-between items-center px-5 pb-2 mono uline" style={{ fontSize: '11px' }}>
                         <div>{series.label} &nbsp;·&nbsp; {String(current + 1).padStart(2,'0')}/{String(slides.length).padStart(2,'0')}</div>
                         <button onClick={onClose} aria-label="Close" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.35)', color: 'var(--fg)', cursor: 'pointer', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', flexShrink: 0 }}>✕</button>
                     </div>
@@ -1415,7 +1415,7 @@ import * as ReactDOM from 'react-dom/client';
                             )}
                         </div>
                         <div className="post-info w-full md:w-80 space-y-6">
-                            <div className="mono uline" style={{ fontSize: '10px', color: 'var(--mute)' }}>
+                            <div className="mono uline" style={{ fontSize: '11px', color: 'var(--mute)' }}>
                                 {String(idx + 1).padStart(2,'0')} / {String(images.length).padStart(2,'0')}
                                 {multi && <span> &nbsp;·&nbsp; {S().post.carousel} {photos.length}</span>}
                                 {photos.some(s => s.video) && <span style={{ color: 'var(--accent)' }}> &nbsp;·&nbsp; {S().post.video}</span>}
@@ -1426,8 +1426,8 @@ import * as ReactDOM from 'react-dom/client';
                             {post.ai && <p className="ai-tag">{S().post.aiLabel}</p>}
                             <PostCredits post={post} />
                             <div className="flex gap-6 pt-4">
-                                <button onClick={onPrev} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>{S().post.prev}</button>
-                                <button onClick={onNext} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'10px' }}>{S().post.next}</button>
+                                <button onClick={onPrev} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'11px' }}>{S().post.prev}</button>
+                                <button onClick={onNext} className="mono uline" style={{ background:'none', border:'none', color:'var(--fg)', cursor:'pointer', fontSize:'11px' }}>{S().post.next}</button>
                             </div>
                             {S().profile.ctaEmail && (
                                 <button type="button"
@@ -1488,7 +1488,7 @@ import * as ReactDOM from 'react-dom/client';
                         </div>
                     </div>
                 </div>
-                <div className="flex justify-between items-center pt-6 mono uline reveal-on-scroll" style={{ fontSize: '10px', color: 'var(--mute)', borderTop: '1px solid var(--line)' }}>
+                <div className="flex justify-between items-center pt-6 mono uline reveal-on-scroll" style={{ fontSize: '11px', color: 'var(--mute)', borderTop: '1px solid var(--line)' }}>
                     {/* P. IVA in home: art. 7 D.Lgs. 70/2003 la vuole facilmente
                         accessibile, non sepolta dentro l'informativa privacy. */}
                     <span>{S().footer.release}{S().footer.vat ? ' · P. IVA ' + S().footer.vat : ''}</span>
@@ -1542,6 +1542,42 @@ import * as ReactDOM from 'react-dom/client';
             return out;
         };
 
+        // Pausa/play di un video di sfondo (WCAG 2.2.2: un video che parte da
+        // solo e dura piu' di 5 secondi deve potersi fermare). aria-pressed =
+        // in pausa; l'etichetta dice cosa succede premendo.
+        const PauseButton = ({ paused, onClick, what }) => (
+            <button type="button" className="pause-btn" aria-pressed={paused ? 'true' : 'false'}
+                aria-label={(paused ? 'Play the ' : 'Pause the ') + what} onClick={onClick}>
+                <span aria-hidden="true">{paused ? '▶' : '❚❚'}</span>
+            </button>
+        );
+
+        // Barra in alto della home (H10): fissa, fondo pieno, con il menu.
+        // A sinistra settings.topbar.left riporta in cima; settings.topbar.right
+        // non si mostra piu' (resta nel pannello).
+        const SiteTopbar = ({ onAbout, onContact, reel, paused, onTogglePause }) => {
+            const ig = S().footer.socialUrl;
+            const calmo = typeof window.matchMedia === 'function'
+                && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            return (
+                <header className="site-top">
+                    <a href="#top" className="site-top-home"
+                        onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: calmo ? 'auto' : 'smooth' }); }}>
+                        {S().topbar.left || 'Andrea Onori'}
+                    </a>
+                    <nav aria-label="Main" className="site-top-nav">
+                        {onAbout && <button type="button" onClick={onAbout}>About</button>}
+                        <button type="button" onClick={onContact}>Contact</button>
+                        {ig && (
+                            <a className="site-top-ig" href={ig} target="_blank" rel="noopener"
+                                onClick={() => track('outbound_click', { link_domain: 'instagram.com', location: 'topbar' })}>Instagram ↗</a>
+                        )}
+                        {reel && <PauseButton paused={paused} onClick={onTogglePause} what="showreel" />}
+                    </nav>
+                </header>
+            );
+        };
+
         const AboutView = ({ onClose }) => {
             const a = aboutData() || {};
             const [wide, setWide] = useState(isWideScreen);
@@ -1568,6 +1604,13 @@ import * as ReactDOM from 'react-dom/client';
             const calmo = typeof window.matchMedia === 'function'
                 && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             const sfondo = Boolean(video || poster);
+            const [bgPaused, setBgPaused] = useState(false);
+            const toggleBg = () => {
+                const v = ref.current;
+                if (!v) return;
+                if (v.paused) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); setBgPaused(false); }
+                else { v.pause(); setBgPaused(true); }
+            };
 
             useEffect(() => {
                 const overflow = document.body.style.overflow;
@@ -1639,7 +1682,10 @@ import * as ReactDOM from 'react-dom/client';
                                 <a href="#" className="about-back" onClick={(e) => { e.preventDefault(); onClose(); }}>
                                     ← {[p.nameFirst, p.nameLast].filter(Boolean).map((t) => t.charAt(0) + t.slice(1).toLowerCase()).join(' ') || 'Andrea Onori'}
                                 </a>
-                                <span className="about-here">About</span>
+                                <div className="about-top-r">
+                                    <span className="about-here">About</span>
+                                    {video && !calmo && <PauseButton paused={bgPaused} onClick={toggleBg} what="background video" />}
+                                </div>
                             </div>
                         </div>
                         <div className="about-wrap about-center">
@@ -1838,6 +1884,26 @@ import * as ReactDOM from 'react-dom/client';
             const anima = () => { setReelAnim(true); clearTimeout(animT.current); animT.current = setTimeout(() => setReelAnim(false), 600); };
             const calmoReel = () => typeof window.matchMedia === 'function'
                 && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            // Pausa scelta da chi guarda (bottone nella barra in alto). Vale
+            // finche' si resta sulla pagina: scorrendo il video non riparte da
+            // solo; PLAY lo fa ripartire comunque. Con meno movimento il video
+            // nasce fermo, quindi nasce "in pausa".
+            const [reelPaused, setReelPaused] = useState(() => calmoReel());
+            const reelPausedRef = useRef(reelPaused);
+            const setPausa = (on) => { reelPausedRef.current = on; setReelPaused(on); };
+            const toggleReel = () => {
+                const v = reelVideo.current;
+                if (!v) return;
+                if (reelPausedRef.current) {
+                    setPausa(false);
+                    const panel = panelRef.current;
+                    const coperto = panel && panel.getBoundingClientRect().top <= 0;
+                    if (!coperto) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+                } else {
+                    setPausa(true);
+                    v.pause();
+                }
+            };
             const playReel = () => {
                 const v = reelVideo.current;
                 if (!v) return;
@@ -1845,6 +1911,7 @@ import * as ReactDOM from 'react-dom/client';
                 anima();
                 playingRef.current = true;
                 setPlaying(true);
+                setPausa(false);
                 try { v.currentTime = 0; } catch (e) {}
                 // play() nel gestore del clic: cosi' su iPhone parte anche l'audio.
                 // Se il browser lo blocca comunque, riparte muto.
@@ -1865,7 +1932,7 @@ import * as ReactDOM from 'react-dom/client';
                 const v = reelVideo.current;
                 if (v) {
                     v.muted = true;
-                    if (calmoReel()) v.pause();
+                    if (calmoReel()) { v.pause(); setPausa(true); }
                 }
             };
             const stopRef = useRef(stopReel);
@@ -1910,7 +1977,7 @@ import * as ReactDOM from 'react-dom/client';
                     if (v && panel && !calmo) {
                         const coperto = panel.getBoundingClientRect().top <= 0;
                         if (coperto && !v.paused) v.pause();
-                        else if (!coperto && v.paused) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
+                        else if (!coperto && v.paused && !reelPausedRef.current) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }
                     }
                 };
                 const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
@@ -1942,23 +2009,32 @@ import * as ReactDOM from 'react-dom/client';
 
             return (
                 <div className={[reel && 'has-hero', reel && playing && 'is-playing', reel && reelAnim && 'reel-anim'].filter(Boolean).join(' ') || undefined}>
+                    <a className="skip-link" href="#work"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            const p = panelRef.current;
+                            if (!p) return;
+                            window.scrollTo({ top: p.getBoundingClientRect().top + window.scrollY - 44 });
+                            p.focus({ preventScroll: true });
+                        }}>Skip to work</a>
+                    <SiteTopbar
+                        onAbout={aboutData() ? () => { track('series_open', { series_label: 'ABOUT ME' }); openAbout(); } : undefined}
+                        onContact={() => apriContatto('topbar')}
+                        reel={reel} paused={reelPaused} onTogglePause={toggleReel} />
                     {reel && <HeroReel ref={reelVideo} veilRef={reelVeil} labelRef={reelLabel} onClick={playing ? stopReel : undefined} />}
                     {/* Prima schermata: con lo showreel e' alta quanto lo schermo,
                         con barra in alto e nome, storie e bottone in basso;
                         scorrendo sparisce (opacita' da useEffect qui sopra). */}
-                    <div ref={heroRef} className="hero-screen">
+                    <section ref={heroRef} className="hero-screen" aria-label="Intro">
                         <Marquee />
-                        <div className="hero-topbar" style={{ borderBottom: '1px solid var(--line)' }}>
-                            <div className="page-x py-3 flex justify-between items-center">
-                                <div className="mono uline" style={{ fontSize: '10px' }}>{S().topbar.left}</div>
-                                <div className="mono uline" style={{ fontSize: '9px', color: 'var(--mute)' }}>{S().topbar.right}</div>
-                            </div>
-                        </div>
+                        {/* Spazio della barra in alto, che ora e' fissa (SiteTopbar):
+                            tiene il blocco centrale dov'era. */}
+                        <div className="hero-topbar" aria-hidden="true"></div>
                         <div className="hero-bottom page-x">
                             <ProfileHeader onContact={() => apriContatto('header')} onAbout={onSeries}
                                 onPlay={reel ? playReel : undefined} />
                         </div>
-                    </div>
+                    </section>
                     {/* Spazio vuoto: qui si vede il video pulito. */}
                     {reel && <div className="hero-gap" aria-hidden="true"></div>}
                     {reel && (
@@ -1972,7 +2048,7 @@ import * as ReactDOM from 'react-dom/client';
                         </button>
                     )}
 
-                    <main ref={panelRef} className="home-panel page-x">
+                    <main ref={panelRef} id="work" tabIndex={-1} className="home-panel page-x">
                         {TAB_KEYS.length > 1 && <Tabs active={active} setActive={setActive} />}
                         <div key={active} className="tab-panel">
                             {active === 'FEED' && <FeedGrid onClick={open} />}

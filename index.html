@@ -121,7 +121,7 @@
               "url": "https://www.andreaonori.com/",
               "image": "https://www.andreaonori.com/andrea.jpg",
               "jobTitle": "Filmmaker",
-              "description": "It began in Marche, where I was born. Today I'm based in Milan and work internationally as an independent filmmaker, mostly in fashion, advertising and media. I follow each project from the first idea to the final cut, treating every story as a film of its own. Emotions rarely arrive with a shape: my craft is building the frame they need to find their meaning.",
+              "description": "It began in Marche, where I was born. Now based in Milan, I work internationally as an independent filmmaker across fashion, advertising and media. I follow each project from the first idea to the final cut, approaching every story as a film of its own, with a sensitivity to detail and an instinct for light. Emotions rarely arrive with a shape: my craft is building the frame they need to find their meaning.",
               "email": "mailto:video@andreaonori.com",
               "nationality": {
                 "@type": "Country",
@@ -164,7 +164,7 @@
               "about": {
                 "@id": "https://www.andreaonori.com/#person"
               },
-              "description": "It began in Marche, where I was born. Today I'm based in Milan and work internationally as an independent filmmaker, mostly in fashion, advertising and media. I follow each project from the first idea to the final cut, treating every story as a film of its own. Emotions rarely arrive with a shape: my craft is building the frame they need to find their meaning.",
+              "description": "It began in Marche, where I was born. Now based in Milan, I work internationally as an independent filmmaker across fashion, advertising and media. I follow each project from the first idea to the final cut, approaching every story as a film of its own, with a sensitivity to detail and an instinct for light. Emotions rarely arrive with a shape: my craft is building the frame they need to find their meaning.",
               "primaryImageOfPage": "https://www.andreaonori.com/media/og-cover.jpg",
               "inLanguage": "en"
             },
@@ -172,7 +172,7 @@
               "@type": "ProfessionalService",
               "@id": "https://www.andreaonori.com/#service",
               "name": "Andrea Onori — Filmmaking",
-              "description": "It began in Marche, where I was born. Today I'm based in Milan and work internationally as an independent filmmaker, mostly in fashion, advertising and media. I follow each project from the first idea to the final cut, treating every story as a film of its own. Emotions rarely arrive with a shape: my craft is building the frame they need to find their meaning.",
+              "description": "It began in Marche, where I was born. Now based in Milan, I work internationally as an independent filmmaker across fashion, advertising and media. I follow each project from the first idea to the final cut, approaching every story as a film of its own, with a sensitivity to detail and an instinct for light. Emotions rarely arrive with a shape: my craft is building the frame they need to find their meaning.",
               "url": "https://www.andreaonori.com/",
               "image": "https://www.andreaonori.com/media/og-cover.jpg",
               "founder": {
@@ -617,7 +617,7 @@
                pieno. La scheda progetto resta nera: vedi .modal-overlay. */
             --bg: #161616;
             --fg: #FFFFFF;
-            --mute: #707070;
+            --mute: #9a9a9a; /* 6,4:1 su #161616 (era #707070, 3,7:1) */
             --line: rgba(255,255,255,0.12);
             --line-strong: rgba(255,255,255,0.26);
             /* Celle del feed e cerchi delle serie: un tono sopra lo sfondo,
@@ -719,7 +719,7 @@
 
         /* Hero buttons — more compact on desktop; mobile keeps the larger size */
         @media (min-width: 768px) {
-            .btn-primary, .btn-secondary { padding: 9px 18px; font-size: 10px; }
+            .btn-primary, .btn-secondary { padding: 9px 18px; font-size: 11px; }
         }
 
         /* Carousel — frecce nella scheda. Sulle celle del feed l'icona del
@@ -800,7 +800,7 @@
             transform: translateY(12px);
             transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.12em;
             display: flex;
@@ -809,7 +809,8 @@
             gap: 10px;
             color: var(--fg);
         }
-        .feed-item:hover .feed-meta { opacity: 1; transform: translateY(0); transition-delay: .05s; }
+        .feed-item:hover .feed-meta, .feed-item:focus-visible .feed-meta { opacity: 1; transform: translateY(0); transition-delay: .05s; }
+        .feed-item:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
 
         /* Home a tutta larghezza (H7): niente colonna da 1100px, margini
            laterali 40px (20px da telefono). */
@@ -842,7 +843,7 @@
         .hero-veil { position: absolute; inset: 0; background: var(--bg); opacity: .5; pointer-events: none; }
         .hero-reel-label {
             position: absolute; left: 40px; bottom: 32px;
-            font-size: 10px; color: #fff; opacity: 0;
+            font-size: 11px; color: #fff; opacity: 0;
             text-shadow: 0 1px 6px rgba(0,0,0,0.6);
             pointer-events: none;
         }
@@ -850,8 +851,20 @@
             position: relative; z-index: 1;
             min-height: 100vh; min-height: 100svh;
             display: flex; flex-direction: column;
-            /* sopra il video le scritte grigie diventano bianche al 78% */
-            --mute: rgba(255,255,255,.78);
+            /* sopra il video le scritte grigie diventano bianche all'88% */
+            --mute: rgba(255,255,255,.88);
+        }
+        /* Scrim (H10): dietro al blocco centrale il velo arriva a circa il 70%
+           (50% del velo + 40% qui), ai bordi il video resta com'e'. Sta dentro
+           .hero-screen, quindi sparisce con le scritte quando si scorre. */
+        .has-hero .hero-screen::before {
+            content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+            background: radial-gradient(ellipse 48% 42% at 50% 52%, rgba(22,22,22,.4) 0%, rgba(22,22,22,.4) 55%, rgba(22,22,22,0) 100%);
+        }
+        @media (max-width: 767px) {
+            .has-hero .hero-screen::before {
+                background: radial-gradient(ellipse 90% 36% at 50% 50%, rgba(22,22,22,.4) 0%, rgba(22,22,22,.4) 55%, rgba(22,22,22,0) 100%);
+            }
         }
         /* H8: il blocco del nome sta al centro dello schermo; padding-bottom
            compensa la barra in alto, cosi' il centro e' quello ottico. */
@@ -959,19 +972,62 @@
         .abtn.solo .abtn-top { height: 100%; }
         .abtn-top { background: #fff; color: #161616; }
         .abtn-top > span { display: inline-block; transition: transform .35s var(--ease-out); }
-        .abtn-bot { background: rgba(255,255,255,.12); color: rgba(244,242,238,.55); transition: background .35s var(--ease-out), color .35s var(--ease-out); }
+        .abtn-bot { background: #2a2a2a; color: rgba(255,255,255,.85); transition: background .35s var(--ease-out), color .35s var(--ease-out); }
         .abtn-bot .tri-f { display: none; }
         .abtn-top:focus-visible, .abtn-bot:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
         @media (hover: hover) {
             .abtn-top:hover > span { transform: scale(1.08); }
-            .abtn-bot:hover { background: rgba(255,255,255,.22); color: rgba(244,242,238,.9); }
+            .abtn-bot:hover { background: #3a3a3a; color: #fff; }
             .abtn-bot:hover .tri-o { display: none; }
             .abtn-bot:hover .tri-f { display: inline; }
         }
         .abtn-top:focus-visible > span { transform: scale(1.08); }
-        .abtn-bot:focus-visible { background: rgba(255,255,255,.22); color: rgba(244,242,238,.9); }
+        .abtn-bot:focus-visible { background: #3a3a3a; color: #fff; }
         .abtn-bot:focus-visible .tri-o { display: none; }
         .abtn-bot:focus-visible .tri-f { display: inline; }
+
+        /* Barra in alto (H10, WCAG AA): fissa, fondo pieno, sopra a tutto tranne
+           le viste a tutto schermo (scheda, About, modulo: z-index 10000). */
+        .site-top {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 9000; height: 44px;
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            padding: 0 40px; background: #161616; border-bottom: 1px solid rgba(255,255,255,.14);
+            font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: #fff;
+        }
+        .site-top a, .site-top button {
+            color: #fff; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none;
+            font: inherit; letter-spacing: inherit; text-transform: inherit;
+            min-height: 44px; display: inline-flex; align-items: center; gap: 8px;
+            transition: color .25s var(--ease-out);
+        }
+        .site-top a:hover, .site-top button:hover { color: rgba(255,255,255,.7); }
+        .site-top a:focus-visible, .site-top button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+        .site-top-nav { display: flex; align-items: center; gap: 28px; }
+        .hero-topbar { height: 44px; flex-shrink: 0; }
+        @media (max-width: 767px) {
+            .site-top { padding: 0 20px; }
+            .site-top-nav { gap: 18px; }
+            .site-top-ig { display: none !important; }
+        }
+        /* Pausa/play dei video di sfondo (WCAG 2.2.2) */
+        .pause-btn {
+            min-height: 30px !important; padding: 0 12px !important; justify-content: center; min-width: 44px;
+            border: 1px solid rgba(255,255,255,.35) !important; color: #fff; background: none; cursor: pointer;
+            font: 400 11px/1 'JetBrains Mono', monospace; letter-spacing: .1em;
+            display: inline-flex; align-items: center;
+        }
+        .pause-btn:hover { color: rgba(255,255,255,.7); border-color: rgba(255,255,255,.6) !important; }
+        .pause-btn:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+        /* "Skip to work": nascosto finche' non riceve il focus da tastiera */
+        .skip-link {
+            position: fixed; left: 12px; top: -60px; z-index: 9500; padding: 12px 16px;
+            background: #fff; color: #161616; text-decoration: none;
+            font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: .16em; text-transform: uppercase;
+        }
+        .skip-link:focus { top: 8px; outline: 2px solid #fff; outline-offset: 3px; }
+        .home-panel:focus { outline: none; }
+        /* Focus da tastiera visibile ovunque */
+        a:focus-visible, button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
         /* Freccina laterale "FEED ↓" (H8): fa capire che sotto c'e' il feed.
            Opacita' allo scroll: useEffect in App. */
@@ -979,11 +1035,11 @@
             position: fixed; right: 40px; top: 50%; transform: translateY(-50%); z-index: 5;
             width: 44px; padding: 16px 0 14px; border: 0; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; gap: 12px;
-            background: rgba(255,255,255,.12); color: rgba(244,242,238,.9);
-            font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase;
+            background: #2a2a2a; color: #fff;
+            font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase;
             transition: background .35s var(--ease-out);
         }
-        .side-arrow:hover { background: rgba(255,255,255,.22); }
+        .side-arrow:hover { background: #3a3a3a; }
         .side-arrow:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
         .side-arrow-t { writing-mode: vertical-rl; }
         .side-arrow-a { display: inline-block; font-size: 13px; animation: arrownudge 2.2s ease-in-out infinite; }
@@ -993,7 +1049,8 @@
         /* Modalita' PLAY (H8): showreel pulito. !important vince sulle opacita'
            scritte dall'effetto allo scroll. La dissolvenza c'e' solo entrando
            e uscendo (.reel-anim), non durante lo scroll normale. */
-        .reel-anim .hero-screen, .reel-anim .hero-veil, .reel-anim .side-arrow { transition: opacity .5s ease; }
+        .reel-anim .hero-screen, .reel-anim .hero-veil, .reel-anim .side-arrow, .reel-anim .site-top { transition: opacity .5s ease; }
+        .is-playing .site-top { opacity: 0; pointer-events: none; }
         .is-playing .hero-screen { opacity: 0 !important; pointer-events: none !important; }
         .is-playing .hero-veil { opacity: 0 !important; }
         .is-playing .side-arrow { opacity: 0 !important; pointer-events: none !important; }
@@ -1002,7 +1059,7 @@
             position: fixed; top: 16px; right: 16px; z-index: 50;
             display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px;
             border: 0; cursor: pointer; background: rgba(0,0,0,.45); color: #fff;
-            font: 700 10px/1 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase;
+            font: 700 11px/1 'JetBrains Mono', monospace; letter-spacing: .18em; text-transform: uppercase;
             transition: background .25s var(--ease-out);
         }
         .reel-close:hover { background: rgba(0,0,0,.7); }
@@ -1025,22 +1082,22 @@
         .cbtn-top, .cbtn-bot { height: 50%; display: flex; align-items: center; justify-content: center; }
         .cbtn-top { color: #161616; }
         .cbtn-top > span { display: inline-block; transition: transform .35s var(--ease-out); }
-        .cbtn-bot { gap: 9px; color: rgba(244,242,238,.55); transition: color .35s var(--ease-out); }
+        .cbtn-bot { gap: 9px; color: rgba(255,255,255,.85); transition: color .35s var(--ease-out); }
         .cbtn-dot { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; transition: background .25s; }
         .cbtn-hover { display: none; }
         .cbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
         /* Stato "REC": col mouse (solo dove il mouse c'e', cosi' da touch resta
            STAND BY anche dopo il tocco) e col focus da tastiera. */
         @media (hover: hover) {
-            .cbtn:hover { background: linear-gradient(to bottom, #fff 0 50%, rgba(255,255,255,.22) 50% 100%); }
-            .cbtn:hover .cbtn-bot { color: rgba(244,242,238,.9); }
+            .cbtn:hover { background: linear-gradient(to bottom, #fff 0 50%, #3a3a3a 50% 100%); }
+            .cbtn:hover .cbtn-bot { color: #fff; }
             .cbtn:hover .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
             .cbtn:hover .cbtn-idle { display: none; }
             .cbtn:hover .cbtn-hover { display: inline; }
             .cbtn:hover .cbtn-top > span { transform: scale(1.08); }
         }
-        .cbtn:focus-visible { background: linear-gradient(to bottom, #fff 0 50%, rgba(255,255,255,.22) 50% 100%); }
-        .cbtn:focus-visible .cbtn-bot { color: rgba(244,242,238,.9); }
+        .cbtn:focus-visible { background: linear-gradient(to bottom, #fff 0 50%, #3a3a3a 50% 100%); }
+        .cbtn:focus-visible .cbtn-bot { color: #fff; }
         .cbtn:focus-visible .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
         .cbtn:focus-visible .cbtn-idle { display: none; }
         .cbtn:focus-visible .cbtn-hover { display: inline; }
@@ -1146,7 +1203,7 @@
             display: inline-flex; align-items: center; min-height: 44px;
             padding: 8px 12px; box-sizing: border-box;
             background: rgba(0,0,0,.55); color: #fff;
-            font-size: 10px; line-height: 1.2; letter-spacing: .08em; text-transform: uppercase;
+            font-size: 11px; line-height: 1.2; letter-spacing: .08em; text-transform: uppercase;
             text-decoration: none; white-space: nowrap; max-width: calc(100% - 24px);
             overflow: hidden; text-overflow: ellipsis;
             transition: background .2s var(--ease-out);
@@ -1169,7 +1226,7 @@
             grid-template-columns: fit-content(50%) minmax(0, 1fr);
             column-gap: 16px;
             row-gap: 4px;
-            font-size: 10px;
+            font-size: 11px;
         }
         .post-credits dt { color: var(--mute); }
         .credit-link { color: inherit; text-decoration: underline; text-decoration-color: rgba(255,255,255,.35); text-underline-offset: 3px; transition: text-decoration-color .2s; }
@@ -1210,7 +1267,7 @@
             padding: 40px 0 28px;
         }
         .colofone-cell { padding: 14px 0; border-bottom: 1px dashed var(--line); }
-        .colofone-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--mute); margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
+        .colofone-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--mute); margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
         .colofone-value { font-size: 13px; color: var(--fg); font-family: 'JetBrains Mono', monospace; }
 
         /* ─────────────────────────────────────────────────────────────────
@@ -1234,16 +1291,17 @@
         .about-veil { position: absolute; inset: 0; background: var(--bg); opacity: .5; pointer-events: none; }
         .about-caption {
             position: absolute; left: 40px; bottom: 32px; z-index: 1; opacity: 0;
-            font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #fff;
+            font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: #fff;
             text-shadow: 0 1px 8px rgba(0,0,0,.6);
         }
         .about-hero { position: relative; z-index: 1; display: flex; flex-direction: column; }
         .has-bg .about-hero { min-height: 100vh; min-height: 100svh; }
-        .about-top { border-bottom: 1px solid var(--line); }
-        .about-topbar { display: flex; justify-content: space-between; align-items: center; height: 52px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+        .about-top { border-bottom: 1px solid rgba(255,255,255,.14); background: #161616; }
+        .about-topbar { display: flex; justify-content: space-between; align-items: center; height: 52px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #fff; }
+        .about-top-r { display: flex; align-items: center; gap: 20px; }
         .about-back { color: inherit; text-decoration: none; transition: color .3s var(--ease-out); }
         .about-back:hover, .about-back:focus-visible { color: rgba(255,255,255,.6); }
-        .about-here { color: rgba(255,255,255,.78); }
+        .about-here { color: #fff; }
         .about-center {
             display: flex; flex-direction: column; align-items: center; text-align: center;
             padding-top: 64px; padding-bottom: 64px;
@@ -1284,12 +1342,12 @@
         }
         .rbtn > span { display: inline-block; transition: transform .35s var(--ease-out); }
         .rbtn.white { background: #fff; color: #161616; }
-        .rbtn.veil { background: rgba(255,255,255,.12); color: rgba(244,242,238,.9); }
+        .rbtn.veil { background: #2a2a2a; color: #fff; }
         .rbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
         .rbtn:focus-visible > span { transform: scale(1.08); }
         @media (hover: hover) {
             .rbtn:hover > span { transform: scale(1.08); }
-            .rbtn.veil:hover { background: rgba(255,255,255,.22); }
+            .rbtn.veil:hover { background: #3a3a3a; }
         }
         .about-gap { height: 50vh; height: 50svh; }
         .about-panel { position: relative; z-index: 1; background: var(--bg); }
@@ -1299,7 +1357,7 @@
         .has-bg .about-panel > .about-foot { margin-top: auto; }
         .has-bg .about-panel > :nth-last-child(2) { margin-bottom: 120px; }
         .about-bio { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; align-items: start; }
-        .about-bio-lbl { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8a8a8a; padding-top: 8px; }
+        .about-bio-lbl { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--mute); padding-top: 8px; }
         .about-body {
             font-weight: 300; font-size: clamp(20px, 1.9vw, 28px); line-height: 1.45;
             color: #e6e6e6; max-width: 34ch;
@@ -1310,9 +1368,9 @@
         .about-photos.one { grid-template-columns: 1fr; }
         .about-photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--cell); }
         .about-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
-        .about-photos figcaption { margin-top: 12px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: #8a8a8a; }
+        .about-photos figcaption { margin-top: 12px; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--mute); }
         .about-foot { margin-top: 120px; border-top: 1px solid var(--line); padding: 28px 0; }
-        .about-foot .about-wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--mute); }
+        .about-foot .about-wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--mute); }
         @media (max-width: 767px) {
             .about-wrap { padding: 0 20px; }
             .about-caption { left: 20px; bottom: 24px; }
@@ -1364,7 +1422,7 @@
         }
         .ai-mark {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 8px;
+            font-size: 11px;
             letter-spacing: 0.18em;
             line-height: 1;
             padding: 4px 6px;
@@ -1379,7 +1437,7 @@
         .ai-tag {
             display: inline-flex; align-items: center; gap: 7px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 9px;
+            font-size: 11px;
             letter-spacing: 0.2em;
             text-transform: uppercase;
             color: var(--mute);
@@ -1481,7 +1539,7 @@
             border-top: 1px solid var(--line);
         }
     </style>
-    <link rel="stylesheet" href="/assets/tailwind.css?v=8bee62ef">
+    <link rel="stylesheet" href="/assets/tailwind.css?v=e79543ee">
     <!-- Umami: statistiche senza cookie, conta solo sul dominio vero (data-domains). -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="6f54222f-5c21-4707-be4f-d71137780c5a" data-domains="andreaonori.com,www.andreaonori.com"></script>
 </head>
@@ -1498,7 +1556,7 @@
             <h1>Andrea Onori</h1>
             <p class="pf-role">Filmmaker — Fashion · Advertising · Media</p>
             <div class="pf-about">
-              <p>It began in Marche, where I was born. Today I&#39;m based in Milan and work internationally as an independent filmmaker, mostly in fashion, advertising and media. I follow each project from the first idea to the final cut, treating every story as a film of its own.</p>
+              <p>It began in Marche, where I was born. Now based in Milan, I work internationally as an independent filmmaker across fashion, advertising and media. I follow each project from the first idea to the final cut, approaching every story as a film of its own, with a sensitivity to detail and an instinct for light.</p>
               <p>Emotions rarely arrive with a shape: my craft is building the frame they need to find their meaning.</p>
             </div>
             <p class="pf-contact">
@@ -1702,7 +1760,7 @@
 
     <!-- Il sorgente di questo bundle e' src/app.jsx. Non modificare
          assets/app.js a mano: si rigenera con `npm run build`. -->
-    <script src="/assets/app.js?v=f526834e" defer></script>
+    <script src="/assets/app.js?v=f767b660" defer></script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
          BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:
@@ -1732,13 +1790,13 @@
            accanto a un "rifiuta" trasparente è la disparità di prominenza che
            il Garante contesta: la scelta dev'essere simmetrica. */
         #aon-consent button.aon-choice {
-            font-family: inherit; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+            font-family: inherit; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
             padding: 9px 16px; cursor: pointer; border: 1px solid #fff; background: transparent; color: #fff;
             min-width: 108px;
         }
         #aon-consent button.aon-choice:hover { background: #fff; color: #000; }
         #aon-consent button.aon-more {
-            font-family: inherit; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+            font-family: inherit; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
             padding: 9px 4px; cursor: pointer; border: 0; background: transparent;
             color: rgba(255,255,255,0.82); text-decoration: underline; margin-left: auto;
         }
