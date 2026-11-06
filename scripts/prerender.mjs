@@ -730,7 +730,7 @@ const projectPageHtml = (pg, others = []) => {
   html,body{background:var(--bg);color:var(--fg)}
   body{font-family:'Roboto',sans-serif;font-weight:400;line-height:1.6}
   .wrap{max-width:1100px;margin:0 auto;padding:40px 24px 96px}
-  .mono{font-family:'JetBrains Mono',monospace;letter-spacing:.12em;text-transform:uppercase}
+  .mono{font-family:'Roboto', sans-serif;letter-spacing:.12em;text-transform:uppercase}
   a{color:var(--fg)}
   .back{font-size:10px;color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
   h1{font-family:'Roboto',sans-serif;font-weight:900;font-size:clamp(34px,7vw,74px);line-height:.95;text-transform:uppercase;margin:22px 0 10px}
@@ -742,7 +742,7 @@ const projectPageHtml = (pg, others = []) => {
   .grid img{width:100%;height:auto;display:block;background:#0a0a0a}
   .ai{display:inline-block;font-size:9px;border:1px solid var(--accent);color:var(--accent);padding:2px 6px;margin-bottom:14px}
   .altri{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
-  .altri a{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-decoration:none;border:1px solid var(--line);padding:7px 11px}
+  .altri a{font-family:'Roboto', sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-decoration:none;border:1px solid var(--line);padding:7px 11px}
   .altri a:hover{color:var(--fg);border-color:var(--fg)}
   footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:10px;color:var(--mute);display:flex;gap:16px;flex-wrap:wrap}
   footer a{color:var(--mute);text-decoration:none}

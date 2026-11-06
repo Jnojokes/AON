@@ -14,8 +14,8 @@
      trovava un pannello bianco e non poteva pubblicare nulla.
      Sorgente: src/admin.jsx -> assets/admin.js (npm run build). -->
 <style>
-  /* Stessa grafica del sito (H8/H9): grafite, Roboto, etichette in
-     JetBrains Mono, bottoni bianchi. L'arancione resta solo per avvisi,
+  /* Stessa grafica del sito (H8/H9): grafite, Roboto anche per le
+     etichette (novembre 2026, prima JetBrains Mono), bottoni bianchi. L'arancione resta solo per avvisi,
      errori ed eliminazioni. */
   :root{
     --bg:#161616; --panel:#1C1C1C; --field:#121212; --fg:#FFFFFF; --soft:rgba(255,255,255,.78); --mute:#8A8A8A;
@@ -29,7 +29,7 @@
   ::selection{background:var(--fg);color:var(--bg);}
   .display{font-family:'Roboto',sans-serif;font-weight:500;letter-spacing:-0.03em;line-height:1;}
   .grot{font-family:'Roboto',sans-serif;}
-  .mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;}
+  .mono{font-family:'Roboto', sans-serif;font-variant-numeric:tabular-nums;}
   .uline{letter-spacing:0.18em;text-transform:uppercase;}
   input,button,textarea,select{font-family:inherit;color:inherit;}
   button{cursor:pointer;background:none;border:none;}
@@ -49,10 +49,10 @@
   .field:focus{border-color:rgba(255,255,255,.7);background:#0e0e0e;}
   .field.sm{padding:7px 9px;font-size:12px;}
   .field.mono{font-size:12px;}
-  .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;display:block;line-height:1.4;}
+  .lbl{font-family:'Roboto', sans-serif;font-size:10px;color:var(--mute);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:6px;display:block;line-height:1.4;}
 
   .btn{
-    font-family:'JetBrains Mono',monospace;border:1px solid var(--line-strong);padding:10px 16px;font-size:11px;
+    font-family:'Roboto', sans-serif;border:1px solid var(--line-strong);padding:10px 16px;font-size:11px;
     letter-spacing:0.16em;text-transform:uppercase;font-weight:700;color:var(--soft);text-decoration:none;
     display:inline-flex;align-items:center;justify-content:center;gap:6px;
     transition:background .25s var(--ease-out),color .25s var(--ease-out),border-color .25s var(--ease-out);white-space:nowrap;
@@ -88,7 +88,7 @@
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
   .adm-tabs{display:flex;gap:28px;overflow-x:auto;}
   .tab{
-    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;
+    font-family:'Roboto', sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:700;
     padding:12px 0;color:var(--mute);border-bottom:2px solid transparent;margin-bottom:-1px;
     transition:color .2s var(--ease-out),border-color .2s var(--ease-out);
   }
@@ -146,7 +146,7 @@
   .drop::after{
     content:attr(data-hint);position:absolute;inset:0;z-index:4;
     display:flex;align-items:center;justify-content:center;text-align:center;
-    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;
+    font-family:'Roboto', sans-serif;font-size:9px;letter-spacing:0.14em;
     text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.10);
     border:2px dashed #fff;opacity:0;pointer-events:none;
     transition:opacity .15s var(--ease-out);padding:8px;
@@ -154,7 +154,7 @@
   .drop.over::after{opacity:1;}
   .drop-idle{
     border:1px dashed var(--line-strong);color:var(--mute);
-    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;
+    font-family:'Roboto', sans-serif;font-size:9px;letter-spacing:0.14em;
     text-transform:uppercase;text-align:center;padding:14px 8px;
     transition:border-color .2s var(--ease-out),color .2s var(--ease-out);
   }
@@ -163,10 +163,10 @@
   .vbadge{
     position:absolute;top:3px;right:3px;z-index:3;
     background:rgba(0,0,0,0.78);border:1px solid rgba(255,255,255,.5);color:#fff;
-    font-family:'JetBrains Mono',monospace;font-size:8px;padding:0 4px;letter-spacing:0.06em;
+    font-family:'Roboto', sans-serif;font-size:8px;padding:0 4px;letter-spacing:0.06em;
   }
   .chip{
-    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;
+    display:inline-block;font-family:'Roboto', sans-serif;font-size:9px;
     letter-spacing:0.1em;text-transform:uppercase;padding:3px 7px;
     border:1px solid var(--line);color:var(--mute);
   }
@@ -175,18 +175,18 @@
   .panel{border:1px solid var(--line-strong);background:var(--field);padding:12px;}
   details.help{border:1px solid var(--line);background:var(--panel);padding:14px 16px;margin-bottom:24px;}
   details.help summary{
-    cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;
+    cursor:pointer;font-family:'Roboto', sans-serif;font-size:10px;
     letter-spacing:0.14em;text-transform:uppercase;color:var(--soft);
   }
   details.help ol{margin:12px 0 0 18px;}
   details.help li{font-size:14px;color:var(--soft);font-weight:300;margin-bottom:7px;line-height:1.5;}
-  details.help code{font-family:'JetBrains Mono',monospace;font-size:11px;background:#141414;padding:1px 5px;border:1px solid var(--line);}
+  details.help code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#141414;padding:1px 5px;border:1px solid var(--line);}
 
   /* ── Impostazioni generali ───────────────────────────────────────────── */
   .set-group{border:1px solid var(--line);background:var(--panel);padding:24px;}
   .set-group + .set-group{margin-top:16px;}
   .set-group h3{
-    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.18em;
+    font-family:'Roboto', sans-serif;font-size:10px;letter-spacing:0.18em;
     text-transform:uppercase;color:#fff;margin-bottom:6px;
   }
   .set-group .hint{
@@ -207,7 +207,7 @@
   .check.on{border-color:rgba(255,255,255,.6);background:#222;}
   .check input{accent-color:#fff;width:14px;height:14px;flex-shrink:0;cursor:pointer;}
   .check span{
-    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;
+    font-family:'Roboto', sans-serif;font-size:10px;letter-spacing:0.12em;
     text-transform:uppercase;color:var(--mute);line-height:1.4;
   }
   .check.on span{color:var(--fg);}
@@ -230,7 +230,7 @@
   .cell-idle{
     position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
     padding:8px;text-align:center;border:1px dashed var(--line-strong);
-    font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;
+    font-family:'Roboto', sans-serif;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:#555;
   }
 
   @keyframes spin{to{transform:rotate(360deg);}}
