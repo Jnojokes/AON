@@ -41,7 +41,7 @@ import * as ReactDOM from 'react-dom/client';
                 { label: 'EDITION',     value: 'BOLD / 01' },
                 { label: 'SHIPPING',    value: 'WORLDWIDE' },
             ],
-            topbar: { left: 'andrea__onori', right: 'ARCHIVE / 25 · VOLUME 01' },
+            topbar: { left: '@andrea__onori', right: 'ARCHIVE / 25 · VOLUME 01' },
             // Un campo svuotato dal pannello toglie l'elemento: è così che
             // badge, link al sito e pulsante secondario sono spariti nella
             // versione 1, senza perdere la possibilità di rimetterli.
