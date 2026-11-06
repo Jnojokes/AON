@@ -103,6 +103,9 @@ const browser = await puppeteer.launch({
 const page = await browser.newPage();
 await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
 page.on("pageerror", (e) => console.warn("    ⚠︎ errore pagina:", e.message));
+// Uscendo dal pannello con modifiche non salvate il browser chiede conferma:
+// qui si accetta sempre (il server finto non salva niente).
+page.on("dialog", (d) => d.accept().catch(() => {}));
 
 console.log("\nCattura screenshot della guida\n");
 
@@ -126,53 +129,61 @@ await pw.click({ clickCount: 3 });
 await pw.type(PASSWORD, { delay: 25 });
 await clickText(page, "Entra");
 await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });   // torna alla piena larghezza
-await page.waitForSelector(".card, [class*='card']", { timeout: 25000 }).catch(() => {});
+await page.waitForSelector(".card", { timeout: 25000 }).catch(() => {});
 await wait(1500);
-await shot(page, "panoramica-feed", { settle: 800 });
+await shot(page, "panoramica-progetti", { settle: 800 });
 
 // Barra in alto: e' li' che vivono "Salva tutto" e l'indicatore di modifiche.
 await highlight(page, "header");
 await shot(page, "barra-superiore");
 await clearHighlight(page);
 
-// ── 3. Le cinque tab ─────────────────────────────────────────────────────────
-for (const [label, slug] of [["MOTION","tab-motion"],["SERIES","tab-series"],["INDEX","tab-index"],["IMPOSTAZIONI","tab-impostazioni"]]) {
-  const ok = await clickText(page, label);
-  if (!ok) continue;
+// ── 3. Le altre tre sezioni ──────────────────────────────────────────────────
+const tab = async (label) => {
+  await page.evaluate((t) => {
+    const b = [...document.querySelectorAll(".tab")].find((x) => x.textContent.trim().toLowerCase().startsWith(t.toLowerCase()));
+    if (b) b.click();
+  }, label);
   await wait(700);
-  await shot(page, slug, { settle: 600 });
+  await page.evaluate(() => window.scrollTo(0, 0));
+};
+for (const [label, slug] of [["Home", "sezione-home"], ["About", "sezione-about"], ["Testi", "sezione-testi"]]) {
+  await tab(label);
+  await shot(page, slug, { settle: 900 });
 }
 
-// IMPOSTAZIONI: il riquadro SEO arancione merita uno scatto dedicato, e' il
-// campo che piu' facilmente viene frainteso.
+// About: l'editor della bio, con un grassetto messo davanti alla camera.
+await tab("About");
 await page.evaluate(() => {
-  const h = [...document.querySelectorAll("h3, h2")].find((x) => /SEO/i.test(x.textContent || ""));
-  if (h) h.scrollIntoView({ block: "center" });
+  const t = document.querySelector(".rte-area");
+  const i = t.value.indexOf("independent filmmaker");
+  t.focus(); t.setSelectionRange(i, i + "independent filmmaker".length);
 });
-await shot(page, "impostazioni-seo", { settle: 700 });
+await page.evaluate(() => [...document.querySelectorAll(".rte-btn")].find((b) => b.textContent === "B").click());
+await wait(400);
+await page.evaluate(() => {
+  const g = document.querySelector(".rte").closest(".set-group");
+  g.setAttribute("data-aon-shot", "bio");
+  g.scrollIntoView({ block: "center" });
+});
+await shot(page, "editor-bio", { selector: "[data-aon-shot=bio]", settle: 700 });
 
-// ── 4. Torna su FEED e mostra le operazioni ──────────────────────────────────
-await clickText(page, "FEED");
-await wait(700);
+// ── 4. Torna su PROGETTI e mostra le operazioni ──────────────────────────────
+await tab("Progetti");
 
-// "+ Aggiungi" evidenziato, poi premuto: la guida mostra prima dove sta il
-// comando e subito dopo che cosa produce.
-await highlightText(page, "Aggiungi");
-await shot(page, "bottone-aggiungi", { settle: 500 });
+// "+ Nuovo progetto" evidenziato, poi premuto: la guida mostra prima dove sta
+// il comando e subito dopo che cosa produce.
+await highlightText(page, "Nuovo progetto");
+await shot(page, "bottone-nuovo", { settle: 500 });
 await clearHighlight(page);
-await clickText(page, "+ Aggiungi");
+await clickText(page, "+ Nuovo progetto");
 await wait(800);
-await shot(page, "elemento-aggiunto", { settle: 900 });
+await page.evaluate(() => { const c = [...document.querySelectorAll(".card")].pop(); c.scrollIntoView({ block: "center" }); });
+await shot(page, "progetto-aggiunto", { settle: 900 });
 
 // Toast + indicatore "modifiche non salvate"
+await page.evaluate(() => window.scrollTo(0, 0));
 await shot(page, "modifiche-non-salvate", { selector: "header", settle: 300 });
-
-// Prima card: campi, galleria, frecce di riordino
-await page.evaluate(() => {
-  const c = document.querySelector("main [class*='card'], main > div > div");
-  if (c) c.scrollIntoView({ block: "center" });
-});
-await shot(page, "scheda-progetto", { settle: 700 });
 
 // ── 5. Salvataggio ───────────────────────────────────────────────────────────
 await highlightText(page, "Salva tutto");
@@ -182,16 +193,7 @@ await clickText(page, "Salva tutto");
 await wait(1600);
 await shot(page, "salvato", { settle: 600 });
 
-// ── 6. Il sito pubblico, per il confronto admin ↔ risultato ─────────────────
-await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
-await wait(3000);
-await page.evaluate(() => { const b = document.querySelector("#consentAccept"); if (b) b.click(); });
-await wait(1200);
-await shot(page, "sito-pubblico", { settle: 1200 });
-
-// ── 7. Ottobre 2026: copertina e logo, video su Bunny, showreel ──────────────
-// In coda, cosi' i numeri degli scatti precedenti (citati in guide.html) non
-// cambiano.
+// ── 6. Un progetto da vicino, crediti con link, video Bunny, showreel ───────
 await page.goto(`${BASE}/admin-edits`, { waitUntil: "domcontentloaded" });
 await page.waitForSelector('input[placeholder="admin"]', { timeout: 20000 });
 await page.type('input[placeholder="admin"]', "admin", { delay: 10 });
@@ -202,14 +204,10 @@ await wait(1500);
 
 // La barra in alto e' fissa: negli scatti di un singolo riquadro finirebbe
 // sopra il contenuto. Da qui la si lascia al suo posto, in cima alla pagina.
-const sblocca = () => page.evaluate(() => {
-  const h = document.querySelector("header");
-  if (h) h.style.position = "relative";
-});
-await sblocca();
+await page.evaluate(() => { const h = document.querySelector("header"); if (h) h.style.position = "relative"; });
 
-// Il primo progetto del FEED, dall'alto fino al carosello: Copertina e Logo,
-// poi le slide. Tutta la card sarebbe alta piu' di una pagina.
+// Il primo progetto, dall'alto fino al carosello: Copertina e Logo, poi le
+// slide. Tutta la card sarebbe alta piu' di una pagina.
 await page.evaluate(() => window.scrollTo(0, 0));
 await wait(300);
 const clipFeed = await page.evaluate(() => {
@@ -221,10 +219,31 @@ const clipFeed = await page.evaluate(() => {
 });
 await wait(1200);
 n += 1;
-await page.screenshot({ path: path.join(SHOTS, `${String(n).padStart(2, "0")}-scheda-feed.jpg`), type: "jpeg", quality: 92, clip: clipFeed });
-console.log("  ▸", `${String(n).padStart(2, "0")}-scheda-feed.jpg`);
+await page.screenshot({ path: path.join(SHOTS, `${String(n).padStart(2, "0")}-scheda-progetto.jpg`), type: "jpeg", quality: 92, clip: clipFeed });
+console.log("  ▸", `${String(n).padStart(2, "0")}-scheda-progetto.jpg`);
 
-// FEED, secondo progetto: "+ Link video" e si incolla il link Embed di Bunny.
+// Crediti: si apre il link della prima voce con ↗ e lo si compila.
+await page.evaluate(() => {
+  const card = document.querySelector(".card");
+  const row = card.querySelector(".row-cr");
+  row.querySelector('button[title^="Collega"]').click();
+});
+await wait(400);
+await page.evaluate(() => {
+  const card = document.querySelector(".card");
+  const ins = card.querySelectorAll(".cr-link input");
+  const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+  set.call(ins[0], "https://www.instagram.com/brand.esempio");
+  ins[0].dispatchEvent(new Event("input", { bubbles: true }));
+  const cr = card.querySelector(".row-cr").parentElement;
+  cr.setAttribute("data-aon-shot", "crediti");
+  cr.scrollIntoView({ block: "center" });
+});
+await highlight(page, ".card .row-cr button[title^='Collega']");
+await shot(page, "crediti-link", { selector: "[data-aon-shot=crediti]", settle: 600 });
+await clearHighlight(page);
+
+// Secondo progetto: "+ Link video" e si incolla il link Embed di Bunny.
 // Il pannello legge il video e compila da solo proporzioni e copertina.
 await page.evaluate(() => {
   const card = document.querySelectorAll(".card")[1];
@@ -246,20 +265,41 @@ await page.waitForFunction(() => {
 }, { timeout: 30000 }).catch(() => console.warn("    ⚠︎ il video Bunny non ha risposto in tempo"));
 await shot(page, "video-bunny", { selector: "[data-aon-shot=video]", settle: 900 });
 
-// IMPOSTAZIONI → Showreel nel feed: il link Embed diventa il file MP4.
-await clickText(page, "IMPOSTAZIONI");
-await wait(700);
+// HOME → Showreel: il link Embed diventa il file MP4.
+await tab("Home");
 await page.evaluate(() => {
   const input = document.querySelector("input[placeholder='media/showreel.mp4']");
   const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
   set.call(input, "https://player.mediadelivery.net/embed/788231/b5536c8a-6f38-476a-b58c-e1744e59b024");
   input.dispatchEvent(new Event("input", { bubbles: true }));
-  input.closest(".set-group").scrollIntoView({ block: "center" });
+  input.closest(".set-group").scrollIntoView({ block: "start" });
 });
 await page.waitForFunction(() => { const v = document.querySelector(".set-group video"); return v && v.readyState >= 2; }, { timeout: 30000 })
   .catch(() => console.warn("    ⚠︎ l'MP4 di Bunny non ha risposto in tempo"));
-await page.evaluate(() => { const g = document.querySelector("input[placeholder='media/showreel.mp4']").closest(".set-group"); g.setAttribute("data-aon-shot", "reel"); });
-await shot(page, "showreel-feed", { selector: "[data-aon-shot=reel]", settle: 900 });
+const clipReel = await page.evaluate(() => {
+  const g = document.querySelector("input[placeholder='media/showreel.mp4']").closest(".set-group");
+  const r = g.getBoundingClientRect();
+  const fine = [...g.querySelectorAll("h3")][1];
+  const bottom = fine ? fine.getBoundingClientRect().top - 8 : r.bottom;
+  return { x: r.x, y: r.y + window.scrollY, width: r.width, height: bottom - r.y };
+});
+await wait(900);
+n += 1;
+await page.screenshot({ path: path.join(SHOTS, `${String(n).padStart(2, "0")}-showreel-home.jpg`), type: "jpeg", quality: 92, clip: clipReel });
+console.log("  ▸", `${String(n).padStart(2, "0")}-showreel-home.jpg`);
+
+// ── 7. Il sito, per il confronto pannello ↔ risultato ───────────────────────
+await page.goto(`${BASE}/versione1`, { waitUntil: "domcontentloaded" });
+await wait(3000);
+await page.evaluate(() => { const b = document.querySelector("#consentReject") || document.querySelector("#consentAccept"); if (b) b.click(); });
+await wait(1500);
+await shot(page, "sito-home", { settle: 1200 });
+
+await page.goto(`${BASE}/versione1#about`, { waitUntil: "domcontentloaded" });
+await wait(3500);
+await page.evaluate(() => { const b = document.querySelector("#consentReject") || document.querySelector("#consentAccept"); if (b) b.click(); });
+await wait(800);
+await shot(page, "sito-about", { settle: 1200 });
 
 await browser.close();
 console.log(`\n✓ ${n} screenshot in scripts/guide/shots/\n`);

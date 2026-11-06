@@ -76,6 +76,12 @@
   ],
   "series": [
     {
+      "id": "aboutme",
+      "label": "ABOUT ME",
+      "image": "media/story-aboutme-bn.webp",
+      "images": []
+    },
+    {
       "id": "esempio-uno",
       "label": "SERIE ESEMPIO",
       "image": "media/santoni-carousel-v2.webp",
@@ -154,18 +160,21 @@
       "right": "ARCHIVE / 26 · VOLUME 01"
     },
     "profile": {
-      "badge": "26",
-      "eyebrow": "◌ FILM-MAKER · BASED IN MILAN",
-      "nameFirst": "ANDREA",
-      "nameLast": "ONORI",
-      "handle": "@andrea__onori · ESTABLISHED MMXVIII",
-      "disciplines": "EDITORIAL · WORKS · PERSONAL PROJECTS",
-      "siteLabel": "↗ ANDREAONORI.COM",
-      "siteUrl": "https://www.andreaonori.com/",
-      "ctaPrimary": "GET IN TOUCH",
+      "badge": "",
+      "eyebrow": "FILM-MAKER · BASED IN MILAN",
+      "nameFirst": "Andrea",
+      "nameLast": "Onori",
+      "handle": "",
+      "disciplines": "",
+      "siteLabel": "",
+      "siteUrl": "",
+      "ctaPrimary": "CONTACT ME",
       "ctaEmail": "video@andreaonori.com",
       "ctaSubject": "Production enquiry",
-      "ctaSecondary": "AVAILABLE FOR WORK"
+      "ctaSecondary": "",
+      "ctaIdle": "STAND BY",
+      "ctaHover": "REC",
+      "ctaPlay": "PLAY"
     },
     "sections": {
       "seriesTitle": "◯ SERIES",
@@ -188,7 +197,7 @@
       "format": "FORMAT",
       "prev": "← POST PREC.",
       "next": "POST SUCC. →",
-      "inquire": "INQUIRE",
+      "inquire": "LET'S FILM",
       "inquireSubject": "Inquiry — {TITLE}",
       "carousel": "CAROUSEL",
       "video": "▶ VIDEO",
@@ -234,5 +243,25 @@
       "label": "SHOWREEL"
     }
   },
-  "updatedAt": "2026-09-01T10:00:00.000Z"
+  "updatedAt": "2026-09-01T10:00:00.000Z",
+  "about": {
+    "videoWide": "media/about/super8-about-wide.mp4",
+    "posterWide": "media/about/super8-about-wide-poster.jpg",
+    "video": "media/about/super8-about.mp4",
+    "poster": "media/about/super8-about-poster.jpg",
+    "caption": "Super 8 · Stromboli, 2025",
+    "title": "Andrea Onori",
+    "lead": "",
+    "body": "It began in the Marche, where I was born. Today I'm based in **Milan** and work internationally as an independent filmmaker, mostly in fashion, advertising and media. I follow each project from the first idea to the *final cut*, treating every story as a film of its own.\n\nEmotions rarely arrive with a shape: my craft is building the frame they need to find their meaning. [Instagram](https://www.instagram.com/andrea__onori)",
+    "photos": [
+      {
+        "src": "media/about/bts-1.jpg",
+        "caption": "Portrait"
+      },
+      {
+        "src": "media/about/bts-2.jpg",
+        "caption": "On set · Milan"
+      }
+    ]
+  }
 }
