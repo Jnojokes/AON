@@ -11,7 +11,7 @@
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  body{background:var(--paper);color:var(--ink);font-family:'Bricolage Grotesque',sans-serif;font-size:10.5pt;line-height:1.55}
+  body{background:var(--paper);color:var(--ink);font-family:'Roboto',sans-serif;font-size:10.5pt;line-height:1.55}
   .mono{font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
   @page{size:A4;margin:16mm 15mm 18mm}
   /* Ogni capitolo inizia su una pagina nuova, ma il contenuto poi SCORRE.
@@ -22,9 +22,9 @@
   h2,h3{break-after:avoid}
   h3+p,h3+ul,h3+ol,h3+table{break-before:avoid}
   p,li{orphans:2;widows:2}
-  h1{font-family:'Archivo Black',sans-serif;font-size:34pt;line-height:.95;text-transform:uppercase;letter-spacing:-.01em}
-  h2{font-family:'Archivo Black',sans-serif;font-size:17pt;text-transform:uppercase;margin:0 0 10pt;padding-bottom:5pt;border-bottom:2px solid var(--ink)}
-  h3{font-size:11pt;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin:16pt 0 5pt;color:var(--ink)}
+  h1{font-family:'Roboto',sans-serif;font-weight:500;font-size:40pt;line-height:.98;letter-spacing:-.03em}
+  h2{font-family:'Roboto',sans-serif;font-weight:500;font-size:19pt;letter-spacing:-.02em;margin:0 0 10pt;padding-bottom:6pt;border-bottom:1.5px solid var(--ink)}
+  h3{font-size:10.5pt;font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin:16pt 0 5pt;color:var(--ink)}
   h4{font-size:10pt;font-weight:600;margin:11pt 0 3pt}
   p{margin-bottom:7pt;color:#2a2a2a}
   ul,ol{margin:0 0 8pt 16pt}
@@ -79,10 +79,10 @@
 <section class="page cover">
   <div class="top">
     <div class="eyebrow">Andrea Onori · andreaonori.com</div>
-    <h1>Guida al<br>pannello<br>admin</h1>
-    <p class="sub">Come cambiare le foto, i testi e l'ordine dei progetti sul tuo sito, senza toccare una riga di codice e senza dover chiedere a nessuno.</p>
+    <h1>Guida al<br>pannello</h1>
+    <p class="sub">Come cambiare progetti, video, testi e la pagina About del tuo sito, senza toccare una riga di codice e senza dover chiedere a nessuno.</p>
   </div>
-  <div class="foot">Versione 1.1 · Ottobre 2026</div>
+  <div class="foot">Versione 2.0 · Novembre 2026</div>
 </section>
 
 <!-- ══════════════════ INDICE ══════════════════ -->
@@ -91,44 +91,46 @@
   <ul class="toc">
     <li><span class="n">01</span><span class="t">In due minuti</span><span class="d">Cosa fa il pannello e come arriva online una modifica</span></li>
     <li><span class="n">02</span><span class="t">Entrare</span><span class="d">Indirizzo, utente, password e i messaggi d'errore</span></li>
-    <li><span class="n">03</span><span class="t">Le cinque sezioni</span><span class="d">FEED, MOTION, SERIES, INDEX, IMPOSTAZIONI</span></li>
-    <li><span class="n">04</span><span class="t">Le operazioni di tutti i giorni</span><span class="d">Aggiungere, caricare, riordinare, eliminare, salvare</span></li>
-    <li><span class="n">05</span><span class="t">I video</span><span class="d">Caricarli su Bunny Stream e collegarli al sito, passo per passo</span></li>
-    <li><span class="n">06</span><span class="t">Le regole d'oro</span><span class="d">Proporzioni, pesi, campi da non toccare</span></li>
-    <li><span class="n">07</span><span class="t">Quando qualcosa non va</span><span class="d">Ogni messaggio d'errore e cosa fare</span></li>
-    <li><span class="n">08</span><span class="t">Rimediare a un errore</span><span class="d">Non c'è annulla: ecco come si torna indietro</span></li>
+    <li><span class="n">03</span><span class="t">Le quattro sezioni</span><span class="d">Progetti, Home, About, Testi</span></li>
+    <li><span class="n">04</span><span class="t">La bio e l'editor</span><span class="d">Grassetto, corsivo e link nel testo della pagina About</span></li>
+    <li><span class="n">05</span><span class="t">Le operazioni di tutti i giorni</span><span class="d">Aggiungere, caricare, riordinare, eliminare, salvare</span></li>
+    <li><span class="n">06</span><span class="t">I video</span><span class="d">Bunny Stream, lo showreel e il video della pagina About</span></li>
+    <li><span class="n">07</span><span class="t">Le regole d'oro</span><span class="d">Proporzioni, pesi, campi da non toccare</span></li>
+    <li><span class="n">08</span><span class="t">Quando qualcosa non va</span><span class="d">Ogni messaggio d'errore e cosa fare</span></li>
+    <li><span class="n">09</span><span class="t">Rimediare a un errore</span><span class="d">Non c'è annulla: ecco come si torna indietro</span></li>
   </ul>
-
 </section>
 
+<!-- ══════════════════ 01 ══════════════════ -->
 <section class="page">
   <h2>01 · In due minuti</h2>
-  <p class="lede">Tutto il contenuto del sito — foto, titoli, anni, luoghi, perfino le scritte dei pulsanti — vive in un unico posto. Il pannello è la finestra su quel posto.</p>
+  <p class="lede">Tutto il contenuto del sito (progetti, video, testi, la pagina About, perfino le scritte dei bottoni) vive in un unico posto. Il pannello è la finestra su quel posto.</p>
 
   <h3>Cosa puoi fare</h3>
   <ul>
-    <li>Aggiungere, togliere e riordinare le foto e i progetti.</li>
-    <li>Cambiare titoli, crediti, copertine e loghi dei progetti.</li>
-    <li>Collegare i video ospitati su Bunny Stream.</li>
-    <li>Riscrivere praticamente ogni testo del sito, comprese le etichette dei pulsanti.</li>
+    <li>Aggiungere, togliere e riordinare i progetti, le loro foto e i loro video.</li>
+    <li>Cambiare titoli, crediti, copertine e loghi dei progetti, e collegare un nome dei crediti a un profilo Instagram.</li>
+    <li>Cambiare lo showreel della home e le scritte dei bottoni.</li>
+    <li>Riscrivere la pagina About: video, titolo, bio con grassetto, corsivo e link, foto.</li>
+    <li>Riscrivere le scritte piccole: scheda del progetto, piè di pagina, banner dei cookie.</li>
   </ul>
 
   <h3>Cosa non puoi fare (e va bene così)</h3>
   <ul>
     <li>Cambiare la grafica, i colori o la disposizione degli elementi.</li>
     <li>Aggiungere pagine nuove.</li>
-    <li>Caricare video direttamente: vanno su Bunny Stream, vedi capitolo 05.</li>
+    <li>Caricare i video dei progetti direttamente: vanno su Bunny Stream, vedi il capitolo 06.</li>
   </ul>
 
   <h3>Come arriva online una modifica</h3>
   <ol class="steps">
-    <li>Modifichi qualcosa nel pannello. In alto compare <strong>● modifiche non salvate</strong>.</li>
+    <li>Modifichi qualcosa nel pannello. In alto compare <strong>● Modifiche non salvate</strong>.</li>
     <li>Premi <strong>Salva tutto</strong>.</li>
-    <li>Il sito si ripubblica da solo. Dopo circa <strong>20 secondi</strong> ricarichi andreaonori.com e la modifica è lì.</li>
+    <li>Il sito si ripubblica da solo. Dopo circa <strong>20 secondi</strong> ricarichi il sito e la modifica è lì.</li>
   </ol>
   <div class="box warn">
     <span class="lbl">Da ricordare</span>
-    <p>Finché non premi <strong>Salva tutto</strong>, sul sito non cambia nulla. E se chiudi la scheda senza salvare, le modifiche si perdono: il browser ti avvisa prima di lasciarti uscire.</p>
+    <p>Finché non premi <strong>Salva tutto</strong>, sul sito non cambia nulla. Se chiudi la scheda senza salvare, le modifiche si perdono: il browser ti avvisa prima di lasciarti uscire.</p>
   </div>
 </section>
 
@@ -139,7 +141,7 @@
 
   <figure>
     <img src="/scripts/guide/shots/01-login-vuoto.jpg" alt="Schermata di accesso del pannello">
-    <figcaption>La schermata di accesso. L'utente è sempre <b>admin</b>; la password è quella che ti è stata consegnata.</figcaption>
+    <figcaption>La schermata di accesso. L'utente è sempre <b>admin</b>; la password è quella qui sotto.</figcaption>
   </figure>
 
   <ol class="steps">
@@ -157,12 +159,12 @@
       <tr><td>Utente</td><td><code>admin</code></td></tr>
       <tr><td>Password</td><td><code data-admin-password>—</code></td></tr>
     </table>
-    <p style="margin-top:6pt">Conserva questo documento in un posto tuo: contiene la password del pannello. Se un giorno ti serve cambiarla, si fa dalle impostazioni del sito su Vercel — chiedi a chi lo gestisce.</p>
+    <p style="margin-top:6pt">Conserva questo documento in un posto tuo: contiene la password del pannello. Se un giorno ti serve cambiarla, si fa dalle impostazioni del sito su Vercel: chiedi a chi lo gestisce.</p>
   </div>
 
   <figure>
     <img src="/scripts/guide/shots/02-login-errore.jpg" alt="Messaggio di password errata">
-    <figcaption>Password sbagliata. Il messaggio compare in arancione sotto i campi.</figcaption>
+    <figcaption>Password sbagliata: il messaggio compare sotto i campi.</figcaption>
   </figure>
 
   <h3>Se non entri</h3>
@@ -178,212 +180,232 @@
 
   <div class="box">
     <span class="lbl">Nessun logout, nessuna scadenza</span>
-    <p>Non c'è un pulsante per uscire, e non serve: la sessione vive solo finché tieni aperta quella scheda. <strong>Se ricarichi la pagina o la chiudi, devi rientrare con la password</strong> — e le modifiche non salvate se ne vanno con lei. Anche il pulsante <strong>Sito</strong> in alto ti porta fuori: usalo solo dopo aver salvato.</p>
+    <p>Non c'è un bottone per uscire, e non serve: la sessione vive solo finché tieni aperta quella scheda. <strong>Se ricarichi la pagina o la chiudi, devi rientrare con la password</strong>, e le modifiche non salvate se ne vanno con lei. Il bottone <strong>Vedi il sito ↗</strong> in alto apre il sito in un'altra scheda, quindi il pannello resta aperto.</p>
   </div>
 </section>
 
 <!-- ══════════════════ 03 SEZIONI ══════════════════ -->
 <section class="page">
-  <h2>03 · Le cinque sezioni</h2>
-  <p class="lede">Appena entri vedi cinque schede in alto. Ognuna governa una parte precisa del sito. Il numerino accanto al nome dice quanti elementi contiene.</p>
+  <h2>03 · Le quattro sezioni</h2>
+  <p class="lede">Appena entri vedi quattro schede in alto. Ognuna governa una parte precisa del sito. Il numerino accanto a <strong>Progetti</strong> dice quanti progetti ci sono.</p>
 
   <figure>
-    <img src="/scripts/guide/shots/03-panoramica-feed.jpg" alt="Il pannello aperto sulla sezione FEED">
-    <figcaption>Il pannello aperto su <b>FEED</b>. In alto le cinque schede; ogni riquadro è un progetto.</figcaption>
+    <img src="/scripts/guide/shots/03-panoramica-progetti.jpg" alt="Il pannello aperto sulla sezione Progetti">
+    <figcaption>Il pannello aperto su <b>Progetti</b>. In alto le quattro schede; ogni riquadro è un progetto.</figcaption>
   </figure>
 
   <table>
-    <thead><tr><th style="width:22%">Sezione</th><th>Cosa governa sul sito</th></tr></thead>
+    <thead><tr><th style="width:18%">Sezione</th><th>Cosa governa sul sito</th></tr></thead>
     <tbody>
-      <tr><td><strong>FEED</strong></td><td>La griglia principale, quella che si vede appena si apre il sito. Ogni riquadro è un progetto: nella griglia si vede la sua <strong>copertina</strong>; cliccando si apre la scheda, con il carosello di video e foto e i crediti.</td></tr>
-      <tr><td><strong>MOTION</strong></td><td>I reel verticali. Una copertina più il collegamento al video su Bunny.</td></tr>
-      <tr><td><strong>SERIES</strong></td><td>Le storie in evidenza, quelle nei cerchi. Ogni serie è una cartella di immagini che si sfogliano come le storie di Instagram.</td></tr>
-      <tr><td><strong>INDEX</strong></td><td>Un elenco numerato dei lavori. Oggi la sua scheda è nascosta sul sito: i dati restano nel pannello.</td></tr>
-      <tr><td><strong>IMPOSTAZIONI</strong></td><td>Tutti i testi del sito, la barra scorrevole, lo showreel in testa al feed e la descrizione per Google.</td></tr>
+      <tr><td><strong>Progetti</strong></td><td>La griglia della home. Nella griglia si vede la <strong>copertina</strong> di ogni progetto; cliccando si apre la scheda, con il carosello di video e foto e i crediti.</td></tr>
+      <tr><td><strong>Home</strong></td><td>La prima schermata: lo <strong>showreel</strong> sullo sfondo, nome e scritta sotto, le righe dei due rettangoli <strong>ABOUT ME / PLAY</strong> e <strong>CONTACT ME / STAND BY</strong>, l'email di contatto e la barra in alto.</td></tr>
+      <tr><td><strong>About</strong></td><td>La pagina che si apre da ABOUT ME: il video a tutto schermo (uno per il computer e uno per il telefono), il titolo, la <strong>bio</strong> e le due foto.</td></tr>
+      <tr><td><strong>Testi</strong></td><td>Le scritte piccole: la scheda del progetto, il piè di pagina, il banner dei cookie, l'autore citato nelle immagini.</td></tr>
     </tbody>
   </table>
 
-  <h3>FEED — i campi di ogni progetto</h3>
+  <h3>Progetti: i campi di ogni progetto</h3>
   <table>
     <thead><tr><th style="width:26%">Campo</th><th>Dove finisce</th></tr></thead>
     <tbody>
       <tr><td><strong>Copertina</strong></td><td>L'immagine del riquadro nella griglia. Si vede <strong>solo lì</strong>, non dentro la scheda. Può essere una foto o una WebP/GIF animata: se è piccola, il sito la ingrandisce a pixel netti. Senza copertina, il riquadro mostra la prima foto del carosello.</td></tr>
-      <tr><td><strong>Logo</strong></td><td>Un PNG o SVG trasparente, centrato sopra la copertina. Resta sempre nitido.</td></tr>
-      <tr><td><strong>Carosello della scheda</strong></td><td>Le foto e i video che si sfogliano aprendo il progetto, nell'ordine in cui li metti. L'etichetta arancione <code>COVER</code> segna la foto che la griglia usa quando manca la Copertina.</td></tr>
-      <tr><td><strong>Titolo</strong></td><td>Il nome del video o del progetto: in cima alla scheda e, passando col mouse, sul riquadro.</td></tr>
-      <tr><td><strong>Crediti</strong></td><td>Le righe sotto il titolo nella scheda: etichetta e valore liberi (CLIENT, DIRECTION…), nell'ordine che scegli. Le voci senza valore non si vedono. Il valore di CLIENT compare anche passando col mouse sulla griglia.</td></tr>
-      <tr><td><strong>Anno, Luogo, Pellicola / Formato</strong></td><td>Non si vedono nella scheda: servono a Google e alle pagine dei singoli progetti. Compilali comunque.</td></tr>
+      <tr><td><strong>Logo</strong></td><td>Un PNG o SVG trasparente, centrato sopra la copertina. Facoltativo.</td></tr>
+      <tr><td><strong>Carosello della scheda</strong></td><td>Le foto e i video che si sfogliano aprendo il progetto, nell'ordine in cui li metti.</td></tr>
+      <tr><td><strong>Titolo</strong></td><td>Il nome del video o del progetto, in cima alla scheda.</td></tr>
+      <tr><td><strong>Crediti</strong></td><td>Le righe sotto il titolo: etichetta e valore liberi (CLIENT, ART DIRECTION…), nell'ordine che scegli. Le voci senza valore non si vedono. Con il bottone <span class="kbd">↗</span> puoi collegare un nome a un link, per esempio un profilo Instagram (vedi capitolo 05).</td></tr>
+      <tr><td><strong>Anno, Luogo, Formato</strong></td><td>Non si vedono nella scheda: servono a Google e alle pagine dei singoli progetti. Compilali comunque.</td></tr>
       <tr><td><strong>Descrizione del progetto</strong></td><td>Il testo della pagina dedicata al progetto (<code>andreaonori.com/work/…</code>): 3–4 paragrafi in terza persona.</td></tr>
-      <tr><td><strong>Contenuto Enhanced con AI</strong></td><td>Se spuntata, sul sito appare il marchio <code>◇ AI</code>. Oggi non è spuntata da nessuna parte: lasciala così finché non pubblichi qualcosa realizzato con l'IA.</td></tr>
+      <tr><td><strong>Contenuto Enhanced con AI</strong></td><td>Se la spunti, sul sito appare il marchio <code>◇ AI</code>. Spuntala solo per un progetto realizzato o ritoccato con l'intelligenza artificiale.</td></tr>
     </tbody>
   </table>
 
   <figure style="max-width:60mm">
-    <img src="/scripts/guide/shots/17-scheda-feed.jpg" alt="Un progetto del FEED nel pannello">
-    <figcaption>Un progetto del <b>FEED</b>: in alto Copertina e Logo, sotto il carosello della scheda. Più giù seguono titolo, crediti e gli altri campi.</figcaption>
+    <img src="/scripts/guide/shots/14-scheda-progetto.jpg" alt="Un progetto nel pannello">
+    <figcaption>Un progetto: in alto Copertina e Logo, sotto il carosello. Più giù seguono titolo, crediti e gli altri campi.</figcaption>
   </figure>
 </section>
 
 <section class="page">
+  <h2>03 · Home, About, Testi</h2>
+  <figure>
+    <img src="/scripts/guide/shots/05-sezione-home.jpg" alt="La sezione Home">
+    <figcaption><b>Home</b>: lo showreel in cima, sotto nome, rettangoli, contatto e barra in alto.</figcaption>
+  </figure>
   <div class="two">
-    <figure><img src="/scripts/guide/shots/05-tab-motion.jpg" alt="Sezione MOTION"><figcaption><b>MOTION</b> — reel verticali 9:16</figcaption></figure>
-    <figure><img src="/scripts/guide/shots/06-tab-series.jpg" alt="Sezione SERIES"><figcaption><b>SERIES</b> — le storie nei cerchi</figcaption></figure>
+    <figure><img src="/scripts/guide/shots/06-sezione-about.jpg" alt="La sezione About"><figcaption><b>About</b>: i video divisi tra computer e telefono, poi testi e foto</figcaption></figure>
+    <figure><img src="/scripts/guide/shots/07-sezione-testi.jpg" alt="La sezione Testi"><figcaption><b>Testi</b>: scheda del progetto, piè di pagina, cookie</figcaption></figure>
   </div>
-  <div class="two">
-    <figure><img src="/scripts/guide/shots/07-tab-index.jpg" alt="Sezione INDEX"><figcaption><b>INDEX</b> — l'elenco numerato</figcaption></figure>
-    <figure><img src="/scripts/guide/shots/08-tab-impostazioni.jpg" alt="Sezione IMPOSTAZIONI"><figcaption><b>IMPOSTAZIONI</b> — tutti i testi del sito</figcaption></figure>
+  <div class="box">
+    <span class="lbl">Rettangoli della home</span>
+    <p>Ogni rettangolo ha due righe. In <strong>ABOUT ME</strong> la riga in alto apre la pagina About, quella in basso (<strong>PLAY</strong>) fa ripartire lo showreel con l'audio. In <strong>CONTACT ME</strong> la riga in basso dice <strong>STAND BY</strong> a riposo e <strong>REC</strong> quando ci passi sopra col mouse. Tutte e cinque le scritte si cambiano dalla sezione Home.</p>
   </div>
-
 </section>
 
+<!-- ══════════════════ 04 BIO ══════════════════ -->
 <section class="page">
-  <h2>IMPOSTAZIONI — il riquadro arancione</h2>
-  <p>In cima alle impostazioni c'è un campo bordato di arancione, <strong>Descrizione per SEO &amp; Motori AI</strong>. Merita una spiegazione perché è l'unico che si comporta diversamente da tutti gli altri.</p>
+  <h2>04 · La bio e l'editor</h2>
+  <p class="lede">La bio della pagina About si scrive in <strong>About → Testi</strong>. Ha un piccolo editor per mettere in evidenza qualche parola.</p>
 
   <figure>
-    <img src="/scripts/guide/shots/09-impostazioni-seo.jpg" alt="Il campo della descrizione per i motori di ricerca">
-    <figcaption>Il testo che non si vede sul sito ma che leggono Google e gli assistenti IA.</figcaption>
+    <img src="/scripts/guide/shots/08-editor-bio.jpg" alt="L'editor della bio con l'anteprima">
+    <figcaption>L'editor: sopra i bottoni, al centro il testo, sotto l'<b>anteprima</b> com'è sul sito.</figcaption>
   </figure>
 
+  <ol class="steps">
+    <li><strong>Seleziona</strong> una o più parole nel testo.</li>
+    <li>Premi <strong>B</strong> per il grassetto, <strong>I</strong> per il corsivo, <strong>Link</strong> per un collegamento. Per il link si apre un campo: scrivi <code>instagram.com/nome</code>, un indirizzo completo o un'email e premi <strong>Inserisci</strong>.</li>
+    <li>Guarda l'<strong>anteprima</strong> sotto: è come apparirà sul sito.</li>
+  </ol>
+
+  <table>
+    <thead><tr><th style="width:30%">Comando</th><th>Cosa fa</th></tr></thead>
+    <tbody>
+      <tr><td><span class="kbd">B</span> o <span class="kbd">⌘ B</span></td><td>Grassetto. Ripremuto sulla stessa parola, lo toglie.</td></tr>
+      <tr><td><span class="kbd">I</span> o <span class="kbd">⌘ I</span></td><td>Corsivo. Ripremuto, lo toglie.</td></tr>
+      <tr><td><span class="kbd">Link</span> o <span class="kbd">⌘ K</span></td><td>Collega le parole selezionate a un indirizzo. Sul sito il link si apre in un'altra scheda.</td></tr>
+      <tr><td><span class="kbd">Pulisci</span></td><td>Toglie tutta la formattazione dalle parole selezionate. Senza selezione, da tutto il testo.</td></tr>
+    </tbody>
+  </table>
+
   <div class="box">
-    <span class="lbl">Come si scrive</span>
-    <p><strong>In terza persona</strong>: «Andrea Onori è un filmmaker…», non «Sono un filmmaker…». I modelli linguistici citano frasi isolate, e una frase che si regge da sola viene ripresa meglio.</p>
-    <p><strong>Frasi brevi e complete</strong>, una per riga. Ogni riga diventa un paragrafo.</p>
-    <p><strong>Metti i fatti</strong>: città, discipline, clienti, testate, contatto. Sono le informazioni che un assistente IA riporterà quando qualcuno chiederà di te.</p>
+    <span class="lbl">Quei segni nel testo</span>
+    <p>Nel testo la formattazione appare come segni: <code>**grassetto**</code>, <code>*corsivo*</code>, <code>[parola](https://indirizzo)</code>. È normale: sul sito i segni spariscono e resta la formattazione. Puoi anche scriverli a mano.</p>
+    <p><strong>Andare a capo</strong> crea un nuovo paragrafo.</p>
   </div>
-  <p>Da settembre 2026 questo testo <strong>è anche visibile sul sito</strong>, in fondo alla pagina prima del footer. Quello che scrivi qui lo leggono sia le persone sia i motori: è un motivo in più per curarlo.</p>
+
+  <div class="box warn">
+    <span class="lbl">La bio vale anche per Google</span>
+    <p>Lo stesso testo, senza grassetti e link, è la descrizione che leggono Google e gli assistenti AI (ChatGPT, Claude, Perplexity) per capire chi sei. Quando cambi la bio, si aggiorna anche quella. Tienila chiara e con i fatti: città, lavoro, ambiti.</p>
+  </div>
+
+  <figure style="max-width:110mm">
+    <img src="/scripts/guide/shots/19-sito-about.jpg" alt="La pagina About sul sito">
+    <figcaption>La pagina About sul sito: titolo, bio con la formattazione e i due bottoni.</figcaption>
+  </figure>
 </section>
 
-<!-- ══════════════════ 04 OPERAZIONI ══════════════════ -->
+<!-- ══════════════════ 05 OPERAZIONI ══════════════════ -->
 <section class="page">
-  <h2>04 · Le operazioni di tutti i giorni</h2>
+  <h2>05 · Le operazioni di tutti i giorni</h2>
 
   <h3>Aggiungere un progetto</h3>
-  <p>Il pulsante <strong>+ Aggiungi</strong> sta in alto a destra, accanto al nome della sezione. Il nuovo elemento compare <strong>in fondo</strong> alla lista, vuoto, pronto da riempire.</p>
+  <p>Il bottone <strong>+ Nuovo progetto</strong> sta in alto a destra nella sezione Progetti. Il nuovo progetto compare <strong>in fondo</strong> alla lista, vuoto, pronto da riempire.</p>
   <div class="two">
-    <figure><img src="/scripts/guide/shots/10-bottone-aggiungi.jpg" alt="Il pulsante Aggiungi evidenziato"><figcaption>Il pulsante <b>+ Aggiungi</b></figcaption></figure>
-    <figure><img src="/scripts/guide/shots/11-elemento-aggiunto.jpg" alt="Nuovo elemento in fondo alla lista"><figcaption>Il nuovo riquadro, in fondo</figcaption></figure>
+    <figure><img src="/scripts/guide/shots/09-bottone-nuovo.jpg" alt="Il bottone Nuovo progetto evidenziato"><figcaption>Il bottone <b>+ Nuovo progetto</b></figcaption></figure>
+    <figure><img src="/scripts/guide/shots/10-progetto-aggiunto.jpg" alt="Nuovo progetto in fondo alla lista"><figcaption>Il nuovo riquadro, in fondo</figcaption></figure>
   </div>
 
   <h3>Caricare le foto</h3>
   <p>Due modi, indifferenti:</p>
   <ul>
-    <li><strong>Trascinale</strong> dal Finder direttamente sul riquadro delle immagini. Il bordo diventa arancione tratteggiato.</li>
+    <li><strong>Trascinale</strong> dal Finder direttamente sul riquadro delle immagini. Il bordo diventa bianco tratteggiato.</li>
     <li>Oppure premi <strong>Scegli foto</strong> / <strong>+ Aggiungi foto</strong> e selezionale. Puoi selezionarne più di una insieme.</li>
   </ul>
   <div class="box warn">
-    <span class="lbl">Il limite: 3 MB per foto</span>
+    <span class="lbl">Il limite: 3 MB per file</span>
     <p>Oltre quel peso il pannello rifiuta il file e te lo dice. Esporta a <strong>lato lungo 2000 px, qualità 80</strong>: è più che sufficiente per il web e il sito si apre molto più in fretta.</p>
   </div>
   <div class="box">
     <span class="lbl">Attenzione, non è ovvio</span>
-    <p>Le foto vengono <strong>caricate subito</strong>, appena le trascini — prima e indipendentemente da <em>Salva tutto</em>. Quel pulsante serve a salvare <em>dove</em> le foto vanno e i testi che hai scritto, non le foto in sé.</p>
+    <p>Le foto vengono <strong>caricate subito</strong>, appena le trascini, prima e indipendentemente da <em>Salva tutto</em>. Quel bottone serve a salvare <em>dove</em> le foto vanno e i testi che hai scritto, non le foto in sé.</p>
   </div>
 
   <h3>Copertina e logo</h3>
-  <p>Hanno due riquadri propri, in cima a ogni progetto del FEED: trascina il file lì sopra, oppure premi <strong>Scegli</strong>. Il file si carica <strong>così com'è</strong>, senza essere ricompresso: una WebP animata resta animata. Se la copertina è animata, il pannello prepara da solo anche un fermo immagine, che il sito mostra a chi ha disattivato le animazioni sul proprio dispositivo. Il limite resta di 3 MB.</p>
+  <p>Hanno due riquadri propri, in cima a ogni progetto: trascina il file lì sopra, oppure premi <strong>Scegli</strong>. Il file si carica <strong>così com'è</strong>, senza essere ricompresso: una WebP animata resta animata. Se la copertina è animata, il pannello prepara da solo anche un fermo immagine per chi ha disattivato le animazioni. Il limite resta di 3 MB.</p>
+
+  <h3>Collegare un nome dei crediti</h3>
+  <p>Accanto a ogni voce dei crediti c'è il bottone <span class="kbd">↗</span>. Premilo e compaiono due campi: nel primo l'indirizzo (per esempio <code>https://www.instagram.com/nome</code>), nel secondo la parte del testo da rendere cliccabile. In «Andrea Onori &amp; Pasquale Rosa» puoi collegare solo «Pasquale Rosa». Se lasci vuoto il secondo campo, diventa cliccabile tutta la voce.</p>
+  <figure style="max-width:70mm">
+    <img src="/scripts/guide/shots/15-crediti-link.jpg" alt="Il link di una voce dei crediti">
+    <figcaption>Il bottone <b>↗</b> apre i campi del link. Quando la voce ha un link, i campi restano sempre visibili.</figcaption>
+  </figure>
 
   <h3>Riordinare</h3>
   <ul>
-    <li><span class="kbd">↑</span> <span class="kbd">↓</span> in alto a destra di ogni riquadro spostano <strong>l'intero progetto</strong> nella lista.</li>
+    <li><span class="kbd">↑</span> <span class="kbd">↓</span> in alto a destra di ogni riquadro spostano <strong>l'intero progetto</strong> nella griglia.</li>
     <li><span class="kbd">←</span> <span class="kbd">→</span> sotto ogni miniatura spostano <strong>una singola foto o video</strong> dentro il carosello. La prima slide è quella che si vede aprendo il progetto.</li>
+    <li>Le stesse frecce, accanto a ogni voce dei crediti, ne cambiano l'ordine.</li>
   </ul>
   <p>Non si trascina per riordinare: il trascinamento serve solo a caricare le foto.</p>
 
   <h3>Eliminare</h3>
-  <p>La <span class="kbd">✕</span> arancione elimina: quella in alto nel riquadro toglie l'intero progetto, quella sulla miniatura toglie una sola foto. La <span class="kbd">✕</span> accanto a Copertina e Logo li toglie.</p>
+  <p>La <span class="kbd">✕</span> elimina. Quella in alto nel riquadro toglie l'intero progetto, e prima <strong>chiede conferma</strong>. Quella sulla miniatura toglie una sola foto, quella accanto a una voce dei crediti toglie la voce, quella accanto a Copertina e Logo li toglie: queste non chiedono conferma.</p>
   <div class="box warn">
-    <span class="lbl">Non c'è conferma</span>
-    <p>Nessuna finestra che chiede «sei sicuro?»: quello che premi sparisce subito. Se è stato un errore, <strong>non salvare</strong> e ricarica la pagina: tutto torna com'era.</p>
+    <span class="lbl">Se hai eliminato per sbaglio</span>
+    <p><strong>Non salvare</strong> e ricarica la pagina: tutto torna all'ultimo salvataggio.</p>
   </div>
 
   <h3>Salvare</h3>
   <figure>
-    <img src="/scripts/guide/shots/12-modifiche-non-salvate.jpg" alt="La barra in alto con l'indicatore di modifiche non salvate">
-    <figcaption>Appena tocchi qualcosa compare <b>● modifiche non salvate</b> e <b>Salva tutto</b> si accende.</figcaption>
+    <img src="/scripts/guide/shots/11-modifiche-non-salvate.jpg" alt="La barra in alto con l'indicatore di modifiche non salvate">
+    <figcaption>Appena tocchi qualcosa compare <b>● Modifiche non salvate</b> e <b>Salva tutto</b> si accende.</figcaption>
   </figure>
-  <figure>
-    <img src="/scripts/guide/shots/15-salvato.jpg" alt="Il messaggio verde di conferma del salvataggio">
-    <figcaption>Il messaggio verde di conferma. Da qui il sito si aggiorna da solo in una ventina di secondi.</figcaption>
-  </figure>
+  <p>Premuto <strong>Salva tutto</strong>, in basso compare un messaggio verde di conferma. Da lì il sito si aggiorna da solo in una ventina di secondi.</p>
 </section>
 
-<!-- ══════════════════ 05 VIDEO ══════════════════ -->
+<!-- ══════════════════ 06 VIDEO ══════════════════ -->
 <section class="page">
-  <h2>05 · I video</h2>
+  <h2>06 · I video</h2>
   <div class="box warn">
     <span class="lbl">La regola</span>
-    <p><strong>I video non si caricano mai nel pannello.</strong> Stanno su <strong>Bunny Stream</strong>; nel sito si incolla soltanto il loro link di incorporamento (Embed). Se provi a trascinare un <code>.mp4</code>, il pannello lo rifiuta e te lo ricorda.</p>
+    <p><strong>I video dei progetti non si caricano nel pannello.</strong> Stanno su <strong>Bunny Stream</strong>; nel sito si incolla soltanto il loro link di incorporamento (Embed). Se provi a trascinare un <code>.mp4</code> nel carosello, il pannello lo rifiuta e te lo ricorda.</p>
   </div>
-  <p>Il motivo è pratico: un video pesa quanto centinaia di foto. Tenendolo fuori, il sito resta leggero e il video si carica solo quando qualcuno apre il progetto, nel player di Bunny, che sceglie da solo la qualità giusta per lo schermo e la connessione.</p>
+  <p>Il motivo è pratico: un video pesa quanto centinaia di foto. Tenendolo fuori, il sito resta leggero e il video si carica solo quando qualcuno apre il progetto, nel player di Bunny, che sceglie da solo la qualità giusta.</p>
 
   <ol class="steps">
     <li>
-      <strong>Esporta il video.</strong> MP4, codec <strong>H.264 + audio AAC</strong>, 1080p — oppure 1080×1920 per i verticali. Non serve alleggerirlo: le versioni per i telefoni le prepara Bunny.<br>
+      <strong>Esporta il video.</strong> MP4, codec <strong>H.264 + audio AAC</strong>, 1080p, oppure 1080×1920 per i verticali. Non serve alleggerirlo: le versioni per i telefoni le prepara Bunny.<br>
       <span style="color:var(--mute)">Da Premiere: preset <em>H.264 → Match Source, High Bitrate</em>. Da DaVinci: <em>MP4, H.264</em>, qualità automatica.</span>
     </li>
     <li><strong>Caricalo su Bunny Stream</strong>, nella libreria <strong>andreaonori</strong>, e aspetta che Bunny finisca di elaborarlo: per un video lungo può volerci qualche minuto.</li>
     <li>
       <strong>Copia il link Embed.</strong> Apri il video su Bunny e copia il codice di incorporamento (<em>Embed</em>).<br>
-      Va bene sia tutto il codice <code>&lt;iframe src="…"&gt;</code> sia il solo indirizzo, che inizia con <code>player.mediadelivery.net/embed/788231/</code>: il pannello estrae da sé quello che serve.
+      Va bene sia tutto il codice <code>&lt;iframe src="…"&gt;</code> sia il solo indirizzo, che inizia con <code>player.mediadelivery.net/embed/788231/</code>.
     </li>
-    <li>
-      <strong>Incollalo nel pannello,</strong> dove vuoi il video:
-      <ul style="margin-top:4pt">
-        <li><strong>MOTION</strong> — campo <em>«Link video · Bunny Stream»</em> del reel;</li>
-        <li><strong>FEED</strong> — pulsante <em>«+ Link video»</em> sotto il carosello del progetto, poi incolla nel campo che si apre;</li>
-        <li><strong>SERIES</strong> — stesso pulsante, il video diventa una slide della storia.</li>
-      </ul>
-    </li>
-    <li><strong>Il pannello fa il resto.</strong> Appena incolli, legge il video e compila da solo le <strong>Proporzioni</strong> (16/9, 4/5, 9/16…) e, se manca, la <strong>copertina</strong> con la miniatura di Bunny. Compare un messaggio verde con durata e risoluzione.</li>
+    <li><strong>Nel pannello,</strong> sotto il carosello del progetto premi <strong>+ Link video</strong> e incolla nel campo che si apre.</li>
+    <li><strong>Il pannello fa il resto.</strong> Legge il video e compila da solo le <strong>proporzioni</strong> (16/9, 4/5, 9/16…) e, se manca, la <strong>copertina</strong> con la miniatura di Bunny. Compare un messaggio verde con durata e risoluzione.</li>
     <li><strong>Se vuoi un'altra copertina,</strong> trascina una foto nel riquadro. <em>«Copertina auto»</em> rimette la miniatura di Bunny.</li>
     <li><strong>Premi «Salva tutto».</strong> Dopo una ventina di secondi il video è sul sito.</li>
   </ol>
 
-  <!-- Schermata stretta e alta: accanto alla spiegazione invece che da sola,
-       altrimenti va a capo e lascia mezza pagina vuota. -->
   <div class="two" style="grid-template-columns:58mm 1fr;align-items:start;break-inside:avoid">
     <figure>
-      <img src="/scripts/guide/shots/18-video-bunny.jpg" alt="Un video aggiunto a un progetto, subito dopo aver incollato il link di Bunny">
+      <img src="/scripts/guide/shots/16-video-bunny.jpg" alt="Un video aggiunto a un progetto, subito dopo aver incollato il link di Bunny">
       <figcaption>Un video aggiunto con <b>«+ Link video»</b>: incollato il link, proporzioni e copertina si sono compilate da sole.</figcaption>
     </figure>
     <div class="box">
       <span class="lbl">Perché le proporzioni contano</span>
-      <p>Servono al sito per dare al player la <strong>forma del video</strong>: un 16:9 resta largo, un 4:5 alto, e i controlli stanno sopra il video, senza bande nere.</p>
-      <p>Nella scheda, passando dal video alle foto, titolo e pallini restano fermi.</p>
+      <p>Servono al sito per dare al player la <strong>forma del video</strong>: un 16:9 resta largo, un 4:5 alto, senza bande nere.</p>
       <p>Se un giorno vedi un video con le bande nere, quasi sempre le proporzioni sono sbagliate: correggile a mano o premi <em>«Verifica link»</em> per rileggerle.</p>
     </div>
   </div>
 </section>
 
-<!-- Stesso capitolo: continua sulla stessa pagina, senza salto. -->
 <section>
-  <h2 style="margin-top:14pt">05 · Lo showreel in testa al feed</h2>
-  <p>Il video in loop sopra la griglia si imposta in <strong>IMPOSTAZIONI → Showreel nel feed</strong>. Lì non c'è il player di Bunny ma il file video vero e proprio, che parte da solo, muto. Incolla pure il link Embed di Bunny: il pannello lo converte da solo nel file MP4 a 1080p. Per un file più leggero, cambia <code>1080</code> in <code>720</code> nell'indirizzo.</p>
+  <h2 style="margin-top:14pt">06 · Lo showreel della home</h2>
+  <p>Si imposta in <strong>Home → Showreel</strong>. Qui non c'è il player di Bunny ma il file video vero e proprio, che parte da solo, muto, e gira in loop; PLAY lo fa ripartire con l'audio. Incolla pure il link Embed di Bunny: il pannello lo converte da solo nel file MP4 a 1080p. Per un file più leggero cambia <code>1080</code> in <code>720</code> nell'indirizzo.</p>
+  <p>Sotto c'è la <strong>versione verticale</strong> per il telefono, facoltativa. Se la lasci vuota, da telefono si vede l'orizzontale tagliato al centro.</p>
   <figure>
-    <img src="/scripts/guide/shots/19-showreel-feed.jpg" alt="Lo showreel del feed nelle impostazioni">
+    <img src="/scripts/guide/shots/17-showreel-home.jpg" alt="Lo showreel nella sezione Home">
     <figcaption>Il link Embed di Bunny incollato nello showreel diventa il file <b>MP4</b>; a destra l'anteprima.</figcaption>
   </figure>
 
-  <h2 style="margin-top:18pt">05 · I video — se qualcosa non va</h2>
+  <h2 style="margin-top:18pt">06 · Il video della pagina About</h2>
+  <p>In <strong>About → Video</strong> ci sono due righe: <strong>Computer</strong> (video orizzontale e la sua copertina) e <strong>Telefono</strong> (video verticale e la sua copertina). Se ne metti uno solo, si usa quello su tutti gli schermi, tagliato al centro.</p>
+  <p>Qui puoi <strong>trascinare direttamente un MP4</strong>, purché pesi meno di 3 MB (basta un loop corto), oppure incollare il link di Bunny, che si converte da solo. La copertina si vede finché il video carica.</p>
+
+  <h2 style="margin-top:18pt">06 · I video, se qualcosa non va</h2>
   <table>
     <thead><tr><th style="width:42%">Cosa vedi</th><th>Cosa fare</th></tr></thead>
     <tbody>
       <tr><td><strong>«Non riesco a leggere il video su Bunny»</strong></td><td>Bunny sta ancora elaborando il video, oppure il link è sbagliato. Aspetta qualche minuto e premi <em>«Verifica link»</em>. Le proporzioni puoi anche scriverle a mano.</td></tr>
       <tr><td><strong>Il riquadro del video resta nero</strong></td><td>Su Bunny controlla che il video abbia finito l'elaborazione e che sia nella libreria <strong>andreaonori</strong>. Ricopia il link Embed.</td></tr>
       <tr><td><strong>Il video ha bande nere</strong></td><td>Le proporzioni non corrispondono al video: correggile (per esempio <code>4/5</code> invece di <code>16/9</code>) o premi <em>«Verifica link»</em>.</td></tr>
-      <tr><td><strong>«Link Jumpshare: il sito non li mostra più»</strong></td><td>Jumpshare non si usa più. Carica il video su Bunny e incolla il link Embed.</td></tr>
+      <tr><td><strong>«Questo è un link da incorporare»</strong> nello showreel o nell'About</td><td>Lì serve il file .mp4, non un player. Il link Embed di Bunny si converte da solo; un link di un altro servizio no.</td></tr>
       <tr><td><strong>Il video parte ma va a scatti</strong></td><td>Di solito è la connessione: Bunny abbassa la qualità da solo. Se succede sempre, controlla su Bunny che l'elaborazione sia finita.</td></tr>
-      <tr><td><strong>Trascino un video e lo rifiuta</strong></td><td>È voluto: i video non entrano nel sito, vanno su Bunny.</td></tr>
+      <tr><td><strong>Trascino un video in un progetto e lo rifiuta</strong></td><td>È voluto: i video dei progetti vanno su Bunny.</td></tr>
     </tbody>
   </table>
-
-  <h3>Cosa non serve fare</h3>
-  <ul>
-    <li>Non serve comprimere i video per il sito: Bunny prepara da solo le versioni per ogni schermo.</li>
-    <li>Non serve cancellare i video vecchi da Bunny quando li sostituisci: basta cambiare il link nel pannello. Su Bunny però occupano spazio: se non ti servono più, eliminali da lì.</li>
-    <li>Non serve toccare nessun file di codice: tutto passa dal pannello.</li>
-  </ul>
 
   <div class="box">
     <span class="lbl">Una volta sola</span>
@@ -391,61 +413,60 @@
   </div>
 </section>
 
-<!-- ══════════════════ 06 REGOLE ══════════════════ -->
+<!-- ══════════════════ 07 REGOLE ══════════════════ -->
 <section class="page">
-  <h2>06 · Le regole d'oro</h2>
+  <h2>07 · Le regole d'oro</h2>
 
-  <h3>Le proporzioni delle foto</h3>
+  <h3>Le proporzioni</h3>
   <p>Le immagini vengono <strong>ritagliate</strong>, non rimpicciolite, per entrare nel loro spazio. Se il taglio ti sorprende, è per questo.</p>
   <table>
-    <thead><tr><th style="width:26%">Sezione</th><th style="width:20%">Proporzione</th><th>In pratica</th></tr></thead>
+    <thead><tr><th style="width:30%">Dove</th><th style="width:20%">Proporzione</th><th>In pratica</th></tr></thead>
     <tbody>
-      <tr><td><strong>FEED</strong> — copertina</td><td>4:5</td><td>Verticale, come un post Instagram. Una copertina animata piccola (es. 272×340) viene ingrandita a pixel netti</td></tr>
-      <tr><td><strong>Video</strong></td><td>Qualsiasi</td><td>Il player prende la forma del video: basta che le proporzioni nel pannello siano giuste</td></tr>
-      <tr><td><strong>MOTION</strong></td><td>9:16</td><td>Verticale pieno, come una storia</td></tr>
-      <tr><td><strong>SERIES</strong> — copertina</td><td>1:1 in cerchio</td><td>Il soggetto va al centro</td></tr>
-      <tr><td><strong>SERIES</strong> — slide</td><td>9:16</td><td>Come le storie</td></tr>
+      <tr><td><strong>Progetti</strong>: copertina</td><td>4:5</td><td>Verticale, come un post Instagram. Una copertina animata piccola (es. 272×340) viene ingrandita a pixel netti</td></tr>
+      <tr><td><strong>Progetti</strong>: video</td><td>Qualsiasi</td><td>Il player prende la forma del video: basta che le proporzioni nel pannello siano giuste</td></tr>
+      <tr><td><strong>Showreel</strong></td><td>16:9 · 9:16</td><td>Orizzontale per il computer, verticale (facoltativo) per il telefono</td></tr>
+      <tr><td><strong>About</strong>: video</td><td>16:9 · 9:16</td><td>Uno per il computer, uno per il telefono</td></tr>
+      <tr><td><strong>About</strong>: foto</td><td>4:5</td><td>Due, affiancate sotto la bio</td></tr>
     </tbody>
   </table>
 
   <h3>I campi da non toccare</h3>
   <ul>
-    <li><strong>Il segnaposto <code>{TITLE}</code></strong> nell'oggetto dell'email di richiesta: viene sostituito con il nome del progetto. Se lo cancelli, l'oggetto resta generico.</li>
-    <li><strong>Il segnaposto <code>{SECTION}</code></strong> nel messaggio di sezione vuota: stessa logica.</li>
-    <li><strong>L'ID (slug)</strong> delle serie: può restare com'è. Se lo cambi, dev'essere diverso da quello di ogni altra serie.</li>
-    <li><strong>I testi del banner cookie</strong>: riformularli va bene, cancellarli no. È un obbligo di legge.</li>
+    <li><strong>Il segnaposto <code>{TITLE}</code></strong> nell'oggetto dell'email di richiesta (Testi → Scheda del progetto): viene sostituito con il nome del progetto. Se lo cancelli, l'oggetto resta generico.</li>
+    <li><strong>I testi del banner dei cookie</strong>: riformularli va bene, cancellarli no. È un obbligo di legge.</li>
   </ul>
 
   <div class="box warn">
-    <span class="lbl">Svuotare un campo lo cancella dal sito</span>
-    <p>Non esiste un «torna al valore predefinito». Se svuoti <strong>Email di contatto</strong>, il pulsante di contatto sparisce dalla scheda progetto. Se svuoti tutte le voci della barra scorrevole, la barra sparisce. È voluto — serve a poter togliere le cose — ma è utile saperlo.</p>
+    <span class="lbl">Svuotare un campo lo toglie dal sito</span>
+    <p>Non esiste un «torna al valore predefinito». Se svuoti <strong>Email di contatto</strong>, il bottone di contatto sparisce dalla scheda progetto. Se svuoti il video dello showreel, la home resta senza sfondo. È voluto, serve a poter togliere le cose, ma è utile saperlo.</p>
   </div>
 
   <h3>Piccole cose che fanno la differenza</h3>
   <ul>
     <li><strong>Comprimi le foto prima di caricarle.</strong> È la cosa che più incide sulla velocità del sito.</li>
-    <li><strong>Compila sempre titolo, luogo e anno.</strong> Finiscono nelle descrizioni che leggono Google e gli assistenti IA: un progetto senza titolo è un progetto che non verrà mai citato.</li>
-    <li><strong>Compila CLIENT nei crediti.</strong> Compare passando col mouse sulla griglia e aiuta Google a collegare il progetto al brand.</li>
+    <li><strong>Compila sempre titolo, luogo e anno.</strong> Finiscono nelle descrizioni che leggono Google e gli assistenti AI: un progetto senza titolo è un progetto che non verrà mai citato.</li>
+    <li><strong>Compila CLIENT nei crediti.</strong> Aiuta Google a collegare il progetto al brand.</li>
+    <li><strong>Tieni la bio fattuale.</strong> È anche il testo che Google mostra di te.</li>
     <li><strong>Ricaricare la stessa foto ne crea una copia.</strong> Non è un problema, ma evita di farlo per abitudine.</li>
   </ul>
 </section>
 
-<!-- ══════════════════ 07 ERRORI ══════════════════ -->
+<!-- ══════════════════ 08 ERRORI ══════════════════ -->
 <section class="page">
-  <h2>07 · Quando qualcosa non va</h2>
-  <p class="lede">I messaggi compaiono in basso al centro: verdi se è andata bene, arancioni se c'è un problema. Quelli d'errore restano dodici secondi, così c'è tempo di leggerli.</p>
+  <h2>08 · Quando qualcosa non va</h2>
+  <p class="lede">I messaggi compaiono in basso al centro: verdi se è andata bene, rossi se c'è un problema. Quelli d'errore restano dodici secondi, così c'è tempo di leggerli.</p>
 
   <table>
     <thead><tr><th style="width:40%">Messaggio</th><th>Cosa fare</th></tr></thead>
     <tbody>
-      <tr><td><strong>«…» pesa 4,2 MB: il limite dal pannello è 3 MB</strong></td><td>Comprimi la foto: lato lungo 2000 px, qualità 80.</td></tr>
-      <tr><td><strong>«…» è un video: i video non vanno caricati nel sito</strong></td><td>Caricalo su Bunny Stream e incolla il link Embed. Vedi capitolo 05.</td></tr>
-      <tr><td><strong>Trascina un file immagine (jpg, png, webp)</strong></td><td>Hai trascinato un file che non è una foto — spesso un PDF o un file di Photoshop.</td></tr>
-      <tr><td><strong>Password errata (401)</strong></td><td>La password è cambiata mentre eri dentro. Salva quello che puoi, ricarica, rientra.</td></tr>
+      <tr><td><strong>«…» pesa 4,2 MB: il limite dal pannello è 3 MB</strong></td><td>Comprimi il file: per una foto lato lungo 2000 px, qualità 80; per un MP4 dell'About, accorcialo o esportalo più leggero, oppure mettilo su Bunny e incolla il link.</td></tr>
+      <tr><td><strong>«…» è un video: i video non vanno caricati nel sito</strong></td><td>Caricalo su Bunny Stream e incolla il link Embed. Vedi capitolo 06.</td></tr>
+      <tr><td><strong>Trascina un file immagine (jpg, png, webp)</strong></td><td>Hai trascinato un file che non è una foto, spesso un PDF o un file di Photoshop.</td></tr>
+      <tr><td><strong>Password errata (401)</strong></td><td>La password è cambiata mentre eri dentro. Ricarica e rientra.</td></tr>
       <tr><td><strong>Rete non raggiungibile</strong></td><td>Manca la connessione. Le modifiche sono ancora lì: riconnettiti e ripremi <strong>Salva tutto</strong>.</td></tr>
       <tr><td><strong>Errore di configurazione server (500)</strong></td><td>Non dipende da te: manca un'impostazione sul server. Va segnalato a chi gestisce il sito.</td></tr>
       <tr><td><strong>GitHub ha rifiutato la scrittura (502)</strong></td><td>La chiave d'accesso è scaduta. Da segnalare: non è risolvibile dal pannello.</td></tr>
-      <tr><td><strong>File troppo grande per l'upload (413)</strong></td><td>Come sopra: comprimi la foto.</td></tr>
+      <tr><td><strong>File troppo grande per l'upload (413)</strong></td><td>Come sopra: comprimi il file.</td></tr>
     </tbody>
   </table>
 
@@ -459,10 +480,10 @@
   <p>Il pannello non avvisa se qualcun altro sta modificando nello stesso momento: <strong>vince l'ultimo che salva</strong>. Se il sito è gestito da più di una persona, mettetevi d'accordo prima.</p>
 </section>
 
-<!-- ══════════════════ 08 RIMEDIARE ══════════════════ -->
+<!-- ══════════════════ 09 RIMEDIARE ══════════════════ -->
 <section class="page">
-  <h2>08 · Rimediare a un errore</h2>
-  <p class="lede">Nel pannello non c'è un pulsante «annulla». Ma niente è mai perso davvero: ogni salvataggio lascia una traccia permanente.</p>
+  <h2>09 · Rimediare a un errore</h2>
+  <p class="lede">Nel pannello non c'è un bottone «annulla». Ma niente è mai perso davvero: ogni salvataggio lascia una traccia permanente.</p>
 
   <h3>Se non hai ancora salvato</h3>
   <p>È il caso più semplice: <strong>ricarica la pagina senza salvare</strong>. Il browser chiede conferma, tu accetti, e tutto torna all'ultimo stato salvato. Poi rientri con la password.</p>
@@ -477,14 +498,14 @@
 
   <div class="box plain">
     <span class="lbl">In sintesi</span>
-    <p>Le foto già caricate restano nel sito anche se togli il progetto che le usava: non occupano spazio visibile e non fanno danno.</p>
-    <p>Le due protezioni contro la perdita di lavoro sono l'indicatore <strong>● modifiche non salvate</strong> e l'avviso del browser quando chiudi. Se li vedi, fermati un attimo prima di procedere.</p>
+    <p>Le foto già caricate restano nel sito anche se togli il progetto che le usava: non si vedono e non fanno danno.</p>
+    <p>Le due protezioni contro la perdita di lavoro sono l'indicatore <strong>● Modifiche non salvate</strong> e l'avviso del browser quando chiudi. Se li vedi, fermati un attimo prima di procedere.</p>
   </div>
 
   <h3>Il risultato</h3>
   <figure>
-    <img src="/scripts/guide/shots/16-sito-pubblico.jpg" alt="Il sito pubblico" style="max-width:78mm;margin:0 auto">
-    <figcaption>Il sito pubblico. Quello che modifichi nel pannello è quello che compare qui.</figcaption>
+    <img src="/scripts/guide/shots/18-sito-home.jpg" alt="La home del sito" style="max-width:72mm;margin:0 auto">
+    <figcaption style="text-align:center">La home del sito. Quello che modifichi nel pannello è quello che compare qui.</figcaption>
   </figure>
 
   <div class="box">
