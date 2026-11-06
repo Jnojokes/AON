@@ -1026,6 +1026,7 @@
         }
         .skip-link:focus { top: 8px; outline: 2px solid #fff; outline-offset: 3px; }
         .home-panel:focus { outline: none; }
+        body:focus { outline: none; }
         /* Focus da tastiera visibile ovunque */
         a:focus-visible, button:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
@@ -1905,7 +1906,17 @@
 
         function close() {
             el.classList.remove('is-open');
-            if (lastFocus && lastFocus.focus) lastFocus.focus();
+            // Il banner sta in fondo alla pagina: se prima non c'era un elemento
+            // col focus (primo caricamento), il focus torna all'inizio, cosi'
+            // il Tab successivo porta a "Skip to work" e non nel vuoto.
+            if (lastFocus && lastFocus !== document.body && lastFocus.focus && document.contains(lastFocus)) {
+                lastFocus.focus();
+            } else {
+                var b = document.body;
+                b.setAttribute('tabindex', '-1');
+                b.focus({ preventScroll: true });
+                b.addEventListener('blur', function via() { b.removeAttribute('tabindex'); b.removeEventListener('blur', via); });
+            }
         }
 
         // Riapre il banner su richiesta. Serve perché il consenso dev'essere
