@@ -16,13 +16,18 @@
 <!-- Umami: statistiche senza cookie, conta solo sul dominio vero (data-domains). -->
 <script defer src="https://cloud.umami.is/script.js" data-website-id="6f54222f-5c21-4707-be4f-d71137780c5a" data-domains="andreaonori.com,www.andreaonori.com"></script>
 <!--
-  WORK IN PROGRESS v6 — pagina d'attesa di andreaonori.com (25/10)
+  WORK IN PROGRESS v7 — pagina d'attesa di andreaonori.com (16/11)
+  v7: via il pallino accanto a WORK IN PROGRESS, via la freccia e FOLLOW → FIND ME,
+  via "ARCHIVE / 26 · VOLUME 01" dalla barra (come sul sito). Meno ornamenti.
+  CONTACT ME: via il pallino verde/rosso, sotto c'è solo LET'S ROLL (niente cambio in REC).
+  Sfondo: wip-reel-v2.webp = il montaggio di prima (fotogrammi identici, non ricodificati)
+  + 4 s di mare di Stromboli dal rullo Super 8 alla fine, sfocati come gli altri (blur 8).
   Una schermata sola, senza scorrere (stile home H8): sfondo sfocato a tutto
   schermo con un velo del colore dello sfondo al 50%; al centro
-  "● WORK IN PROGRESS", poi "Andrea Onori" (Roboto 500), la scritta
-  FILM-MAKER · BASED IN MILAN (Roboto) e due rettangoli: INSTAGRAM / ↗ FOLLOW e
-  CONTACT ME / STAND BY → REC. In fondo la riga con P. IVA, mail e link legali.
-  Sfondo temporaneo: il montaggio sfocato dei lavori (media/wip-reel.webp).
+  "WORK IN PROGRESS", poi "Andrea Onori" (Roboto 500), la scritta
+  FILM-MAKER · BASED IN MILAN (Roboto) e due rettangoli: INSTAGRAM / FIND ME e
+  CONTACT ME / LET'S ROLL. In fondo la riga con P. IVA, mail e link legali.
+  Sfondo temporaneo: il montaggio sfocato dei lavori (media/wip-reel-v2.webp).
   Solo HTML + CSS: niente JavaScript, niente cookie, nessun servizio esterno.
   Se lo schermo e' troppo basso (telefono in orizzontale) la pagina scorre.
 -->
@@ -89,11 +94,9 @@
         margin: auto 0; padding-top: 32px; padding-bottom: 32px;
         display: flex; flex-direction: column; align-items: center; text-align: center;
     }
-    /* sopra il nome: pallino arancio che lampeggia + WORK IN PROGRESS */
+    /* sopra il nome: WORK IN PROGRESS, senza pallino (v7) */
     /* un po' piu' grande della v6 (richiesta di Andrea, 25/10) */
-    .kicker { display: inline-flex; align-items: center; gap: 12px; font-size: 13px; color: rgba(255,255,255,.88); margin-bottom: 24px; }
-    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: blink 1.4s ease-in-out 3; }
-    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+    .kicker { display: inline-flex; align-items: center; font-size: 13px; color: rgba(255,255,255,.88); margin-bottom: 24px; }
     h1 {
         font-family: 'Roboto', sans-serif; font-weight: 500;
         white-space: nowrap;
@@ -121,25 +124,16 @@
     .cbtn-top { color: #161616; }
     .cbtn-top > span { display: inline-block; transition: transform .35s var(--ease-out); }
     .cbtn-bot { gap: 9px; color: rgba(255,255,255,.85); transition: color .35s var(--ease-out); }
-    .cbtn-dot { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; transition: background .25s; }
-    .cbtn-hover { display: none; }
     .cbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
     /* stati col mouse (solo dove il mouse c'è) e col focus da tastiera */
     @media (hover: hover) {
         .cbtn:hover { background: linear-gradient(to bottom, #fff 0 50%, #3a3a3a 50% 100%); }
         .cbtn:hover .cbtn-bot { color: #fff; }
         .cbtn:hover .cbtn-top > span { transform: scale(1.08); }
-        .cbtn.contact:hover .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
-        .cbtn.contact:hover .cbtn-idle { display: none; }
-        .cbtn.contact:hover .cbtn-hover { display: inline; }
     }
     .cbtn:focus-visible { background: linear-gradient(to bottom, #fff 0 50%, #3a3a3a 50% 100%); }
     .cbtn:focus-visible .cbtn-bot { color: #fff; }
     .cbtn:focus-visible .cbtn-top > span { transform: scale(1.08); }
-    .cbtn.contact:focus-visible .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
-    .cbtn.contact:focus-visible .cbtn-idle { display: none; }
-    .cbtn.contact:focus-visible .cbtn-hover { display: inline; }
-    @keyframes recblink { 0%, 55% { opacity: 1; } 70%, 100% { opacity: .2; } }
 
     /* ── Footer ── */
     /* footer in fondo alla stessa schermata */
@@ -154,18 +148,16 @@
         :root { --gap: 6px; --side: 20px; }
         .btn-row { width: 100%; gap: 8px; }
         .btn-row .cbtn { flex: 1 1 0; min-width: 0; padding: 0 12px; }
-        .kicker { font-size: 11px; gap: 10px; }
+        .kicker { font-size: 11px; }
         .hero::before { background: radial-gradient(ellipse 90% 36% at 50% 50%, rgba(22,22,22,.4) 0%, rgba(22,22,22,.4) 55%, rgba(22,22,22,0) 100%); }
-        .topbar .right .vol { display: none; }
         /* footer da telefono: tre righe ordinate */
         footer .wrap { font-size: 11px; flex-direction: column; gap: 8px; }
         footer .sep { display: none; }
         footer .piva { display: block; margin-top: 4px; }
         footer .links { gap: 8px 16px; }
     }
-    /* Movimento ridotto: sfondo fermo (copertina), niente lampeggi */
+    /* Movimento ridotto: sfondo fermo (copertina) */
     @media (prefers-reduced-motion: reduce) {
-        .live-dot, .cbtn .cbtn-dot { animation: none !important; }
         .cbtn-top > span { transition: none; }
     }
 </style>
@@ -175,7 +167,7 @@
     <div class="bg" aria-hidden="true">
         <picture class="anim">
             <source media="(prefers-reduced-motion: reduce)" srcset="/media/wip-reel-poster.jpg">
-            <img src="/media/wip-reel.webp" alt="" decoding="async">
+            <img src="/media/wip-reel-v2.webp" alt="" decoding="async">
         </picture>
         <img class="still" src="/media/wip-reel-poster.jpg" alt="" loading="lazy" decoding="async">
     </div>
@@ -185,7 +177,6 @@
             <div class="wrap">
                 <div class="mono uline">@andrea__onori</div>
                 <div class="mono uline right">
-                    <span class="vol">ARCHIVE / 26 · VOLUME 01</span>
                     <input type="checkbox" id="pause" class="pause-cb" aria-label="Pause the background">
                     <label for="pause" class="pause-lbl" aria-hidden="true"><span class="stop">❚❚</span><span class="play">▶</span></label>
                 </div>
@@ -193,17 +184,17 @@
         </header>
 
         <main class="profile wrap">
-            <div class="kicker mono uline"><i class="live-dot" aria-hidden="true"></i>Work in progress</div>
+            <div class="kicker mono uline">Work in progress</div>
             <h1>Andrea Onori</h1>
             <div class="eyebrow">Film-maker · Based in Milan</div>
             <div class="btn-row">
                 <a class="cbtn" href="https://www.instagram.com/andrea__onori" rel="noopener" aria-label="Instagram">
                     <span class="cbtn-top"><span>Instagram</span></span>
-                    <span class="cbtn-bot" aria-hidden="true"><span>↗ Follow</span></span>
+                    <span class="cbtn-bot" aria-hidden="true"><span>Find me</span></span>
                 </a>
                 <a class="cbtn contact" href="mailto:video@andreaonori.com?subject=Production%20enquiry" aria-label="Contact me">
                     <span class="cbtn-top"><span>Contact me</span></span>
-                    <span class="cbtn-bot" aria-hidden="true"><i class="cbtn-dot"></i><span class="cbtn-idle">Stand by</span><span class="cbtn-hover">Rec</span></span>
+                    <span class="cbtn-bot" aria-hidden="true"><span>Let’s roll</span></span>
                 </a>
             </div>
         </main>

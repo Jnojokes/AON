@@ -1085,29 +1085,24 @@
         .cbtn-top { color: #161616; }
         .cbtn-top > span { display: inline-block; transition: transform .35s var(--ease-out); }
         .cbtn-bot { gap: 9px; color: rgba(255,255,255,.85); transition: color .35s var(--ease-out); }
-        .cbtn-dot { width: 7px; height: 7px; border-radius: 50%; background: #3ddc84; transition: background .25s; }
         .cbtn-hover { display: none; }
         .cbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-        /* Stato "REC": col mouse (solo dove il mouse c'e', cosi' da touch resta
-           STAND BY anche dopo il tocco) e col focus da tastiera. */
+        /* Col mouse (solo dove il mouse c'e') e col focus da tastiera la meta'
+           sotto si schiarisce; se ctaHover e' pieno, la scritta cambia. */
         @media (hover: hover) {
             .cbtn:hover { background: linear-gradient(to bottom, #fff 0 50%, #3a3a3a 50% 100%); }
             .cbtn:hover .cbtn-bot { color: #fff; }
-            .cbtn:hover .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
             .cbtn:hover .cbtn-idle { display: none; }
             .cbtn:hover .cbtn-hover { display: inline; }
             .cbtn:hover .cbtn-top > span { transform: scale(1.08); }
         }
         .cbtn:focus-visible { background: linear-gradient(to bottom, #fff 0 50%, #3a3a3a 50% 100%); }
         .cbtn:focus-visible .cbtn-bot { color: #fff; }
-        .cbtn:focus-visible .cbtn-dot { background: #ff3b30; animation: recblink 1.2s ease-in-out infinite; }
         .cbtn:focus-visible .cbtn-idle { display: none; }
         .cbtn:focus-visible .cbtn-hover { display: inline; }
         .cbtn:focus-visible .cbtn-top > span { transform: scale(1.08); }
-        @keyframes recblink { 0%, 55% { opacity: 1; } 70%, 100% { opacity: .2; } }
         @media (prefers-reduced-motion: reduce) {
             .cbtn-top > span { transition: none; }
-            .cbtn .cbtn-dot { animation: none !important; }
         }
 
         /* Tabs */
@@ -1762,7 +1757,7 @@
 
     <!-- Il sorgente di questo bundle e' src/app.jsx. Non modificare
          assets/app.js a mano: si rigenera con `npm run build`. -->
-    <script src="/assets/app.js?v=f767b660" defer></script>
+    <script src="/assets/app.js?v=8b20f6ac" defer></script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
          BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:

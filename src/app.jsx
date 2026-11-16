@@ -56,8 +56,8 @@ import * as ReactDOM from 'react-dom/client';
                 siteUrl: 'https://www.andreaonori.com/',
                 ctaPrimary: 'CONTACT ME',
                 // Riga sotto del bottone di contatto: a riposo e col mouse sopra.
-                ctaIdle: 'STAND BY',
-                ctaHover: 'REC',
+                ctaIdle: 'LET’S ROLL',
+                ctaHover: '',
                 // Meta' sotto del rettangolo ABOUT ME: fa partire lo showreel.
                 ctaPlay: 'PLAY',
                 ctaEmail: 'video@andreaonori.com',
@@ -733,10 +733,9 @@ import * as ReactDOM from 'react-dom/client';
         };
 
         // Bottone di contatto "a due piani": sopra CONTACT ME (ctaPrimary),
-        // sotto un pallino verde e STAND BY (ctaIdle); col mouse sopra il
-        // pallino diventa rosso e lampeggia e la scritta diventa REC
-        // (ctaHover), come una camera che registra. Apre il modulo di
-        // contatto. Stile in .cbtn (index.html).
+        // sotto LET'S ROLL (ctaIdle). Se ctaHover e' pieno, col mouse sopra la
+        // scritta cambia; vuoto, resta ctaIdle. Apre il modulo di contatto.
+        // Stile in .cbtn (index.html).
         const ContactButton = ({ onOpen }) => {
             const p = S().profile;
             if (!(p.ctaPrimary && p.ctaEmail)) return null;
@@ -744,7 +743,6 @@ import * as ReactDOM from 'react-dom/client';
                 <button type="button" className="cbtn" aria-label={p.ctaPrimary} onClick={onOpen}>
                     <span className="cbtn-top"><span>{p.ctaPrimary}</span></span>
                     <span className="cbtn-bot" aria-hidden="true">
-                        <i className="cbtn-dot"></i>
                         <span className="cbtn-idle">{p.ctaIdle}</span>
                         <span className="cbtn-hover">{p.ctaHover || p.ctaIdle}</span>
                     </span>
