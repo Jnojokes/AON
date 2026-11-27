@@ -640,11 +640,11 @@ import * as ReactDOM from 'react-dom/client';
                               display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
                               padding: '24px', overflowY: 'auto' }}>
                     <div ref={box} role="dialog" aria-modal="true" aria-label="Contatta Andrea Onori" className="fade"
-                         style={{ background: '#0a0a0a', border: '1px solid var(--line)', padding: '26px',
+                         style={{ background: '#161616', padding: '26px',
                                   width: '100%', maxWidth: '480px', marginTop: '4vh', marginBottom: '4vh' }}>
                         <div className="flex justify-between items-start" style={{ marginBottom: '18px' }}>
                             <div>
-                                <div className="mono uline" style={{ fontSize: '11px', color: 'var(--accent)', marginBottom: '6px' }}>Contatto</div>
+                                <div className="mono uline" style={{ fontSize: '11px', color: 'var(--mute)', marginBottom: '6px' }}>Contatto</div>
                                 <div className="display" style={{ fontSize: '22px', lineHeight: 1.1, textTransform: 'uppercase' }}>
                                     {progetto || 'Scrivimi'}
                                 </div>
@@ -695,13 +695,13 @@ import * as ReactDOM from 'react-dom/client';
                                                 fontSize: '11px', color: 'var(--mute)', lineHeight: 1.5,
                                                 marginBottom: '16px', cursor: 'pointer' }}>
                                     <input type="checkbox" checked={dati.privacy} onChange={set('privacy')}
-                                           style={{ marginTop: '2px', accentColor: 'var(--accent)' }} required />
+                                           style={{ marginTop: '2px', accentColor: '#fff' }} required />
                                     <span>Ho letto l&rsquo;<a href="/privacy" target="_blank" rel="noopener"
                                           style={{ color: 'var(--fg)' }}>informativa privacy</a> e acconsento al
                                           trattamento dei miei dati per ricevere una risposta.</span>
                                 </label>
 
-                                {errore && <p className="mono" role="alert" style={{ fontSize: '11px', color: 'var(--accent)',
+                                {errore && <p className="mono" role="alert" style={{ fontSize: '11px', color: 'var(--fg)',
                                               marginBottom: '12px', lineHeight: 1.6 }}>{errore}</p>}
 
                                 <button type="submit" disabled={stato === 'invio'} className="btn-primary"
@@ -723,7 +723,7 @@ import * as ReactDOM from 'react-dom/client';
                                 {email}
                             </button>
                             <span className="mono" role="status" aria-live="polite"
-                                  style={{ fontSize: '11px', color: 'var(--accent)', marginLeft: '8px' }}>
+                                  style={{ fontSize: '11px', color: 'var(--fg)', marginLeft: '8px' }}>
                                 {copiata ? 'copiata' : ' '}
                             </span>
                         </div>
@@ -1041,6 +1041,18 @@ import * as ReactDOM from 'react-dom/client';
             );
         });
 
+        // Loghi sulle copertine del feed e della sezione Motion
+        // (settings.feedLogos, dal pannello). mode: always | hover | off;
+        // size: larghezza in % della cella (20-60), l'altezza massima e' 0,75 x.
+        // Senza il campo vale always / 40, com'era prima.
+        const feedLogos = () => {
+            const f = (M().settings && M().settings.feedLogos) || {};
+            const mode = ['always', 'hover', 'off'].includes(f.mode) ? f.mode : 'always';
+            const n = Number(f.size);
+            const size = Number.isFinite(n) ? Math.min(60, Math.max(20, n)) : 40;
+            return { className: 'grid grid-cols-3 feed-grid logos-' + mode, style: { '--logo-w': size + '%' } };
+        };
+
         // Feed Grid — uniform 4:5 cells on every breakpoint (no bento, no mixed ratios, no holes)
         const FeedGrid = ({ onClick }) => {
             const images = (M().feed && M().feed.length) ? M().feed : [];
@@ -1048,7 +1060,7 @@ import * as ReactDOM from 'react-dom/client';
 
             return (
                 <>
-                <div className="grid grid-cols-3 feed-grid">
+                <div {...feedLogos()}>
                     {images.map((img, i) => {
                         const slides = slidesOf(img);
                         return (
@@ -1092,7 +1104,7 @@ import * as ReactDOM from 'react-dom/client';
             const items = (M().motion && M().motion.length) ? M().motion : [];
             if (!items.length) return <EmptyState section="MOTION" />;
             return (
-                <div className="grid grid-cols-3 feed-grid">
+                <div {...feedLogos()}>
                     {items.map((raw, i) => {
                         const m = normMedia(raw);
                         const derived = titleFromFilename(m.image || m.video);
@@ -1406,7 +1418,7 @@ import * as ReactDOM from 'react-dom/client';
                                     <div className="post-dots">
                                         {photos.map((s, i) => (
                                             <button key={i} onClick={() => setPhoto(i)} aria-label={(s.video ? 'Video ' : 'Foto ') + (i + 1)}
-                                                style={{ width: i === photo ? '18px' : '6px', height: '6px', borderRadius: '3px', padding: 0, border: 'none', cursor: 'pointer', background: i === photo ? 'var(--fg)' : (s.video ? 'var(--accent)' : 'rgba(255,255,255,0.45)'), transition: 'width .25s var(--ease-out), background .25s var(--ease-out)' }} />
+                                                style={{ width: i === photo ? '18px' : '6px', height: '6px', borderRadius: '3px', padding: 0, border: 'none', cursor: 'pointer', background: i === photo ? 'var(--fg)' : 'rgba(255,255,255,0.45)', transition: 'width .25s var(--ease-out), background .25s var(--ease-out)' }} />
                                         ))}
                                     </div>
                                 </>
@@ -1416,7 +1428,6 @@ import * as ReactDOM from 'react-dom/client';
                             <div className="mono uline" style={{ fontSize: '11px', color: 'var(--mute)' }}>
                                 {String(idx + 1).padStart(2,'0')} / {String(images.length).padStart(2,'0')}
                                 {multi && <span> &nbsp;·&nbsp; {S().post.carousel} {photos.length}</span>}
-                                {photos.some(s => s.video) && <span style={{ color: 'var(--accent)' }}> &nbsp;·&nbsp; {S().post.video}</span>}
                             </div>
                             <h2 className="display" style={{ fontSize: '32px' }}>{post.title}</h2>
                             {/* Dicitura "Contenuto Enhanced con AI": compare solo
@@ -1550,7 +1561,9 @@ import * as ReactDOM from 'react-dom/client';
             </button>
         );
 
-        // Barra in alto della home (H10): fissa, fondo pieno, con il menu.
+        // Barra in alto della home (H10, alleggerita a novembre 2026): fissa,
+        // fondo pieno, con il menu. Con lo showreel compare solo dal feed in
+        // giu' (classe .bar-on in App).
         // A sinistra settings.topbar.left riporta in cima; settings.topbar.right
         // non si mostra piu' (resta nel pannello).
         const SiteTopbar = ({ onAbout, onContact, reel, paused, onTogglePause }) => {
@@ -1568,7 +1581,7 @@ import * as ReactDOM from 'react-dom/client';
                         <button type="button" onClick={onContact}>Contact</button>
                         {ig && (
                             <a className="site-top-ig" href={ig} target="_blank" rel="noopener"
-                                onClick={() => track('outbound_click', { link_domain: 'instagram.com', location: 'topbar' })}>Instagram ↗</a>
+                                onClick={() => track('outbound_click', { link_domain: 'instagram.com', location: 'topbar' })}>Instagram</a>
                         )}
                         {reel && <PauseButton paused={paused} onClick={onTogglePause} what="showreel" />}
                     </nav>
@@ -1887,6 +1900,26 @@ import * as ReactDOM from 'react-dom/client';
             // solo; PLAY lo fa ripartire comunque. Con meno movimento il video
             // nasce fermo, quindi nasce "in pausa".
             const [reelPaused, setReelPaused] = useState(() => calmoReel());
+            // Barra in alto (novembre 2026): sopra lo showreel non c'e';
+            // compare quando il bordo alto del feed arriva sotto la barra (36 px)
+            // e sparisce risalendo. Un IntersectionObserver sul pannello: la
+            // "radice" e' la striscia alta 36 px in cima allo schermo.
+            const [barOn, setBarOn] = useState(false);
+            useEffect(() => {
+                const panel = panelRef.current;
+                if (!reel || !panel || typeof IntersectionObserver !== 'function') return;
+                let io;
+                const watch = () => {
+                    if (io) io.disconnect();
+                    const below = Math.max(0, window.innerHeight - 36);
+                    io = new IntersectionObserver(([e]) => setBarOn(e.isIntersecting || e.boundingClientRect.bottom < 0),
+                        { rootMargin: `0px 0px -${below}px 0px` });
+                    io.observe(panel);
+                };
+                watch();
+                window.addEventListener('resize', watch);
+                return () => { window.removeEventListener('resize', watch); if (io) io.disconnect(); };
+            }, [reel]);
             const reelPausedRef = useRef(reelPaused);
             const setPausa = (on) => { reelPausedRef.current = on; setReelPaused(on); };
             const toggleReel = () => {
@@ -2006,13 +2039,13 @@ import * as ReactDOM from 'react-dom/client';
             }, [active]);
 
             return (
-                <div className={[reel && 'has-hero', reel && playing && 'is-playing', reel && reelAnim && 'reel-anim'].filter(Boolean).join(' ') || undefined}>
+                <div className={[reel && 'has-hero', reel && barOn && 'bar-on', reel && playing && 'is-playing', reel && reelAnim && 'reel-anim'].filter(Boolean).join(' ') || undefined}>
                     <a className="skip-link" href="#work"
                         onClick={(e) => {
                             e.preventDefault();
                             const p = panelRef.current;
                             if (!p) return;
-                            window.scrollTo({ top: p.getBoundingClientRect().top + window.scrollY - 44 });
+                            window.scrollTo({ top: p.getBoundingClientRect().top + window.scrollY - 36 });
                             p.focus({ preventScroll: true });
                         }}>Skip to work</a>
                     <SiteTopbar
@@ -2025,13 +2058,18 @@ import * as ReactDOM from 'react-dom/client';
                         scorrendo sparisce (opacita' da useEffect qui sopra). */}
                     <section ref={heroRef} className="hero-screen" aria-label="Intro">
                         <Marquee />
-                        {/* Spazio della barra in alto, che ora e' fissa (SiteTopbar):
-                            tiene il blocco centrale dov'era. */}
-                        <div className="hero-topbar" aria-hidden="true"></div>
                         <div className="hero-bottom page-x">
                             <ProfileHeader onContact={() => apriContatto('header')} onAbout={onSeries}
                                 onPlay={reel ? playReel : undefined} />
                         </div>
+                        {/* Pausa dello showreel sulla prima schermata (WCAG 2.2.2),
+                            visto che qui la barra non c'e'. Stesso stato del tasto
+                            nella barra; dopo i bottoni nell'ordine del Tab. */}
+                        {reel && (
+                            <div className="hero-pause">
+                                <PauseButton paused={reelPaused} onClick={toggleReel} what="showreel" />
+                            </div>
+                        )}
                     </section>
                     {/* Spazio vuoto: qui si vede il video pulito. */}
                     {reel && <div className="hero-gap" aria-hidden="true"></div>}

@@ -439,6 +439,10 @@
                 "@id": "https://www.andreaonori.com/#website"
               },
               "dateCreated": "2024",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "STUDIO FERRANTE APORTI"
+              },
               "genre": "ADV",
               "image": {
                 "@type": "ImageObject",
@@ -521,6 +525,10 @@
                 "@id": "https://www.andreaonori.com/#website"
               },
               "dateCreated": "2025",
+              "contentLocation": {
+                "@type": "Place",
+                "name": "ROTTERDAM"
+              },
               "genre": "CAMPAIGN",
               "image": {
                 "@type": "ImageObject",
@@ -604,7 +612,6 @@
     <link rel="preload" href="/fonts/roboto-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/roboto-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/roboto-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/fonts/roboto-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/fonts/fonts.css">
 
     <!-- React, ReactDOM e @babel/standalone non arrivano piu' da unpkg.
@@ -624,7 +631,7 @@
             /* Celle del feed e cerchi delle serie: un tono sopra lo sfondo,
                si vede finché la foto non è arrivata. */
             --cell: #1E1E1E;
-            --accent: #FF3D00;
+            --accent: #FFFFFF; /* niente piu' arancione (novembre 2026) */
             --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
             --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
             --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -665,33 +672,24 @@
         }
         @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-100%); } }
         .marquee-item { display: inline-flex; align-items: center; gap: 14px; font-size: 11px; }
-        .marquee-dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+        .marquee-dot { width: 4px; height: 4px; background: var(--mute); border-radius: 50%; flex-shrink: 0; }
 
         /* Buttons */
         .btn-primary {
             background: var(--fg); color: var(--bg);
             padding: 14px 28px; border: none;
             font-family: 'Roboto', sans-serif;
-            font-size: 11px; font-weight: 700;
+            font-size: 11px; font-weight: 500;
             text-transform: uppercase; letter-spacing: 0.18em;
-            transition: transform .35s var(--ease-out), background .35s var(--ease-out), box-shadow .35s var(--ease-out);
+            transition: background .35s var(--ease-out);
             cursor: pointer; border-radius: 0;
             display: inline-flex; align-items: center; gap: 10px;
             position: relative;
             overflow: hidden;
         }
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: var(--accent);
-            transform: translateY(100%);
-            transition: transform .5s var(--ease-out);
-            z-index: 0;
-        }
-        .btn-primary > * { position: relative; z-index: 1; }
-        .btn-primary:hover { color: var(--fg); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255, 61, 0, 0.25); }
-        .btn-primary:hover::before { transform: translateY(0); }
+        /* Hover: solo uno schiarimento del fondo, come gli altri bottoni
+           (novembre 2026: niente piu' riempimento arancione). */
+        .btn-primary:hover { background: #dcdcdc; }
         .btn-primary .arrow { transition: transform .4s var(--ease-out); display: inline-block; }
         .btn-primary:hover .arrow { transform: translateX(6px); }
 
@@ -700,7 +698,7 @@
             padding: 14px 28px;
             border: 1px solid var(--line-strong);
             font-family: 'Roboto', sans-serif;
-            font-size: 11px; font-weight: 700;
+            font-size: 11px; font-weight: 500;
             text-transform: uppercase; letter-spacing: 0.18em;
             transition: border-color .35s var(--ease-out), transform .35s var(--ease-out), background .35s var(--ease-out);
             cursor: pointer; border-radius: 0;
@@ -782,15 +780,27 @@
            foto grandi vengono rimpicciolite e la classe non la prendono. */
         .feed-item picture { display: block; width: 100%; height: 100%; }
         .feed-item img.pixel { image-rendering: pixelated; }
-        /* Logo del brand sopra la copertina: centrato, largo circa il 40% della
-           cella e mai più alto del 30%. Resta nitido (niente .pixel): il
-           contrasto tra logo pulito e copertina sporca è voluto. */
+        /* Logo del brand sopra la copertina: centrato, largo --logo-w della
+           cella (40% di base, dal pannello 20-60%) e mai più alto di 0,75 volte
+           quel valore. Resta nitido (niente .pixel): il contrasto tra logo
+           pulito e copertina sporca è voluto. */
         .feed-item .feed-logo {
             position: absolute; inset: 0; margin: auto;
-            width: 40%; height: 30%;
+            width: var(--logo-w, 40%); height: calc(var(--logo-w, 40%) * .75);
             object-fit: contain;
             filter: drop-shadow(0 2px 12px rgba(0,0,0,.35));
             pointer-events: none;
+        }
+        /* settings.feedLogos.mode: "hover" = il logo compare col mouse o col
+           focus da tastiera; dove non c'e' il mouse si vede sempre. "off" = mai. */
+        .logos-off .feed-logo { display: none; }
+        @media (hover: hover) {
+            .logos-hover .feed-logo { opacity: 0; transition: opacity .35s var(--ease-out); }
+            .logos-hover .feed-item:hover .feed-logo,
+            .logos-hover .feed-item:focus-visible .feed-logo { opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .logos-hover .feed-logo { transition: none; }
         }
         .feed-meta {
             position: absolute;
@@ -867,9 +877,9 @@
                 background: radial-gradient(ellipse 90% 36% at 50% 50%, rgba(22,22,22,.4) 0%, rgba(22,22,22,.4) 55%, rgba(22,22,22,0) 100%);
             }
         }
-        /* H8: il blocco del nome sta al centro dello schermo; padding-bottom
-           compensa la barra in alto, cosi' il centro e' quello ottico. */
-        .has-hero .hero-bottom { margin: auto 0; padding-top: 24px; padding-bottom: 64px; }
+        /* H8: il blocco del nome sta al centro dello schermo intero (da
+           novembre 2026 la barra in alto qui non c'e'). */
+        .has-hero .hero-bottom { margin: auto 0; padding-top: 64px; padding-bottom: 64px; }
         .hero-gap { height: calc(90vh - 90px); height: calc(90svh - 90px); }
         .has-hero .home-panel { position: relative; z-index: 1; background: var(--bg); padding-top: 48px; }
         @media (max-width: 767px) {
@@ -920,7 +930,7 @@
             pointer-events: none;
         }
         .series-circle:hover { transform: translateY(-3px); }
-        .series-circle:hover::before { border-color: var(--accent); inset: -5px; }
+        .series-circle:hover::before { border-color: var(--fg); inset: -5px; }
         .series-circle img {
             width: 100%; height: 100%; object-fit: cover;
             transition: transform .7s var(--ease-out);
@@ -967,7 +977,7 @@
         .abtn-top, .abtn-bot {
             height: 50%; padding: 0 28px; border: 0; border-radius: 0; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 9px;
-            font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 700;
+            font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 500;
             letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
         }
         .abtn.solo .abtn-top { height: 100%; }
@@ -990,21 +1000,29 @@
         /* Barra in alto (H10, WCAG AA): fissa, fondo pieno, sopra a tutto tranne
            le viste a tutto schermo (scheda, About, modulo: z-index 10000). */
         .site-top {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 9000; height: 44px;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 9000; height: 36px;
             display: flex; align-items: center; justify-content: space-between; gap: 16px;
-            padding: 0 40px; background: #161616; border-bottom: 1px solid rgba(255,255,255,.14);
+            padding: 0 40px; background: #161616;
             font: 400 11px/1 'Roboto', sans-serif; letter-spacing: .16em; text-transform: uppercase; color: #fff;
+            transition: transform .35s var(--ease-out), opacity .35s var(--ease-out), visibility 0s;
         }
+        /* Con lo showreel la barra non c'e' all'apertura: compare dal feed in
+           giu' (.bar-on, IntersectionObserver in App). visibility: hidden la
+           toglie anche dal Tab; arriva dopo la dissolvenza. */
+        .has-hero:not(.bar-on) .site-top {
+            transform: translateY(-100%); opacity: 0; visibility: hidden; pointer-events: none;
+            transition: transform .35s var(--ease-out), opacity .35s var(--ease-out), visibility 0s linear .35s;
+        }
+        @media (prefers-reduced-motion: reduce) { .site-top, .has-hero:not(.bar-on) .site-top { transition: none; } }
         .site-top a, .site-top button {
             color: #fff; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none;
             font: inherit; letter-spacing: inherit; text-transform: inherit;
-            min-height: 44px; display: inline-flex; align-items: center; gap: 8px;
+            min-height: 36px; display: inline-flex; align-items: center; gap: 8px;
             transition: color .25s var(--ease-out);
         }
         .site-top a:hover, .site-top button:hover { color: rgba(255,255,255,.7); }
         .site-top a:focus-visible, .site-top button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
         .site-top-nav { display: flex; align-items: center; gap: 28px; }
-        .hero-topbar { height: 44px; flex-shrink: 0; }
         @media (max-width: 767px) {
             .site-top { padding: 0 20px; }
             .site-top-nav { gap: 18px; }
@@ -1019,11 +1037,15 @@
         }
         .pause-btn:hover { color: rgba(255,255,255,.7); border-color: rgba(255,255,255,.6) !important; }
         .pause-btn:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+        /* Nella barra e sullo showreel: senza riquadro */
+        .site-top .pause-btn, .hero-pause .pause-btn { border: 0 !important; min-width: 28px; padding: 0 !important; }
+        .hero-pause { position: absolute; top: 20px; right: 20px; z-index: 2; }
+        .hero-pause .pause-btn { min-height: 28px !important; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
         /* "Skip to work": nascosto finche' non riceve il focus da tastiera */
         .skip-link {
             position: fixed; left: 12px; top: -60px; z-index: 9500; padding: 12px 16px;
             background: #fff; color: #161616; text-decoration: none;
-            font: 700 11px/1 'Roboto', sans-serif; letter-spacing: .16em; text-transform: uppercase;
+            font: 500 11px/1 'Roboto', sans-serif; letter-spacing: .16em; text-transform: uppercase;
         }
         .skip-link:focus { top: 8px; outline: 2px solid #fff; outline-offset: 3px; }
         .home-panel:focus { outline: none; }
@@ -1038,7 +1060,7 @@
             width: 44px; padding: 16px 0 14px; border: 0; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; gap: 12px;
             background: #2a2a2a; color: #fff;
-            font: 700 11px/1 'Roboto', sans-serif; letter-spacing: .18em; text-transform: uppercase;
+            font: 500 11px/1 'Roboto', sans-serif; letter-spacing: .18em; text-transform: uppercase;
             transition: background .35s var(--ease-out);
         }
         .side-arrow:hover { background: #3a3a3a; }
@@ -1061,7 +1083,7 @@
             position: fixed; top: 16px; right: 16px; z-index: 50;
             display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px;
             border: 0; cursor: pointer; background: rgba(0,0,0,.45); color: #fff;
-            font: 700 11px/1 'Roboto', sans-serif; letter-spacing: .18em; text-transform: uppercase;
+            font: 500 11px/1 'Roboto', sans-serif; letter-spacing: .18em; text-transform: uppercase;
             transition: background .25s var(--ease-out);
         }
         .reel-close:hover { background: rgba(0,0,0,.7); }
@@ -1076,7 +1098,7 @@
             height: 84px; min-width: 168px; padding: 0 28px;
             display: inline-flex; flex-direction: column; align-items: stretch;
             border: 0; border-radius: 0; cursor: pointer;
-            font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 700;
+            font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 500;
             letter-spacing: .18em; text-transform: uppercase; white-space: nowrap;
             background: linear-gradient(to bottom, #fff 0 50%, rgba(255,255,255,.12) 50% 100%);
             transition: background .35s var(--ease-out);
@@ -1109,7 +1131,7 @@
         .tab-btn {
             font-family: 'Roboto', sans-serif;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.22em;
             padding: 18px 0;
@@ -1146,7 +1168,7 @@
             letter-spacing: 0.15em;
         }
         .index-row:hover { background: rgba(255,255,255,0.04); padding-left: 12px; padding-right: 12px; }
-        .index-row:hover .index-arrow { transform: translateX(4px); color: var(--accent); }
+        .index-row:hover .index-arrow { transform: translateX(4px); color: var(--fg); }
         .index-arrow { transition: all .25s ease; }
         @media (max-width: 768px) {
             .index-row { grid-template-columns: 40px 1fr 30px; gap: 14px; }
@@ -1333,7 +1355,7 @@
         .rbtn {
             height: 44px; min-width: 168px; padding: 0 24px; border: 0; border-radius: 0; cursor: pointer;
             display: inline-flex; align-items: center; justify-content: center;
-            font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 700;
+            font-family: 'Roboto', sans-serif; font-size: 11px; font-weight: 500;
             letter-spacing: .18em; text-transform: uppercase; white-space: nowrap; text-decoration: none;
             transition: background .35s var(--ease-out);
         }
@@ -1603,9 +1625,9 @@
               <p class="pf-meta">2026 · EDITORIAL</p>
             </article>
             <article class="pf-item">
-              <img src="https://vz-13c73ffe-e6a.b-cdn.net/a23ce765-4772-4ee3-974b-56ed150dd914/thumbnail.jpg" alt="AUDEMARS PIGUET — ADV — 2024" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <img src="https://vz-13c73ffe-e6a.b-cdn.net/a23ce765-4772-4ee3-974b-56ed150dd914/thumbnail.jpg" alt="AUDEMARS PIGUET — ADV — STUDIO FERRANTE APORTI — 2024" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
               <h3><a href="/work/audemars-piguet">AUDEMARS PIGUET</a></h3>
-              <p class="pf-meta">2024 · ADV</p>
+              <p class="pf-meta">STUDIO FERRANTE APORTI · 2024 · ADV</p>
             </article>
             <article class="pf-item">
               <img src="https://www.andreaonori.com/media/okgiorgio-dj-ginostra.webp" alt="IN VACANZA A STROMBOLI CON OKGIORGIO — Est Radio — DOC — LIVE — STROMBOLI — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
@@ -1618,9 +1640,9 @@
               <p class="pf-meta">2024 · CAMPAIGN — INDUSTRIAL</p>
             </article>
             <article class="pf-item">
-              <img src="https://vz-13c73ffe-e6a.b-cdn.net/f783c346-cdcd-46b1-b5ee-c95c4fc33ca8/thumbnail.jpg" alt="MANDARINA DUCK — CAMPAIGN — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
+              <img src="https://vz-13c73ffe-e6a.b-cdn.net/f783c346-cdcd-46b1-b5ee-c95c4fc33ca8/thumbnail.jpg" alt="MANDARINA DUCK — CAMPAIGN — ROTTERDAM — 2025" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
               <h3><a href="/work/mandarina-duck">MANDARINA DUCK</a></h3>
-              <p class="pf-meta">2025 · CAMPAIGN</p>
+              <p class="pf-meta">ROTTERDAM · 2025 · CAMPAIGN</p>
             </article>
             <article class="pf-item">
               <img src="https://vz-13c73ffe-e6a.b-cdn.net/e6d9e8f8-7f27-41a8-9e47-286c49b09c7b/thumbnail.jpg" alt="FRAGILE — D la Repubblica — EDITORIAL — 2026" style="aspect-ratio:4 / 5" loading="lazy" decoding="async">
@@ -1669,7 +1691,7 @@
               <h3>SANTONI - Back To Office</h3>
             </article>
             <article class="pf-item">
-              <img src="https://www.andreaonori.com/media/screenshot-2026-09-07-alle-11-46-39-mtr23fcy.png" alt="PRADA - SHOW INVITATION — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
+              <img src="https://vz-13c73ffe-e6a.b-cdn.net/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6/thumbnail.jpg" alt="PRADA - SHOW INVITATION — motion still by Andrea Onori, Milan" style="aspect-ratio:9 / 16" loading="lazy" decoding="async">
               <h3>PRADA - SHOW INVITATION</h3>
             </article>
             <article class="pf-item">
@@ -1707,10 +1729,10 @@
                   <tr><td>05</td><td>BACK TO OFFICE</td><td>MILANO</td><td>2025</td></tr>
                   <tr><td>06</td><td>YPSUM</td><td>MILANO</td><td>2025</td></tr>
                   <tr><td>07</td><td>CUM CLOSER</td><td></td><td>2026</td></tr>
-                  <tr><td>08</td><td>AUDEMARS PIGUET</td><td></td><td>2024</td></tr>
+                  <tr><td>08</td><td>AUDEMARS PIGUET</td><td>STUDIO FERRANTE APORTI</td><td>2024</td></tr>
                   <tr><td>09</td><td>IN VACANZA A STROMBOLI CON OKGIORGIO</td><td>STROMBOLI</td><td>2025</td></tr>
                   <tr><td>10</td><td>MOSAIQ GROUP</td><td></td><td>2024</td></tr>
-                  <tr><td>11</td><td>MANDARINA DUCK</td><td></td><td>2025</td></tr>
+                  <tr><td>11</td><td>MANDARINA DUCK</td><td>ROTTERDAM</td><td>2025</td></tr>
                   <tr><td>12</td><td>FRAGILE</td><td></td><td>2026</td></tr>
                   <tr><td>13</td><td>NEIT X YAPA — ANTIPAROS</td><td>ANTIPAROS</td><td>2026</td></tr>
                 </tbody>
@@ -1751,13 +1773,13 @@
       <p>Contact: <a href="mailto:video@andreaonori.com">video@andreaonori.com</a> · <a href="https://www.instagram.com/andrea__onori" rel="me noopener">@andrea__onori</a></p>
       <p>Disciplines: Filmmaking, Fashion, Advertising, Media.</p>
       <p>Projects: GRETA&#39;S GARDEN, IL CASO EST RADIO, FW26 INVITATION, PIZZO CARDI DW, BACK TO OFFICE, YPSUM, CUM CLOSER, AUDEMARS PIGUET, IN VACANZA A STROMBOLI CON OKGIORGIO, MOSAIQ GROUP, MANDARINA DUCK, FRAGILE, NEIT X YAPA — ANTIPAROS.</p>
-      <p>Locations: MILANO, STROMBOLI, ANTIPAROS.</p>
+      <p>Locations: MILANO, STUDIO FERRANTE APORTI, STROMBOLI, ROTTERDAM, ANTIPAROS.</p>
     </section>
         <!-- SEOBIO:END -->
 
     <!-- Il sorgente di questo bundle e' src/app.jsx. Non modificare
          assets/app.js a mano: si rigenera con `npm run build`. -->
-    <script src="/assets/app.js?v=8b20f6ac" defer></script>
+    <script src="/assets/app.js?v=eda025a3" defer></script>
 
     <!-- ─────────────────────────────────────────────────────────────────────
          BANNER COOKIE — vanilla, non React, e fuori da #root di proposito:

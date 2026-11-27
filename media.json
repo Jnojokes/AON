@@ -37,7 +37,7 @@
         },
         {
           "label": "FORMAT",
-          "value": ""
+          "value": "Campaign"
         },
         {
           "label": "ART DIRECTION",
@@ -259,7 +259,7 @@
         },
         {
           "label": "FORMAT",
-          "value": ""
+          "value": "Campaign"
         },
         {
           "label": "CRAFTED BY",
@@ -358,7 +358,7 @@
       ],
       "title": "AUDEMARS PIGUET",
       "year": "2024",
-      "loc": "",
+      "loc": "STUDIO FERRANTE APORTI",
       "film": "ADV",
       "credits": [
         {
@@ -487,7 +487,7 @@
       ],
       "title": "MANDARINA DUCK",
       "year": "2025",
-      "loc": "",
+      "loc": "ROTTERDAM",
       "film": "CAMPAIGN",
       "credits": [
         {
@@ -594,10 +594,6 @@
           "value": "2026"
         },
         {
-          "label": "FORMAT",
-          "value": ""
-        },
-        {
           "label": "PRODUCTION",
           "value": "Bravò Studio"
         }
@@ -614,7 +610,7 @@
       "logo": "media/logos/santoni.svg"
     },
     {
-      "poster": "media/screenshot-2026-09-07-alle-11-46-39-mtr23fcy.png",
+      "poster": "https://vz-13c73ffe-e6a.b-cdn.net/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6/thumbnail.jpg",
       "video": "https://player.mediadelivery.net/embed/788231/c7dfcca7-9ffd-4ab1-8a16-4c68a63851f6",
       "title": "PRADA - SHOW INVITATION",
       "ratio": "9/16"
@@ -756,7 +752,7 @@
     {
       "num": "08",
       "title": "AUDEMARS PIGUET",
-      "location": "",
+      "location": "STUDIO FERRANTE APORTI",
       "year": "2024",
       "image": "https://vz-13c73ffe-e6a.b-cdn.net/a23ce765-4772-4ee3-974b-56ed150dd914/thumbnail.jpg"
     },
@@ -777,7 +773,7 @@
     {
       "num": "11",
       "title": "MANDARINA DUCK",
-      "location": "",
+      "location": "ROTTERDAM",
       "year": "2025",
       "image": "https://vz-13c73ffe-e6a.b-cdn.net/f783c346-cdcd-46b1-b5ee-c95c4fc33ca8/thumbnail.jpg"
     },
@@ -816,8 +812,8 @@
       "siteLabel": "",
       "siteUrl": "",
       "ctaPrimary": "CONTACT ME",
-      "ctaIdle": "STAND BY",
-      "ctaHover": "REC",
+      "ctaIdle": "LET’S ROLL",
+      "ctaHover": "",
       "ctaPlay": "PLAY",
       "ctaEmail": "video@andreaonori.com",
       "ctaSubject": "Production enquiry",
@@ -892,6 +888,10 @@
       "author": "Andrea Onori",
       "avatarAlt": "Andrea Onori, filmmaker based in Milan, working on fashion and adv",
       "bio": "It began in the Marche, where I was born. Today I'm based in Milan and work internationally as an independent filmmaker, mostly in fashion, advertising and media. I follow each project from the first idea to the final cut, treating every story as a film of its own.\nEmotions rarely arrive with a shape: my craft is building the frame they need to find their meaning."
+    },
+    "feedLogos": {
+      "mode": "hover",
+      "size": 40
     }
   },
   "about": {
