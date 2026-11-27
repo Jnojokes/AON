@@ -31,10 +31,10 @@ All projects listed below: 2024–2026.
 - [BACK TO OFFICE](https://www.andreaonori.com/work/back-to-office): MILANO, 2025, CAMPAIGN (no written description yet)
 - [YPSUM](https://www.andreaonori.com/work/ypsum): MILANO, 2025, CAMPAIGN — SCREEN (no written description yet)
 - [CUM CLOSER](https://www.andreaonori.com/work/cum-closer): 2026, EDITORIAL (no written description yet)
-- [AUDEMARS PIGUET](https://www.andreaonori.com/work/audemars-piguet): 2024, ADV (no written description yet)
+- [AUDEMARS PIGUET](https://www.andreaonori.com/work/audemars-piguet): STUDIO FERRANTE APORTI, 2024, ADV (no written description yet)
 - [IN VACANZA A STROMBOLI CON OKGIORGIO](https://www.andreaonori.com/work/in-vacanza-a-stromboli-con-okgiorgio): STROMBOLI, 2025, DOC — LIVE (no written description yet)
 - [MOSAIQ GROUP](https://www.andreaonori.com/work/mosaiq-group): 2024, CAMPAIGN — INDUSTRIAL (no written description yet)
-- [MANDARINA DUCK](https://www.andreaonori.com/work/mandarina-duck): 2025, CAMPAIGN (no written description yet)
+- [MANDARINA DUCK](https://www.andreaonori.com/work/mandarina-duck): ROTTERDAM, 2025, CAMPAIGN (no written description yet)
 - [FRAGILE](https://www.andreaonori.com/work/fragile): 2026, EDITORIAL (no written description yet)
 - [NEIT X YAPA — ANTIPAROS](https://www.andreaonori.com/work/neit-x-yapa-antiparos): ANTIPAROS, 2026 (no written description yet)
 
@@ -46,10 +46,10 @@ All projects listed below: 2024–2026.
 - **BACK TO OFFICE** — MILANO, 2025
 - **YPSUM** — MILANO, 2025
 - **CUM CLOSER** — 2026
-- **AUDEMARS PIGUET** — 2024
+- **AUDEMARS PIGUET** — STUDIO FERRANTE APORTI, 2024
 - **IN VACANZA A STROMBOLI CON OKGIORGIO** — STROMBOLI, 2025
 - **MOSAIQ GROUP** — 2024
-- **MANDARINA DUCK** — 2025
+- **MANDARINA DUCK** — ROTTERDAM, 2025
 - **FRAGILE** — 2026
 - **NEIT X YAPA — ANTIPAROS** — ANTIPAROS, 2026
 
@@ -64,10 +64,10 @@ All projects listed below: 2024–2026.
 | 05 | BACK TO OFFICE | MILANO | 2025 | CAMPAIGN | no |
 | 06 | YPSUM | MILANO | 2025 | CAMPAIGN — SCREEN | no |
 | 07 | CUM CLOSER |  | 2026 | EDITORIAL | no |
-| 08 | AUDEMARS PIGUET |  | 2024 | ADV | no |
+| 08 | AUDEMARS PIGUET | STUDIO FERRANTE APORTI | 2024 | ADV | no |
 | 09 | IN VACANZA A STROMBOLI CON OKGIORGIO | STROMBOLI | 2025 | DOC — LIVE | no |
 | 10 | MOSAIQ GROUP |  | 2024 | CAMPAIGN — INDUSTRIAL | no |
-| 11 | MANDARINA DUCK |  | 2025 | CAMPAIGN | no |
+| 11 | MANDARINA DUCK | ROTTERDAM | 2025 | CAMPAIGN | no |
 | 12 | FRAGILE |  | 2026 | EDITORIAL | no |
 | 13 | NEIT X YAPA — ANTIPAROS | ANTIPAROS | 2026 |  | no |
 

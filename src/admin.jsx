@@ -1479,6 +1479,39 @@ function AboutEditor({ value, password, onChange, onStatus }){
 const getPath = (obj, path) => { const [a, b] = path.split("."); const o = (obj || {})[a]; return (o && o[b] != null) ? String(o[b]) : ""; };
 const setPath = (obj, path, v) => { const [a, b] = path.split("."); return { ...obj, [a]: { ...((obj || {})[a] || {}), [b]: v } }; };
 
+// ── Loghi sulle copertine del feed (settings.feedLogos) ─────────────────────
+// mode: always | hover | off; size: larghezza del logo in % della cella (20-60).
+// Senza il campo il sito usa always / 40.
+const LOGO_MODES = [["always", "Sempre"], ["hover", "Solo al passaggio del mouse"], ["off", "Nascosti"]];
+const logoSettings = (s) => {
+  const f = (s && s.feedLogos) || {};
+  const mode = LOGO_MODES.some(([k]) => k === f.mode) ? f.mode : "always";
+  const n = Number(f.size);
+  return { mode, size: Number.isFinite(n) ? Math.min(60, Math.max(20, n)) : 40 };
+};
+function LogosEditor({ settings, onChange }){
+  const v = logoSettings(settings);
+  const set = (patch) => onChange({ ...(settings || {}), feedLogos: { ...v, ...patch } });
+  return (
+    <div className="set-group">
+      <h3>Loghi sulle copertine del feed</h3>
+      <p className="hint">Valgono per il feed e per la sezione Motion. "Solo al passaggio del mouse": da telefono, dove il mouse non c'è, i loghi si vedono sempre.</p>
+      <div className="logo-modes" role="radiogroup" aria-label="Quando si vedono i loghi">
+        {LOGO_MODES.map(([k, lbl]) => (
+          <button key={k} type="button" role="radio" aria-checked={v.mode === k}
+            className={"btn" + (v.mode === k ? " btn-primary" : " btn-ghost")} onClick={() => set({ mode: k })}>{lbl}</button>
+        ))}
+      </div>
+      <label className="lbl" htmlFor="logo-size" style={{ marginTop: 18 }}>Dimensione</label>
+      <div className="logo-size">
+        <input id="logo-size" type="range" min="20" max="60" step="1" value={v.size}
+          disabled={v.mode === "off"} onChange={(e) => set({ size: Number(e.target.value) })} />
+        <span className="mono">{v.size}%</span>
+      </div>
+    </div>
+  );
+}
+
 // ── Sezione HOME ────────────────────────────────────────────────────────────
 // La scritta ABOUT ME e' l'etichetta della serie "aboutme" (media.series):
 // si modifica qui, il resto delle serie non si tocca.
@@ -1494,6 +1527,7 @@ function HomeEditor({ settings, series, password, onChange, onSeries, onStatus }
     <div>
       <FeedReelEditor value={s.feedReel} password={password} onStatus={onStatus}
         onChange={(v) => onChange({ ...s, feedReel: v })} />
+      <LogosEditor settings={s} onChange={onChange} />
       {HOME_GROUPS.map(g => (
         <FieldGroup key={g.title} group={g} get={get} set={set} />
       ))}
@@ -1728,7 +1762,7 @@ function CMS({ password }){
         </nav>
       </header>
 
-      <main className="adm-wrap adm-main">
+      <main className="adm-wrap adm-main" style={{ "--logo-w": logoSettings(media.settings).size + "%" }}>
         <div className="adm-intro">
           <div>
             <h2 className="display adm-title">{meta.label}</h2>
